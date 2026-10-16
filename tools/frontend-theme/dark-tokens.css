@@ -1,0 +1,50 @@
+[data-theme="dark"] {
+  /* ---- Marca (violeta neón) ---- */
+  --brand: #8b5cf6;
+  --brand-600: #7c3aed;
+  --brand-500: #a78bfa;
+  --brand-400: #c4b5fd;
+  --brand-50: rgba(139, 92, 246, 0.12);
+  --brand-100: rgba(139, 92, 246, 0.22);
+
+  /* ---- Acento (fucsia neón) ---- */
+  --accent: #e879f9;
+  --accent-600: #d946ef;
+  --accent-50: rgba(232, 121, 249, 0.12);
+  --pink: #f472b6;
+
+  --grad: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 50%, #c026d3 100%);
+  --grad-soft: linear-gradient(135deg, rgba(139,92,246,.14), rgba(232,121,249,.10));
+  --grad-sidebar: linear-gradient(185deg, #14092b 0%, #1e0f3f 60%, #2a1257 100%);
+
+  /* ---- Fondos y capas ---- */
+  --bg: #0e0a1c;
+  --surface: #1a1330;
+  --surface-2: #231a42;
+  --sidebar-bg: #14092b;
+  --border: rgba(167, 139, 250, 0.14);
+  --border-strong: rgba(167, 139, 250, 0.28);
+
+  /* ---- Texto ---- */
+  --text-1: #f5f3ff;
+  --text-2: #ddd6fe;
+  --text-3: #a79bc9;
+  --text-4: #7a6ea0;
+
+  /* ---- Estados ---- */
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.12);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.12);
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.12);
+  --info: #a78bfa;
+  --info-bg: rgba(167, 139, 250, 0.12);
+
+  /* ---- Sombras con resplandor ---- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(167, 139, 250, 0.05);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.55), 0 0 18px rgba(139, 92, 246, 0.08);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 30px rgba(139, 92, 246, 0.14);
+  --glow: 0 6px 20px rgba(139, 92, 246, 0.35);
+}

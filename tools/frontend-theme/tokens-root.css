@@ -1,0 +1,71 @@
+:root {
+  /* Marca: violeta EduNova */
+  --brand: #7c3aed;
+  --brand-600: #6d28d9;
+  --brand-500: #8b5cf6;
+  --brand-400: #a78bfa;
+  --brand-50: #f5f3ff;
+  --brand-100: #ede9fe;
+
+  /* Acento: fucsia (destellos, gradientes, detalles) */
+  --accent: #c026d3;
+  --accent-600: #a21caf;
+  --accent-50: #fdf4ff;
+  --pink: #ec4899;
+
+  /* Gradientes de marca */
+  --grad: linear-gradient(135deg, #6d28d9 0%, #7c3aed 45%, #a855f7 100%);
+  --grad-soft: linear-gradient(135deg, #f5f3ff 0%, #fdf4ff 100%);
+  --grad-sidebar: linear-gradient(185deg, #2e1065 0%, #4c1d95 55%, #5b21b6 100%);
+
+  /* Superficies y texto */
+  --bg: #f6f3fd;
+  --surface: #ffffff;
+  --surface-2: #faf8ff;
+  --border: #e9e3f7;
+  --border-strong: #d6cdee;
+
+  --text-1: #1e1033;
+  --text-2: #3f3157;
+  --text-3: #6b5f86;
+  --text-4: #9a8fb5;
+
+  /* Estados (contraste AA sobre fondo blanco) */
+  --success: #0f7a37;
+  --success-bg: #e7f6ec;
+  --warning: #a85703;
+  --warning-bg: #fdf2e3;
+  --danger: #dc2626;
+  --danger-bg: #fdeaea;
+  --info: #7c3aed;
+  --info-bg: #f5f3ff;
+
+  /* Tipografía (empaquetada en la app, funciona sin internet) */
+  --font: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Radios */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* Sombras con tinte violeta */
+  --shadow-xs: 0 1px 2px rgba(76, 29, 149, 0.06);
+  --shadow-sm: 0 2px 6px rgba(76, 29, 149, 0.07), 0 1px 2px rgba(76, 29, 149, 0.04);
+  --shadow-md: 0 8px 22px rgba(76, 29, 149, 0.10);
+  --shadow-lg: 0 18px 44px rgba(76, 29, 149, 0.16);
+  --glow: 0 6px 18px rgba(124, 58, 237, 0.32);
+
+  /* Espaciado */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* Medidas del layout */
+  --sidebar-w: 264px;
+  --sidebar-collapsed-w: 76px;
+  --topbar-h: 68px;

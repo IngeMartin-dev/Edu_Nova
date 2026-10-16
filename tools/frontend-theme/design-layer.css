@@ -1,0 +1,148 @@
+
+/* ============================================================
+   CAPA DE DISEÑO EDUNOVA
+   Identidad visual propia: violeta + fucsia, esquinas amplias,
+   sombras con tinte violeta y gradientes suaves.
+   ============================================================ */
+
+/* Iconos Material (fuente empaquetada, sin depender de Google) */
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(900px 480px at 8% -8%, rgba(168, 85, 247, 0.13), transparent 60%),
+    radial-gradient(700px 420px at 100% 0%, rgba(192, 38, 211, 0.08), transparent 55%);
+  background-attachment: fixed;
+  letter-spacing: -0.005em;
+}
+
+::selection { background: rgba(124, 58, 237, 0.22); color: var(--text-1); }
+
+* { scrollbar-width: thin; scrollbar-color: #c4b5fd transparent; }
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 99px; border: 2px solid transparent; background-clip: padding-box; }
+*::-webkit-scrollbar-thumb:hover { background: #a78bfa; background-clip: padding-box; border: 2px solid transparent; }
+
+h1, h2, h3, h4 { letter-spacing: -0.02em; font-weight: 700; }
+
+/* Encabezado de página: título con barra de acento */
+.page-header h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  position: relative;
+  padding-left: 16px;
+}
+.page-header h1::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 12%; bottom: 12%;
+  width: 5px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #7c3aed, #d946ef);
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  border-radius: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  padding: 0.62rem 1.2rem;
+}
+.btn-primary {
+  background: var(--grad);
+  box-shadow: var(--glow);
+  border-color: transparent;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--grad);
+  filter: brightness(1.07);
+  box-shadow: 0 10px 26px rgba(124, 58, 237, 0.42);
+  transform: translateY(-1px);
+}
+.btn-accent { background: linear-gradient(135deg, #c026d3, #e879f9); }
+.btn-accent:hover:not(:disabled) { background: linear-gradient(135deg, #a21caf, #d946ef); }
+.btn-outline {
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  color: var(--brand-600);
+}
+.btn-outline:hover:not(:disabled) { border-color: var(--brand); background: var(--brand-50); color: var(--brand-600); }
+.btn-ghost:hover:not(:disabled) { background: var(--brand-50); color: var(--brand-600); }
+
+/* ---------- Tarjetas ---------- */
+.card {
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface);
+}
+.card-title { font-weight: 700; }
+
+/* ---------- Formularios ---------- */
+.form-control,
+input[type="text"], input[type="email"], input[type="password"], input[type="number"],
+input[type="search"], input[type="date"], input[type="datetime-local"], select, textarea {
+  border: 1.5px solid var(--border-strong);
+  border-radius: 12px;
+  background-color: var(--surface-2);
+}
+.form-control:focus, input:focus, select:focus, textarea:focus {
+  border-color: var(--brand);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.14);
+}
+.form-group label { font-weight: 700; color: var(--text-2); font-size: 0.8rem; letter-spacing: 0.01em; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--brand); }
+
+/* ---------- Tablas ---------- */
+.table-container, .table-responsive {
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+}
+.table thead th {
+  background: linear-gradient(180deg, #f5f3ff, #ede9fe);
+  color: var(--brand-600);
+  font-weight: 800;
+  border-bottom: 1px solid var(--border-strong);
+}
+.table tbody tr:nth-child(even) { background: rgba(245, 243, 255, 0.45); }
+.table tbody tr:hover { background: var(--brand-100); }
+
+/* ---------- Insignias ---------- */
+.badge { font-weight: 700; padding: 0.25rem 0.7rem; }
+.badge-info { color: var(--brand-600); border-color: var(--brand-100); }
+.progress > span { background: linear-gradient(90deg, #7c3aed, #d946ef); }
+
+/* ---------- Estado vacío ---------- */
+.empty-state .material-icons { color: var(--brand-400); opacity: 0.8; }
+
+/* ---------- Entrada suave de las pantallas ---------- */
+@keyframes edunovaRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.content-wrapper > * { animation: edunovaRise 0.35s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .content-wrapper > *, .fade-in { animation: none !important; }
+  * { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+}
+
+/* Los controles heredan la tipografía de la marca */
+button,input,select,textarea{font-family:inherit}
