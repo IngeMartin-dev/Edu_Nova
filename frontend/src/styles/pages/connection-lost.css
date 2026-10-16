@@ -1,0 +1,8 @@
+.pg-connection-lost {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: block;
+  overflow: auto;
+  background: var(--bg, #f6f4fc);
+}

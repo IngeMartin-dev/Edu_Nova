@@ -1,0 +1,732 @@
+:root {
+  /* Marca: violeta EduNova */
+  --brand: #7c3aed;
+  --brand-600: #6d28d9;
+  --brand-500: #8b5cf6;
+  --brand-400: #a78bfa;
+  --brand-50: #f5f3ff;
+  --brand-100: #ede9fe;
+
+  /* Acento: fucsia (destellos, gradientes, detalles) */
+  --accent: #c026d3;
+  --accent-600: #a21caf;
+  --accent-50: #fdf4ff;
+  --pink: #ec4899;
+
+  /* Gradientes de marca */
+  --grad: linear-gradient(135deg, #6d28d9 0%, #7c3aed 45%, #a855f7 100%);
+  --grad-soft: linear-gradient(135deg, #f5f3ff 0%, #fdf4ff 100%);
+  --grad-sidebar: linear-gradient(185deg, #2e1065 0%, #4c1d95 55%, #5b21b6 100%);
+
+  /* Superficies y texto */
+  --bg: #f6f3fd;
+  --surface: #ffffff;
+  --surface-2: #faf8ff;
+  --border: #e9e3f7;
+  --border-strong: #d6cdee;
+
+  --text-1: #1e1033;
+  --text-2: #3f3157;
+  --text-3: #6b5f86;
+  --text-4: #9a8fb5;
+
+  /* Estados (contraste AA sobre fondo blanco) */
+  --success: #0f7a37;
+  --success-bg: #e7f6ec;
+  --warning: #a85703;
+  --warning-bg: #fdf2e3;
+  --danger: #dc2626;
+  --danger-bg: #fdeaea;
+  --info: #7c3aed;
+  --info-bg: #f5f3ff;
+
+  /* Tipografía (empaquetada en la app, funciona sin internet) */
+  --font: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Radios */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* Sombras con tinte violeta */
+  --shadow-xs: 0 1px 2px rgba(76, 29, 149, 0.06);
+  --shadow-sm: 0 2px 6px rgba(76, 29, 149, 0.07), 0 1px 2px rgba(76, 29, 149, 0.04);
+  --shadow-md: 0 8px 22px rgba(76, 29, 149, 0.10);
+  --shadow-lg: 0 18px 44px rgba(76, 29, 149, 0.16);
+  --glow: 0 6px 18px rgba(124, 58, 237, 0.32);
+
+  /* Espaciado */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* Medidas del layout */
+  --sidebar-w: 264px;
+  --sidebar-collapsed-w: 76px;
+  --topbar-h: 68px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background-color: var(--bg);
+  color: var(--text-1);
+  line-height: 1.55;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Contenedor de página estándar */
+.container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 var(--sp-5);
+}
+
+/* Encabezado de sección reutilizable */
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-6);
+}
+
+.page-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.page-header p {
+  color: var(--text-3);
+  font-size: 0.95rem;
+  margin: var(--sp-1) 0 0;
+}
+
+.page-header-actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+/* Tipografía base */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-1);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+a {
+  color: var(--brand);
+  text-decoration: none;
+}
+
+/* ===================== Botones ===================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: 0.6rem 1.1rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease,
+    color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn .material-icons {
+  font-size: 1.15rem;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background-color: var(--brand);
+  color: #fff;
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--brand-600);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+.btn-accent:hover:not(:disabled) {
+  background-color: var(--accent-600);
+}
+
+.btn-success {
+  background-color: var(--success);
+  color: #fff;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: #15803d;
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.btn-outline {
+  background: var(--surface);
+  color: var(--text-2);
+  border-color: var(--border-strong);
+}
+
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: var(--brand-50);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-2);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text-1);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ===================== Tarjetas ===================== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-5);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.card-footer {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+/* ===================== Formularios ===================== */
+.form-group {
+  margin-bottom: var(--sp-4);
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  color: var(--text-2);
+  font-size: 0.85rem;
+  margin-bottom: var(--sp-2);
+}
+
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="date"],
+input[type="datetime-local"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  font-size: 0.92rem;
+  font-family: inherit;
+  color: var(--text-1);
+  background: var(--surface);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  padding-right: 2.2rem;
+}
+
+.form-control:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(74, 29, 233, 0.15);
+}
+
+.form-control::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-4);
+}
+
+.input-error {
+  border-color: var(--danger) !important;
+}
+
+.field-error {
+  color: var(--danger);
+  font-size: 0.78rem;
+  margin-top: var(--sp-1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sp-4);
+}
+
+/* ===================== Tablas ===================== */
+.table-container,
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.table thead th {
+  background: var(--surface-2);
+  color: var(--text-3);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid var(--border);
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--brand-50);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table .actions-cell {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: flex-end;
+}
+
+/* Insignias / badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--r-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+
+.badge-success { background: var(--success-bg); color: var(--success); border-color: #bfe6cc; }
+.badge-warning { background: var(--warning-bg); color: var(--warning); border-color: #f3dcb4; }
+.badge-danger  { background: var(--danger-bg);  color: var(--danger);  border-color: #f3c4c4; }
+.badge-info    { background: var(--info-bg);    color: var(--brand);   border-color: var(--brand-100); }
+
+/* Barra de progreso genérica */
+.progress {
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.progress > span {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+  border-radius: var(--r-pill);
+  transition: width 0.3s ease;
+}
+
+/* Estado vacío reutilizable */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--sp-8) var(--sp-4);
+  color: var(--text-3);
+}
+
+.empty-state .material-icons {
+  font-size: 3rem;
+  opacity: 0.5;
+  margin-bottom: var(--sp-3);
+}
+
+/* Indicador de carga */
+.spinner-sm {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out backwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Utilidades */
+.text-center { text-align: center; }
+.mt-1 { margin-top: var(--sp-1); }
+.mt-2 { margin-top: var(--sp-2); }
+.mt-3 { margin-top: var(--sp-3); }
+.mt-4 { margin-top: var(--sp-4); }
+.mb-1 { margin-bottom: var(--sp-1); }
+.mb-2 { margin-bottom: var(--sp-2); }
+.mb-3 { margin-bottom: var(--sp-3); }
+.mb-4 { margin-bottom: var(--sp-4); }
+.hidden { display: none !important; }
+
+/* ============================================================
+   KaTeX — fórmulas en línea
+   ============================================================ */
+.katex-display,
+.katex-display.inline-only {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  margin: 0 0.25em !important;
+  line-height: 1 !important;
+}
+.katex { display: inline-block !important; vertical-align: middle !important; }
+.katex .katex-html { display: inline-block !important; }
+.katex .katex-mathml { display: inline-block !important; }
+.katex-block { display: block !important; margin: 0.8em 0 !important; }
+
+/* ============================================================
+   Estilos de impresión (boletines)
+   ============================================================ */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    font-size: 12pt !important;
+    line-height: 1.3 !important;
+  }
+  .navbar,
+  .sidebar,
+  .top-bar,
+  .search-bar,
+  .print-button-container,
+  .grades-sidebar,
+  button,
+  .btn,
+  input,
+  .input,
+  .mobile-nav {
+    display: none !important;
+  }
+  .printable-area,
+  .print-only {
+    display: block !important;
+    visibility: visible !important;
+  }
+  body > *:not(.printable-area):not(.print-only) {
+    display: none !important;
+  }
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  th, td {
+    border: 1px solid #000 !important;
+    padding: 8px !important;
+    font-size: 11pt !important;
+  }
+  th { background-color: #f0f0f0 !important; font-weight: bold !important; }
+  .page-break { page-break-before: always !important; }
+  .no-page-break { page-break-inside: avoid !important; }
+}
+
+/*
+ * Utilidad global de accesibilidad para elementos clicables que no son
+ * <button> nativos (tarjetas seleccionables, elementos de lista, etc.).
+ * Se agregó junto con role="button"/tabindex="0"/(keydown.enter|space)
+ * en las plantillas para que también sean operables con teclado, no solo
+ * con mouse/touch. Sin este estilo, esos elementos serían enfocables por
+ * teclado pero invisibles al recibir el foco.
+ */
+.a11y-clickable:focus-visible {
+  outline: 2px solid #6340b4;
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   CAPA DE DISEÑO EDUNOVA
+   Identidad visual propia: violeta + fucsia, esquinas amplias,
+   sombras con tinte violeta y gradientes suaves.
+   ============================================================ */
+
+/* Iconos Material (fuente empaquetada, sin depender de Google) */
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(900px 480px at 8% -8%, rgba(168, 85, 247, 0.13), transparent 60%),
+    radial-gradient(700px 420px at 100% 0%, rgba(192, 38, 211, 0.08), transparent 55%);
+  background-attachment: fixed;
+  letter-spacing: -0.005em;
+}
+
+::selection { background: rgba(124, 58, 237, 0.22); color: var(--text-1); }
+
+* { scrollbar-width: thin; scrollbar-color: #c4b5fd transparent; }
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 99px; border: 2px solid transparent; background-clip: padding-box; }
+*::-webkit-scrollbar-thumb:hover { background: #a78bfa; background-clip: padding-box; border: 2px solid transparent; }
+
+h1, h2, h3, h4 { letter-spacing: -0.02em; font-weight: 700; }
+
+/* Encabezado de página: título con barra de acento */
+.page-header h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  position: relative;
+  padding-left: 16px;
+}
+.page-header h1::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 12%; bottom: 12%;
+  width: 5px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #7c3aed, #d946ef);
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  border-radius: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  padding: 0.62rem 1.2rem;
+}
+.btn-primary {
+  background: var(--grad);
+  box-shadow: var(--glow);
+  border-color: transparent;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--grad);
+  filter: brightness(1.07);
+  box-shadow: 0 10px 26px rgba(124, 58, 237, 0.42);
+  transform: translateY(-1px);
+}
+.btn-accent { background: linear-gradient(135deg, #c026d3, #e879f9); }
+.btn-accent:hover:not(:disabled) { background: linear-gradient(135deg, #a21caf, #d946ef); }
+.btn-outline {
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  color: var(--brand-600);
+}
+.btn-outline:hover:not(:disabled) { border-color: var(--brand); background: var(--brand-50); color: var(--brand-600); }
+.btn-ghost:hover:not(:disabled) { background: var(--brand-50); color: var(--brand-600); }
+
+/* ---------- Tarjetas ---------- */
+.card {
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface);
+}
+.card-title { font-weight: 700; }
+
+/* ---------- Formularios ---------- */
+.form-control,
+input[type="text"], input[type="email"], input[type="password"], input[type="number"],
+input[type="search"], input[type="date"], input[type="datetime-local"], select, textarea {
+  border: 1.5px solid var(--border-strong);
+  border-radius: 12px;
+  background-color: var(--surface-2);
+}
+.form-control:focus, input:focus, select:focus, textarea:focus {
+  border-color: var(--brand);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.14);
+}
+.form-group label { font-weight: 700; color: var(--text-2); font-size: 0.8rem; letter-spacing: 0.01em; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--brand); }
+
+/* ---------- Tablas ---------- */
+.table-container, .table-responsive {
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+}
+.table thead th {
+  background: linear-gradient(180deg, #f5f3ff, #ede9fe);
+  color: var(--brand-600);
+  font-weight: 800;
+  border-bottom: 1px solid var(--border-strong);
+}
+.table tbody tr:nth-child(even) { background: rgba(245, 243, 255, 0.45); }
+.table tbody tr:hover { background: var(--brand-100); }
+
+/* ---------- Insignias ---------- */
+.badge { font-weight: 700; padding: 0.25rem 0.7rem; }
+.badge-info { color: var(--brand-600); border-color: var(--brand-100); }
+.progress > span { background: linear-gradient(90deg, #7c3aed, #d946ef); }
+
+/* ---------- Estado vacío ---------- */
+.empty-state .material-icons { color: var(--brand-400); opacity: 0.8; }
+
+/* ---------- Entrada suave de las pantallas ---------- */
+@keyframes edunovaRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.content-wrapper > * { animation: edunovaRise 0.35s ease-out backwards; }
+@media (prefers-reduced-motion: reduce) {
+  .content-wrapper > *, .fade-in { animation: none !important; }
+  * { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+}
+
+/* Los controles heredan la tipografía de la marca */
+button,input,select,textarea{font-family:inherit}

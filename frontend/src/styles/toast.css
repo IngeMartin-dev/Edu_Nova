@@ -1,0 +1,4 @@
+.toasts { position: fixed; right: 18px; bottom: 18px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: var(--surface); color: var(--text-1); border: 1px solid var(--border-strong); border-left: 4px solid var(--brand); box-shadow: var(--shadow-lg); border-radius: 12px; padding: 12px 16px; min-width: 240px; max-width: 360px; font-size: .9rem; }
+.toast.success { border-left-color: var(--success); }
+.toast.error { border-left-color: var(--danger); }

@@ -1,0 +1,218 @@
+.pg-consolidado .reports-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.pg-consolidado .page-header { margin-bottom: 24px; }
+
+.pg-consolidado .page-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 6px;
+}
+
+.pg-consolidado .page-header .material-icons { color: var(--brand); }
+
+.pg-consolidado .page-subtitle { color: var(--text-3); font-size: 0.9rem; margin: 0; }
+
+.pg-consolidado .ver-generados-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pg-consolidado .ver-generados-btn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.pg-consolidado .ver-generados-btn .material-icons { font-size: 18px; }
+
+
+.pg-consolidado .reports-layout { display: flex; gap: 24px; align-items: flex-start; }
+
+.pg-consolidado .reports-sidebar {
+  flex: 0 0 300px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg, 16px);
+  padding: 18px;
+  box-shadow: var(--shadow-xs);
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.pg-consolidado .grades-row { display: flex; flex-direction: column; gap: 14px; }
+
+.pg-consolidado .grade-section h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-2);
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.pg-consolidado .classrooms { display: flex; gap: 8px; }
+
+.pg-consolidado .classroom-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pg-consolidado .classroom-btn:hover { border-color: var(--brand); color: var(--brand); }
+
+.pg-consolidado .classroom-btn.selected { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+.pg-consolidado .reports-content {
+  flex: 1;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg, 16px);
+  padding: 24px;
+  box-shadow: var(--shadow-xs);
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-consolidado .content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pg-consolidado .content-header h3 { color: var(--text-1); font-size: 1.15rem; margin: 0; }
+
+.pg-consolidado .period-filter { display: flex; align-items: center; gap: 10px; }
+
+.pg-consolidado .period-filter label { color: var(--text-3); font-size: 0.85rem; font-weight: 600; }
+
+.pg-consolidado .period-filter select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-1);
+  font-size: 0.85rem;
+}
+
+.pg-consolidado .generate-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pg-consolidado .generate-btn:hover:not(:disabled) { background: var(--brand-600); }
+
+.pg-consolidado .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.pg-consolidado .generate-btn .material-icons { font-size: 18px; }
+
+.pg-consolidado .spin { animation: reports-spin 1s linear infinite; }
+
+@keyframes reports-spin { to { transform: rotate(360deg); } }
+
+.pg-consolidado .empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-3);
+}
+
+.pg-consolidado .empty-state .material-icons { font-size: 56px; color: var(--text-3); margin-bottom: 12px; }
+
+.pg-consolidado .empty-state h3 { color: var(--text-1); margin: 0 0 6px; }
+
+.pg-consolidado .empty-state p { margin: 0; max-width: 340px; }
+
+.pg-consolidado .error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--danger-bg);
+  border: 1px solid rgba(217, 48, 37, 0.3);
+  color: var(--danger);
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.pg-consolidado .pdf-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: var(--text-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.pg-consolidado .download-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-1);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.pg-consolidado .download-btn:hover { border-color: var(--brand); color: var(--brand); }
+
+.pg-consolidado .pdf-preview {
+  flex: 1;
+  width: 100%;
+  min-height: 560px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .pg-consolidado .reports-layout { flex-direction: column; }
+  .pg-consolidado .reports-sidebar { flex: none; width: 100%; max-height: none; }
+}

@@ -1,0 +1,1023 @@
+/* ============================================================
+   Teachers — aligned to EduNova design system
+   ============================================================ */
+.pg-teachers .teachers-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-6) var(--sp-8);
+  min-height: calc(100vh - 4rem);
+}
+
+.pg-teachers .teachers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-5);
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.pg-teachers .teachers-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+}
+
+.pg-teachers .two-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--sp-4);
+}
+
+.pg-teachers .column {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.pg-teachers .column:first-child { padding: var(--sp-5); }
+.pg-teachers .column:last-child { padding: var(--sp-4); }
+
+.pg-teachers .column > h3 {
+  margin: 0 0 var(--sp-4);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+/* ---------- Search bar ---------- */
+.pg-teachers .search-bar {
+  margin-bottom: var(--sp-4);
+  position: relative;
+}
+
+.pg-teachers .search-bar input {
+  width: 100%;
+  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: 0.9rem;
+  color: var(--text-1);
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.pg-teachers .search-bar input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(74, 29, 233, 0.15);
+}
+
+.pg-teachers .search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+/* ---------- Teachers list / cards ---------- */
+.pg-teachers .teachers-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+.pg-teachers .teacher-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 2rem 0.85rem 0.85rem;
+  gap: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.pg-teachers .teacher-item:hover {
+  border-color: var(--brand-100);
+  box-shadow: var(--shadow-sm);
+}
+
+.pg-teachers .teacher-item.teacher-selected {
+  border-color: var(--brand);
+  background: var(--brand-50);
+}
+
+.pg-teachers .teacher-item-actions {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  display: flex;
+  gap: var(--sp-2);
+  z-index: 2;
+}
+
+.pg-teachers .icon-action-button {
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.15s ease;
+}
+
+.pg-teachers .icon-action-button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.pg-teachers .edit-icon-button {
+  border-color: var(--brand-100);
+  color: var(--brand);
+  background: var(--brand-50);
+}
+
+.pg-teachers .edit-icon-button:hover {
+  background: var(--brand-100);
+  color: var(--brand-600);
+}
+
+.pg-teachers .delete-icon-button {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-color: #f3c4c4;
+}
+
+.pg-teachers .delete-icon-button:hover {
+  background: #fbd5d5;
+  color: #b91c1c;
+}
+
+.pg-teachers .teacher-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.pg-teachers .teacher-avatar,
+.pg-teachers .teacher-photo {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.pg-teachers .teacher-avatar {
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.pg-teachers .teacher-photo {
+  border: 2px solid var(--brand-100);
+  background: var(--brand-50);
+}
+
+.pg-teachers .teacher-item.teacher-selected .teacher-photo { border-color: var(--brand); }
+
+.pg-teachers .teacher-details {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.pg-teachers .teacher-name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0.4rem;
+  margin-bottom: 0.3rem;
+}
+
+.pg-teachers .teacher-name {
+  font-weight: 600;
+  color: var(--text-1);
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.pg-teachers .teacher-email,
+.pg-teachers .teacher-username {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.pg-teachers .assigned-subjects {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.pg-teachers .assigned-subjects-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pg-teachers .teacher-subject-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.pg-teachers .subject-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0.18rem 0.45rem;
+  border-radius: var(--r-pill);
+  background: var(--brand-50);
+  color: var(--brand);
+  border: 1px solid var(--brand-100);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: transform 0.15s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.pg-teachers .subject-chip:hover { background: var(--brand-100); transform: translateY(-1px); }
+.pg-teachers .subject-chip:active { transform: translateY(0); }
+
+.pg-teachers .subject-chip.subject-chip-primaria {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: #bfe6cc;
+}
+
+.pg-teachers .subject-chip.subject-chip-bachillerato {
+  background: var(--brand-50);
+  color: var(--brand);
+  border-color: var(--brand-100);
+}
+
+.pg-teachers .empty-subjects { color: var(--text-3); font-size: 0.82rem; }
+
+/* ---------- Assignment hint ---------- */
+.pg-teachers .assignment-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 0.85rem 1rem;
+  margin-bottom: var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--brand-50);
+  border: 1px solid var(--brand-100);
+  color: var(--brand-600);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.pg-teachers .assignment-hint button.small {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* ---------- Subjects (assign) columns ---------- */
+.pg-teachers .subjects-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+.pg-teachers .materia-columna {
+  background: var(--surface);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-teachers .columna-header {
+  padding: 0.9rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #fff;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.pg-teachers .columna-header.primaria { background: var(--success); }
+.pg-teachers .columna-header.bachillerato { background: var(--brand); }
+
+.pg-teachers .columna-header .icono { font-size: 1.3rem; }
+
+.pg-teachers .columna-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+.pg-teachers .columna-body {
+  padding: 0.8rem 0.9rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.pg-teachers .columna-body .empty-text { grid-column: 1 / -1; }
+
+.pg-teachers .subject-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  transition: border-color 0.18s ease, transform 0.15s ease, background-color 0.18s ease;
+}
+
+.pg-teachers .subject-item.clickable { cursor: pointer; }
+
+.pg-teachers .subject-item.clickable:hover {
+  border-color: var(--brand);
+  background: var(--brand-50);
+  transform: translateY(-1px);
+}
+
+.pg-teachers .subject-item.disabled { opacity: 0.6; cursor: not-allowed; }
+
+.pg-teachers .subject-item.assigned {
+  background: var(--brand-50);
+  border-color: var(--brand-100);
+}
+
+.pg-teachers .subject-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.pg-teachers .subject-name {
+  font-weight: 700;
+  color: var(--text-1);
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.pg-teachers .subject-code-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  max-width: 80px;
+  padding: 0.25rem 0.55rem;
+  color: var(--brand);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--brand-50);
+  border: 1px solid var(--brand-100);
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pg-teachers .subject-code-pill.subject-chip-primaria {
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: #bfe6cc;
+}
+
+.pg-teachers .subject-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.pg-teachers .subject-range {
+  color: var(--text-2);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.pg-teachers .subject-item:hover .subject-range { color: var(--brand); }
+
+.pg-teachers .subject-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--r-pill);
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pg-teachers .subject-badge.primaria {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid #bfe6cc;
+}
+
+.pg-teachers .subject-badge.bachillerato {
+  background: var(--brand-50);
+  color: var(--brand);
+  border: 1px solid var(--brand-100);
+}
+
+/* ---------- Empty states ---------- */
+.pg-teachers .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: var(--sp-6);
+  text-align: center;
+  color: var(--text-3);
+  grid-column: 1 / -1;
+}
+
+.pg-teachers .empty-icon { font-size: 2.2rem; }
+.pg-teachers .empty-text { font-weight: 500; color: var(--text-2); font-size: 0.9rem; }
+
+/* ---------- Add teacher button ---------- */
+.pg-teachers .add-teacher-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.65rem 1.3rem;
+  background: var(--brand);
+  color: #fff;
+  border: 1px solid var(--brand);
+  border-radius: var(--r-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.pg-teachers .add-teacher-button:hover { background: var(--brand-600); box-shadow: var(--shadow-sm); }
+.pg-teachers .add-teacher-button:active { transform: translateY(1px); }
+.pg-teachers .add-teacher-button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* ============================================================
+   Modals
+   ============================================================ */
+.pg-teachers .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 15, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  z-index: 1000;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.pg-teachers .modal-content.large-modal {
+  width: min(100%, 760px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlideIn 0.25s ease-out;
+}
+
+.pg-teachers .confirm-modal {
+  width: min(100%, 440px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-lg);
+}
+
+.pg-teachers .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.pg-teachers .modal-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pg-teachers .modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.pg-teachers .modal-subtitle {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.pg-teachers .close-button {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 1.05rem;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.pg-teachers .close-button:hover { background: var(--border); color: var(--text-1); }
+.pg-teachers .close-button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+.pg-teachers .modal-body {
+  margin: 0;
+  padding: var(--sp-5);
+  background: var(--surface);
+}
+
+/* ---------- Form ---------- */
+.pg-teachers .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.pg-teachers .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.pg-teachers .form-group label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+.pg-teachers .form-group.full-width { grid-column: 1 / -1; }
+
+.pg-teachers .form-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  font-size: 0.92rem;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  box-sizing: border-box;
+  background: var(--surface);
+  color: var(--text-1);
+  font-family: inherit;
+}
+
+.pg-teachers .form-input::placeholder { color: var(--text-3); }
+
+.pg-teachers .form-input:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(74, 29, 233, 0.15);
+}
+
+.pg-teachers .form-input.input-error {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.pg-teachers .form-group:focus-within .input-icon { color: var(--brand); }
+
+.pg-teachers .input-group { position: relative; }
+
+.pg-teachers .input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-3);
+  font-size: 20px;
+  z-index: 1;
+  pointer-events: none;
+  transition: color 0.18s ease;
+}
+
+.pg-teachers .form-group label + .input-group .form-input,
+.pg-teachers .input-group .form-input {
+  padding-left: 2.75rem;
+}
+
+.pg-teachers .password-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--r-sm);
+  transition: background-color 0.18s ease, color 0.18s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.pg-teachers .password-toggle:hover { background: var(--brand-50); color: var(--brand); }
+.pg-teachers .password-toggle:active { transform: translateY(-50%) scale(0.94); }
+
+.pg-teachers .password-toggle .material-icons { font-size: 20px; }
+
+.pg-teachers .password-section {
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.pg-teachers .password-section h4 {
+  margin: 0 0 var(--sp-4);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.pg-teachers .security-note {
+  display: block;
+  margin-top: var(--sp-3);
+  color: var(--text-3);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* ---------- Modal error states ---------- */
+.pg-teachers .modal-form-error {
+  background: var(--danger-bg);
+  border: 1px solid #f3c4c4;
+  color: var(--danger);
+  padding: 0.85rem 1rem;
+  border-radius: var(--r-sm);
+  margin-bottom: var(--sp-4);
+  font-weight: 600;
+  animation: popIn 0.3s ease;
+}
+
+.pg-teachers .field-error {
+  color: var(--danger);
+  font-weight: 600;
+  margin-top: 0.3rem;
+  font-size: 0.82rem;
+}
+
+.pg-teachers .animated-error { animation: shake 0.4s ease; }
+
+@keyframes popIn {
+  from { transform: translateY(-6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+/* ---------- Modal actions ---------- */
+.pg-teachers .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 0 0 var(--r-md) var(--r-md);
+}
+
+.pg-teachers .modal-actions.confirm-actions { border-radius: 0; }
+
+.pg-teachers .cancel-btn {
+  padding: 0.65rem 1.3rem;
+  background: var(--surface);
+  color: var(--text-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.pg-teachers .cancel-btn:hover { background: var(--surface-2); border-color: var(--text-3); color: var(--text-1); }
+.pg-teachers .cancel-btn.secondary { background: var(--surface-2); }
+.pg-teachers .cancel-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+.pg-teachers .confirm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: 0.7rem 1.35rem;
+  background: var(--brand);
+  color: #fff;
+  border: 1px solid var(--brand);
+  border-radius: var(--r-sm);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+  font-size: 0.9rem;
+}
+
+.pg-teachers .confirm-btn:hover:not(:disabled) { background: var(--brand-600); box-shadow: var(--shadow-sm); }
+.pg-teachers .confirm-btn:active { transform: translateY(1px); }
+.pg-teachers .confirm-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.pg-teachers .confirm-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+.pg-teachers .confirm-btn.danger { background: var(--danger); border-color: var(--danger); }
+.pg-teachers .confirm-btn.danger:hover:not(:disabled) { background: #b91c1c; }
+
+.pg-teachers .confirm-modal-body { padding-top: var(--sp-2); }
+
+.pg-teachers .confirm-message {
+  margin: 0;
+  color: var(--text-2);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   Notifications
+   ============================================================ */
+.pg-teachers .notification-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 15, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.pg-teachers .notification-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--success);
+  border-radius: var(--r-md);
+  padding: var(--sp-5) var(--sp-6);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+  animation: notificationSlideIn 0.25s ease-out;
+}
+
+.pg-teachers .notification-success { border-left-color: var(--success); }
+.pg-teachers .notification-error { border-left-color: var(--danger); }
+
+.pg-teachers .notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--success);
+}
+
+.pg-teachers .notification-error .notification-icon { background: var(--danger); }
+
+.pg-teachers .checkmark, .pg-teachers .error-mark {
+  width: 28px;
+  height: 28px;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pg-teachers .checkmark__check,
+.pg-teachers .error-mark__x {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: checkmarkStroke 0.6s ease forwards;
+}
+
+@keyframes checkmarkStroke { 100% { stroke-dashoffset: 0; } }
+
+.pg-teachers .notification-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.pg-teachers .notification-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.pg-teachers .notification-success .notification-title { color: #14532d; }
+.pg-teachers .notification-error .notification-title { color: #7f1d1d; }
+
+.pg-teachers .notification-message {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.pg-teachers .notification-close {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 50%;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.pg-teachers .notification-close:hover { background: var(--border); color: var(--text-1); }
+
+@keyframes notificationSlideIn {
+  from { transform: translateY(-20px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+  from { transform: translateY(-16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ---------- Loading ---------- */
+.pg-teachers .loading {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding: var(--sp-8);
+  color: var(--text-3);
+  background: rgba(248, 247, 252, 0.92);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* Spinner LOCAL de la lista de profesores (reemplaza a .loading para este
+   caso): NO tapa toda la pantalla, solo el área donde va el contenido, así
+   el encabezado y el botón "Agregar Profesor" siguen visibles mientras
+   carga en vez de mostrar una pantalla blanca. */
+.pg-teachers .teachers-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding: var(--sp-8) var(--sp-4);
+  min-height: 320px;
+  color: var(--text-3);
+}
+
+.pg-teachers .teachers-loading .spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 4px solid var(--border);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.pg-teachers .spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 4px solid var(--border);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 1180px) {
+  .pg-teachers .teachers-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .pg-teachers .two-columns { grid-template-columns: 1fr; }
+  .pg-teachers .subjects-list { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .pg-teachers .teachers-container { padding: var(--sp-4); }
+  .pg-teachers .column { padding: var(--sp-4); }
+  .pg-teachers .teachers-list { grid-template-columns: 1fr; }
+  .pg-teachers .columna-body { grid-template-columns: 1fr; }
+  .pg-teachers .modal-content.large-modal { width: 100%; max-width: 100%; }
+  .pg-teachers .form-row { grid-template-columns: 1fr; }
+  .pg-teachers .modal-actions { flex-direction: column-reverse; }
+  .pg-teachers .cancel-btn, .pg-teachers .confirm-btn { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .pg-teachers .teachers-header h2 { font-size: 1.3rem; }
+  .pg-teachers .assignment-hint { flex-direction: column; align-items: flex-start; }
+}

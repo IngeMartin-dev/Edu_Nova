@@ -1,0 +1,1137 @@
+/* ============================================================
+   EduNova — MODO OSCURO "Violeta neón"
+   Se activa con [data-theme="dark"] en <html> o <body>.
+   Las variables reescriben el sistema de diseño global.
+   ============================================================ */
+
+[data-theme="dark"] {
+  /* ---- Marca (violeta neón) ---- */
+  --brand: #8b5cf6;
+  --brand-600: #7c3aed;
+  --brand-500: #a78bfa;
+  --brand-400: #c4b5fd;
+  --brand-50: rgba(139, 92, 246, 0.12);
+  --brand-100: rgba(139, 92, 246, 0.22);
+
+  /* ---- Acento (fucsia neón) ---- */
+  --accent: #e879f9;
+  --accent-600: #d946ef;
+  --accent-50: rgba(232, 121, 249, 0.12);
+  --pink: #f472b6;
+
+  --grad: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 50%, #c026d3 100%);
+  --grad-soft: linear-gradient(135deg, rgba(139,92,246,.14), rgba(232,121,249,.10));
+  --grad-sidebar: linear-gradient(185deg, #14092b 0%, #1e0f3f 60%, #2a1257 100%);
+
+  /* ---- Fondos y capas ---- */
+  --bg: #0e0a1c;
+  --surface: #1a1330;
+  --surface-2: #231a42;
+  --sidebar-bg: #14092b;
+  --border: rgba(167, 139, 250, 0.14);
+  --border-strong: rgba(167, 139, 250, 0.28);
+
+  /* ---- Texto ---- */
+  --text-1: #f5f3ff;
+  --text-2: #ddd6fe;
+  --text-3: #a79bc9;
+  --text-4: #7a6ea0;
+
+  /* ---- Estados ---- */
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.12);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.12);
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.12);
+  --info: #a78bfa;
+  --info-bg: rgba(167, 139, 250, 0.12);
+
+  /* ---- Sombras con resplandor ---- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(167, 139, 250, 0.05);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.55), 0 0 18px rgba(139, 92, 246, 0.08);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 30px rgba(139, 92, 246, 0.14);
+  --glow: 0 6px 20px rgba(139, 92, 246, 0.35);
+}
+
+/* ============================================================
+   1) ESTILOS BASE: body, títulos y párrafos
+   ============================================================ */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body {
+  background-color: var(--bg);
+  color: var(--text-1);
+  color-scheme: dark;
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3 {
+  color: var(--text-1);
+  text-shadow: 0 0 14px rgba(167, 139, 250, 0.18);
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] .page-header p {
+  color: var(--text-3);
+}
+
+/* ============================================================
+   2) COMPONENTES COMUNES
+   ============================================================ */
+
+/* ---- Tarjetas (.card) con borde sutil + glow al hover ---- */
+[data-theme="dark"] .card {
+  background: var(--surface);
+  border: 1px solid rgba(156, 148, 184, 0.1);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+[data-theme="dark"] .card:hover {
+  border-color: rgba(139, 92, 246, 0.35);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), 0 0 22px rgba(139, 92, 246, 0.18);
+}
+
+[data-theme="dark"] .card-title,
+[data-theme="dark"] .card-header h1,
+[data-theme="dark"] .card-header h2,
+[data-theme="dark"] .card-header h3 {
+  color: var(--text-1);
+}
+
+/* ---- Barra lateral (sidebar) ---- */
+[data-theme="dark"] .sidebar {
+  background: var(--sidebar-bg) !important;
+  border-right: 1px solid var(--border);
+  box-shadow: 2px 0 18px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .sidebar-header {
+  border-bottom: 1px solid var(--border-strong);
+}
+
+[data-theme="dark"] .sidebar .logo-container h1,
+[data-theme="dark"] .sidebar .user-info h4 {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .sidebar .user-info p {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .nav-menu a {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .nav-menu a:hover,
+[data-theme="dark"] .nav-menu li.active a {
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.18), rgba(139, 92, 246, 0.04));
+  color: var(--brand-500);
+  box-shadow: inset 3px 0 0 var(--brand), 0 0 16px rgba(139, 92, 246, 0.25);
+  text-shadow: 0 0 10px rgba(167, 139, 250, 0.45);
+}
+
+[data-theme="dark"] .nav-menu li.active .material-icons {
+  color: var(--brand-500);
+  text-shadow: 0 0 12px rgba(167, 139, 250, 0.6);
+}
+
+[data-theme="dark"] .user-profile {
+  border-top: 1px solid var(--border-strong);
+}
+
+[data-theme="dark"] .user-initials {
+  background: var(--brand-600);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.45);
+}
+
+/* Tooltip del avatar en modo colapsado */
+[data-theme="dark"] .sidebar:not(:hover) .user-avatar:hover::after,
+[data-theme="dark"] .sidebar:not(:hover) .user-info {
+  background: var(--sidebar-bg);
+  color: var(--text-1);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.2);
+}
+
+/* ---- Top bar ---- */
+[data-theme="dark"] .top-bar,
+[data-theme="dark"] .top-header {
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .search-bar {
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+}
+
+[data-theme="dark"] .search-bar input {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .search-bar .material-icons {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .message-btn,
+[data-theme="dark"] .notification-btn {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .message-btn:hover,
+[data-theme="dark"] .notification-btn:hover {
+  background: var(--surface-2);
+  color: var(--brand-500);
+}
+
+[data-theme="dark"] .message-badge {
+  background: var(--info);
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.55);
+}
+
+[data-theme="dark"] .notification-badge {
+  background: var(--danger);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+/* ---- INPUTS / FORMULARIOS ---- */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="search"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="datetime-local"],
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--bg);
+  color: var(--text-1);
+  border-color: var(--border-strong);
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.20), 0 0 14px rgba(139, 92, 246, 0.25);
+}
+
+[data-theme="dark"] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] .form-group label {
+  color: var(--text-3);
+}
+
+/* ---- CHECKBOXES / TOGGLES activos (Violeta Neón) ---- */
+[data-theme="dark"] .switch input:checked + .slider {
+  background-color: var(--accent);
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.55);
+}
+
+[data-theme="dark"] .switch input:checked + .slider:before {
+  background-color: #f8f3ff;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+}
+
+[data-theme="dark"] .switch input:focus-visible + .slider {
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.35), 0 0 14px rgba(168, 85, 247, 0.5);
+}
+
+[data-theme="dark"] .slider {
+  background-color: var(--border-strong);
+}
+
+[data-theme="dark"] input[type="checkbox"]:checked,
+[data-theme="dark"] input[type="radio"]:checked {
+  accent-color: var(--accent);
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.7));
+}
+
+/* ---- BOTONES ---- */
+[data-theme="dark"] .btn-primary {
+  background-color: var(--brand);
+  color: #18041a;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+}
+
+[data-theme="dark"] .btn-primary:hover:not(:disabled) {
+  background-color: var(--brand-500);
+  box-shadow: 0 6px 22px rgba(139, 92, 246, 0.55);
+}
+
+[data-theme="dark"] .btn-accent {
+  background-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+}
+
+[data-theme="dark"] .btn-accent:hover:not(:disabled) {
+  background-color: var(--accent-600);
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.6);
+}
+
+[data-theme="dark"] .btn-success {
+  background-color: var(--success);
+  color: #04231a;
+  box-shadow: 0 4px 16px rgba(52, 211, 153, 0.35);
+}
+
+[data-theme="dark"] .btn-danger {
+  background-color: var(--danger);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.45);
+}
+
+[data-theme="dark"] .btn-danger:hover:not(:disabled) {
+  background-color: #dc2626;
+  box-shadow: 0 6px 22px rgba(239, 68, 68, 0.7);
+}
+
+[data-theme="dark"] .btn-outline {
+  background: var(--surface);
+  color: var(--text-2);
+  border-color: var(--border-strong);
+}
+
+[data-theme="dark"] .btn-outline:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: var(--brand-500);
+  background: var(--brand-50);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.25);
+}
+
+[data-theme="dark"] .btn-ghost:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text-1);
+}
+
+/* ---- Botón de CERRAR SESIÓN (rojo vibrante + glow) ---- */
+[data-theme="dark"] .logout-btn {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+[data-theme="dark"] .logout-btn:hover {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.6);
+}
+
+[data-theme="dark"] .logout-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35), 0 0 16px rgba(239, 68, 68, 0.5);
+}
+
+/* ---- Tablas (glow sutil en hover/filas) ---- */
+[data-theme="dark"] .table-container,
+[data-theme="dark"] .table-responsive {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .table th,
+[data-theme="dark"] .table td {
+  border-color: var(--border);
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .table thead th {
+  background: var(--surface-2);
+  color: var(--text-3);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .table tbody tr:hover {
+  background: var(--brand-50);
+  box-shadow: inset 0 0 18px rgba(139, 92, 246, 0.10);
+}
+
+/* ---- Badges ---- */
+[data-theme="dark"] .badge {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-color: var(--border-strong);
+}
+
+[data-theme="dark"] .badge-success { background: var(--success-bg); color: var(--success); border-color: rgba(52,211,153,0.4); }
+[data-theme="dark"] .badge-warning { background: var(--warning-bg); color: var(--warning); border-color: rgba(251,191,36,0.4); }
+[data-theme="dark"] .badge-danger  { background: var(--danger-bg);  color: #fca5a5;        border-color: rgba(239,68,68,0.4); }
+[data-theme="dark"] .badge-info    { background: var(--info-bg);    color: var(--brand-500); border-color: rgba(139, 92, 246, 0.4); }
+
+/* ---- Barra de progreso ---- */
+[data-theme="dark"] .progress {
+  background: var(--border-strong);
+}
+
+[data-theme="dark"] .progress > span {
+  background: linear-gradient(90deg, var(--brand), var(--brand-500));
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+}
+
+/* ---- Modal de logout / legales ---- */
+[data-theme="dark"] .logout-modal-overlay {
+  background: rgba(7, 3, 18, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+[data-theme="dark"] .logout-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(139, 92, 246, 0.08);
+}
+
+[data-theme="dark"] .modal-header {
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .modal-body p {
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .legal-content h4 { color: var(--brand-500); }
+[data-theme="dark"] .legal-content p,
+[data-theme="dark"] .legal-content li { color: var(--text-2); }
+[data-theme="dark"] .legal-content .last-update { color: var(--text-4); }
+
+/* ---- Notificación de éxito ---- */
+[data-theme="dark"] .success-notification {
+  background: rgba(7, 3, 18, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+[data-theme="dark"] .notification-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg), 0 0 36px rgba(139, 92, 246, 0.10);
+}
+
+/* ---- Loading overlay ---- */
+[data-theme="dark"] .loading-overlay {
+  background: rgba(15, 11, 25, 0.85);
+}
+
+[data-theme="dark"] .spinner {
+  border-color: rgba(156, 148, 184, 0.25);
+  border-top-color: var(--brand);
+}
+
+/* ---- Mobile nav ---- */
+[data-theme="dark"] .mobile-nav {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 14px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .mobile-nav a {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .mobile-nav a:hover,
+[data-theme="dark"] .mobile-nav a.active {
+  background: var(--brand-50);
+  color: var(--brand-500);
+}
+
+[data-theme="dark"] .sidebar-backdrop {
+  background: rgba(7, 3, 18, 0.6);
+}
+
+/* ============================================================
+   3) ANIMACIÓN SUTIL DE TRANSICIÓN (claro <-> oscuro)
+   ============================================================ */
+[data-theme="dark"] body,
+[data-theme="dark"] .card,
+[data-theme="dark"] .sidebar,
+[data-theme="dark"] .top-bar,
+[data-theme="dark"] .settings-section,
+[data-theme="dark"] .form-control,
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] .btn,
+[data-theme="dark"] .table-container {
+  transition: background-color 0.35s ease, color 0.35s ease,
+    border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Clase de apoyo para forzar la transición global al alternar */
+.theme-transition,
+.theme-transition * {
+  transition: background-color 0.35s ease, color 0.35s ease,
+    border-color 0.35s ease, box-shadow 0.35s ease !important;
+}
+
+/* ============================================================
+   4) DETALLES PREMIUM — RESPLANDOR NEÓN EN ESTADO ACTIVO
+   ============================================================ */
+
+/* Glow en elementos seleccionados / focus visibles */
+[data-theme="dark"] a:focus-visible,
+[data-theme="dark"] button:focus-visible,
+[data-theme="dark"] .setting-item.clickable:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.35), 0 0 16px rgba(139, 92, 246, 0.45);
+}
+
+/* Resplandor de los iconos de navegación principales */
+[data-theme="dark"] .nav-menu .material-icons {
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+/* Items de configuración con borde de acento al hover */
+[data-theme="dark"] .setting-item {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .setting-item:hover {
+  background: var(--bg);
+}
+
+[data-theme="dark"] .setting-item.clickable:hover {
+  border-color: var(--brand);
+  background: var(--brand-50);
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.18);
+}
+
+[data-theme="dark"] .setting-icon {
+  color: var(--brand-500);
+  filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.5));
+}
+
+[data-theme="dark"] .setting-text h3 {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .setting-text p {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .chevron {
+  color: var(--text-4);
+}
+
+/* Scrollbar cyberpunk (WebKit) */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--brand-600), var(--accent-600));
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--brand-500), var(--accent));
+}
+
+/* ============================================================
+   5) DASHBOARD — Stat cards, Quick actions y Activity content
+   (estilos de componente con colores hardcodeados)
+   ============================================================ */
+
+/* Encabezado del dashboard */
+[data-theme="dark"] .dashboard-header h1 {
+  color: var(--text-1);
+  text-shadow: 0 0 16px rgba(167, 139, 250, 0.2);
+}
+
+[data-theme="dark"] .dashboard-header p {
+  color: var(--text-3);
+}
+
+/* ---- Stat cards ---- */
+[data-theme="dark"] .stat-card {
+  background: var(--surface);
+  border: 1px solid rgba(156, 148, 184, 0.1);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 22px rgba(139, 92, 246, 0.2);
+}
+
+[data-theme="dark"] .stat-icon {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-600) 100%);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+  color: #18041a;
+}
+
+[data-theme="dark"] .stat-info h3 {
+  color: var(--text-1);
+  text-shadow: 0 0 12px rgba(167, 139, 250, 0.15);
+}
+
+[data-theme="dark"] .stat-info p {
+  color: var(--text-3);
+}
+
+/* ---- Quick Actions (botones del dashboard) ---- */
+[data-theme="dark"] .quick-actions h2,
+[data-theme="dark"] .recent-activity h2 {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .action-btn {
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  color: var(--text-2);
+  transition: all 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-theme="dark"] .action-btn:hover {
+  border-color: var(--brand);
+  background: var(--brand-50);
+  color: var(--brand-500);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(139, 92, 246, 0.18), 0 0 18px rgba(139, 92, 246, 0.2);
+}
+
+[data-theme="dark"] .action-btn .material-icons {
+  color: var(--brand-500);
+  filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.45));
+}
+
+[data-theme="dark"] .action-btn span:last-child {
+  color: inherit;
+}
+
+/* ---- Recent Activity content ---- */
+[data-theme="dark"] .activity-item {
+  background: var(--surface);
+  border: 1px solid rgba(156, 148, 184, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-theme="dark"] .activity-item:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.15);
+}
+
+[data-theme="dark"] .activity-icon {
+  background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+  color: #04231a;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+[data-theme="dark"] .activity-content p {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .activity-content small {
+  color: var(--text-3);
+}
+
+/* ---- Empty activity state ---- */
+[data-theme="dark"] .empty-activity {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .empty-activity p {
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .empty-activity small {
+  color: var(--text-4);
+}
+
+/* ---- Mini spinner de stats ---- */
+[data-theme="dark"] .mini-spinner {
+  border-color: rgba(156, 148, 184, 0.25);
+  border-top-color: var(--brand);
+}
+
+/* ---- Modal del dashboard (config countdown, etc.) ---- */
+[data-theme="dark"] .modal-overlay {
+  background: rgba(7, 3, 18, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+[data-theme="dark"] .modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(139, 92, 246, 0.08);
+}
+
+[data-theme="dark"] .modal-header {
+  background: var(--surface-2);
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .modal-header h3 {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .close-button {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .close-button:hover {
+  background: var(--border-strong);
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .modal-body {
+  background: var(--surface);
+}
+
+[data-theme="dark"] .form-group label {
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select {
+  background: var(--bg);
+  color: var(--text-1);
+  border-color: var(--border-strong);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2), 0 0 14px rgba(139, 92, 246, 0.25);
+}
+
+[data-theme="dark"] .modal-actions {
+  border-top-color: var(--border);
+}
+
+[data-theme="dark"] .cancel-button {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border-strong);
+}
+
+[data-theme="dark"] .cancel-button:hover {
+  background: var(--border-strong);
+}
+
+[data-theme="dark"] .save-button {
+  background: var(--brand);
+  color: #18041a;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+}
+
+[data-theme="dark"] .save-button:hover:not(:disabled) {
+  background: var(--brand-500);
+}
+
+[data-theme="dark"] .primary-button {
+  background: var(--success);
+  color: #04231a;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+[data-theme="dark"] .primary-button:hover {
+  background: #059669;
+}
+
+[data-theme="dark"] .modal-description {
+  background: var(--brand-50);
+  border: 1px solid var(--brand-100);
+}
+
+[data-theme="dark"] .modal-description p {
+  color: var(--brand-500);
+}
+
+[data-theme="dark"] .current-grades h4,
+[data-theme="dark"] .current-subjects h4,
+[data-theme="dark"] .reports-section h4 {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .grade-item,
+[data-theme="dark"] .subject-item {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border-strong);
+}
+
+[data-theme="dark"] .report-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .report-card:hover {
+  background: var(--brand-50);
+  border-color: var(--brand);
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.18);
+}
+
+[data-theme="dark"] .report-info h5 {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .report-info p {
+  color: var(--text-3);
+}
+
+/* ---- Profile card (gradiente azul institucional -> tech cyan) ---- */
+[data-theme="dark"] .profile-card {
+  background: linear-gradient(135deg, #160f2a 0%, #4a1de9 60%, #b508d2 100%);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.18);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+[data-theme="dark"] .profile-info h2 {
+  color: #f2f1f9;
+}
+
+[data-theme="dark"] .profile-name {
+  color: rgba(242, 241, 249, 0.9);
+}
+
+[data-theme="dark"] .profile-role {
+  color: rgba(242, 241, 249, 0.7);
+}
+
+/* ---- Countdown timer (sección y tarjeta) ---- */
+[data-theme="dark"] .countdown-timer-section {
+  background: linear-gradient(135deg, #3e17c7 0%, #6d28d9 100%);
+  box-shadow: 0 10px 40px rgba(109, 40, 217, 0.35);
+}
+
+[data-theme="dark"] .countdown-setup-btn {
+  background: linear-gradient(135deg, #b508d2 0%, #a855f7 100%);
+  color: #18041a;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+}
+
+[data-theme="dark"] .countdown-setup-btn:hover {
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.55);
+}
+
+/* ---- Notificación personalizada del dashboard ---- */
+[data-theme="dark"] .notification-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .notification-title {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .notification-success .notification-title,
+[data-theme="dark"] .notification-success .notification-message {
+  color: var(--success);
+}
+
+[data-theme="dark"] .notification-error .notification-title,
+[data-theme="dark"] .notification-error .notification-message {
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .notification-message {
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .notification-close {
+  color: var(--text-3);
+}
+
+[data-theme="dark"] .notification-close:hover {
+  background: var(--surface-2);
+  color: var(--text-1);
+}
+
+/* ============================================================
+   MODO OSCURO — Modal "Ver Plan de Estudio" (Recuperaciones)
+   El contenido del plan se inserta vía [innerHTML], por lo que
+   NO recibe los atributos _ngcontent del componente y las
+   reglas de :host-context no le aplican. Por eso usamos reglas
+   GLOBALES con especificidad elevada (clase repetida) para
+   vencer a las reglas base del componente.
+   ============================================================ */
+[data-theme="dark"] .fullscreen-modal-overlay.fullscreen-modal-overlay {
+  background: rgba(7, 3, 18, 0.82);
+  backdrop-filter: blur(4px);
+}
+
+[data-theme="dark"] .fullscreen-modal-content.fullscreen-modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(139, 92, 246, 0.10);
+}
+
+[data-theme="dark"] .modal-header.modal-header {
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand) 50%, var(--brand-400) 100%);
+  color: #18041a;
+}
+
+[data-theme="dark"] .plan-meta-top.plan-meta-top,
+[data-theme="dark"] .plan-meta.plan-meta {
+  background: var(--surface-2);
+  border-left: 4px solid var(--brand);
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .plan-meta-top.plan-meta-top p,
+[data-theme="dark"] .plan-meta.plan-meta p {
+  color: var(--text-2);
+}
+
+[data-theme="dark"] .plan-content-fullscreen.plan-content-fullscreen {
+  background: var(--surface);
+  color: var(--text-1);
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text h1,
+[data-theme="dark"] .plan-content-fullscreen .plan-text h2,
+[data-theme="dark"] .plan-content-fullscreen .plan-text h3,
+[data-theme="dark"] .plan-content-fullscreen .plan-text h4 {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text strong,
+[data-theme="dark"] .plan-content-fullscreen .plan-text em {
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .section-title {
+  color: #18041a;
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .subsection-title {
+  color: var(--text-2);
+  background: var(--surface-2);
+  border-left: 5px solid var(--brand);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-source {
+  color: var(--text-3);
+  background: var(--surface-2);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-link {
+  color: var(--brand-500);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .ai-h3 {
+  background: var(--surface-2);
+  color: var(--brand-500);
+  border-left: 4px solid var(--brand);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .ai-h4 {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-left: 3px solid var(--border-strong);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .ai-list li,
+[data-theme="dark"] .plan-content-fullscreen .plan-text ol li {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .ai-list li::marker,
+[data-theme="dark"] .plan-content-fullscreen .plan-text ol li::marker,
+[data-theme="dark"] .plan-content-fullscreen .plan-text li::marker {
+  color: var(--brand-500);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .ai-table {
+  border: 2px solid var(--brand);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .ai-table th {
+  background: var(--brand);
+  color: #18041a;
+  border: 1px solid var(--brand-600);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .ai-table td {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-1);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .ai-table tr:nth-child(even) td {
+  background: var(--surface);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-unavailable {
+  background: rgba(239, 68, 68, 0.10);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-unavailable-icon,
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-unavailable-title,
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-unavailable-message,
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-unavailable-url {
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .no-videos-message {
+  background: var(--surface-2);
+  color: var(--text-3);
+  border: 2px dashed var(--border-strong);
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-status-badge.available {
+  background: rgba(52, 211, 153, 0.14);
+  color: #6ee7b7;
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-status-badge.unavailable {
+  background: rgba(239, 68, 68, 0.14);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .video-status-badge.checking {
+  background: rgba(251, 191, 36, 0.14);
+  color: #fcd34d;
+}
+
+[data-theme="dark"] .plan-content-fullscreen .plan-text .check {
+  color: #6ee7b7;
+}
+
+[data-theme="dark"] .math-large-block.math-large-block,
+[data-theme="dark"] .katex-display.katex-display {
+  background: var(--surface-2) !important;
+}
+
+/* --- Fuerza texto CLARO en TODO el modal del plan (incluye innerHTML) --- */
+[data-theme="dark"] .fullscreen-modal-content,
+[data-theme="dark"] .fullscreen-modal-content *,
+[data-theme="dark"] .plan-content-fullscreen,
+[data-theme="dark"] .plan-content-fullscreen * {
+  color: var(--text-1) !important;
+}
+
+/* Encabezados dentro del plan: en modo oscuro el gradiente azul claro
+   de la regla base queda muy apagado, así que los "h2" y "section-title"
+   se ven casi invisibles (texto oscuro sobre fondo azul oscuro).
+   Les damos un fondo oscuro con texto blanco brillante para que el
+   contraste sea legible, sin tocar la regla global de "todo el modal en
+   color claro". */
+[data-theme="dark"] .fullscreen-modal-content h2,
+[data-theme="dark"] .fullscreen-modal-content h3,
+[data-theme="dark"] .plan-content-fullscreen h2,
+[data-theme="dark"] .plan-content-fullscreen h3,
+[data-theme="dark"] .fullscreen-modal-content .section-title,
+[data-theme="dark"] .fullscreen-modal-content .subsection-title,
+[data-theme="dark"] .plan-content-fullscreen .section-title,
+[data-theme="dark"] .plan-content-fullscreen .subsection-title {
+  background: linear-gradient(135deg, #461fae 0%, #5627e9 100%) !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(167, 139, 250, 0.35) !important;
+}
+
+/* Subsecciones (h3) en el plan: fondo intermedio, texto claro. */
+[data-theme="dark"] .fullscreen-modal-content h3,
+[data-theme="dark"] .plan-content-fullscreen h3,
+[data-theme="dark"] .fullscreen-modal-content .subsection-title,
+[data-theme="dark"] .plan-content-fullscreen .subsection-title {
+  background: linear-gradient(135deg, #251c40 0%, #2c1f5e 100%) !important;
+  color: var(--text-1) !important;
+  border-left: 5px solid var(--brand) !important;
+  text-shadow: none;
+}
+
+/* Forzar que los párrafos dentro del plan se vean claros en dark mode.
+   La regla general ya pone color: var(--text-1) !important, pero
+   algunos párrafos heredan un color casi negro por especificidad.
+   Esto lo refuerza. */
+[data-theme="dark"] .plan-content-fullscreen p,
+[data-theme="dark"] .plan-content-fullscreen li,
+[data-theme="dark"] .plan-content-fullscreen span {
+  color: var(--text-1) !important;
+}
+
+[data-theme="dark"] .fullscreen-modal-content a,
+[data-theme="dark"] .plan-content-fullscreen a,
+[data-theme="dark"] .plan-content-fullscreen .video-link {
+  color: var(--brand-500) !important;
+}
+
+[data-theme="dark"] .plan-content-fullscreen .video-unavailable,
+[data-theme="dark"] .plan-content-fullscreen .video-unavailable *,
+[data-theme="dark"] .plan-content-fullscreen .no-videos-message,
+[data-theme="dark"] .plan-content-fullscreen .no-videos-message * {
+  color: #fca5a5 !important;
+}
+
+[data-theme="dark"] .plan-content-fullscreen .video-status-badge.available,
+[data-theme="dark"] .plan-content-fullscreen .video-status-badge.available * { color: #6ee7b7 !important; }
+[data-theme="dark"] .plan-content-fullscreen .video-status-badge.unavailable,
+[data-theme="dark"] .plan-content-fullscreen .video-status-badge.unavailable * { color: #fca5a5 !important; }
+[data-theme="dark"] .plan-content-fullscreen .video-status-badge.checking,
+[data-theme="dark"] .plan-content-fullscreen .video-status-badge.checking * { color: #fcd34d !important; }
+
+/* Tablas genéricas dentro del plan */
+[data-theme="dark"] .plan-content-fullscreen table,
+[data-theme="dark"] .plan-content-fullscreen table * {
+  color: var(--text-1) !important;
+  background: var(--surface-2) !important;
+  border-color: var(--border-strong) !important;
+}
+
+[data-theme="dark"] .plan-content-fullscreen table th {
+  background: var(--brand) !important;
+  color: #18041a !important;
+}
+
+[data-theme="dark"] .plan-content-fullscreen table tr:nth-child(even) td {
+  background: var(--surface) !important;
+}
+
+/* Refuerzo específico para tablas con clase .ai-table: que la cabecera
+   tenga el gradiente azul (igual que en modo claro) y los textos sean
+   legibles. Las reglas anteriores genéricas ya funcionaban, pero este
+   bloque asegura que el th de .ai-table NO se pinte en color oscuro
+   (forzamos blanco). */
+[data-theme="dark"] .plan-content-fullscreen .ai-table th,
+[data-theme="dark"] .plan-content-fullscreen .ai-table th * {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #461fae 0%, #5627e9 50%, #4f1fd6 100%) !important;
+}
+[data-theme="dark"] .plan-content-fullscreen .ai-table td,
+[data-theme="dark"] .plan-content-fullscreen .ai-table td * {
+  color: var(--text-1) !important;
+}
+[data-theme="dark"] .plan-content-fullscreen .ai-table tr:nth-child(even) td,
+[data-theme="dark"] .plan-content-fullscreen .ai-table tr:nth-child(even) td * {
+  background: var(--surface) !important;
+}
+
+
+[data-theme="dark"] body { background-image: radial-gradient(900px 480px at 8% -8%, rgba(139,92,246,.16), transparent 60%), radial-gradient(700px 420px at 100% 0%, rgba(232,121,249,.08), transparent 55%); }

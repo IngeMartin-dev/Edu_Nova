@@ -1,0 +1,869 @@
+/* ============================================================
+   Students — aligned to EduNova design system
+   ============================================================ */
+.pg-students .students-container {
+  padding: var(--sp-6) var(--sp-6) var(--sp-8);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.pg-students .students-container > h2 {
+  margin: 0 0 var(--sp-6);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+}
+
+/* ---------- Loading ---------- */
+.pg-students .loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--sp-5);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.pg-students .spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid var(--border);
+  border-top: 4px solid var(--brand);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin-bottom: var(--sp-4);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.pg-students .loading-indicator p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ---------- Grades selector bar ---------- */
+.pg-students .grades-sidebar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.pg-students .grades-row {
+  display: flex;
+  gap: var(--sp-4);
+  flex-wrap: nowrap;
+}
+
+.pg-students .grade-section {
+  min-width: 150px;
+  flex: 1;
+  text-align: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--sp-4) var(--sp-3);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pg-students .grade-section h3 {
+  color: var(--text-2);
+  font-size: 0.95rem;
+  margin: 0 0 var(--sp-3);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pg-students .classrooms {
+  display: flex;
+  gap: var(--sp-2);
+  flex-direction: column;
+}
+
+.pg-students .classroom-btn {
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text-2);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  font-size: 0.85rem;
+}
+
+.pg-students .classroom-btn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: var(--brand-50);
+}
+
+.pg-students .classroom-btn.selected {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+  box-shadow: var(--shadow-xs);
+}
+
+.pg-students .classroom-btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ---------- Content panels ---------- */
+.pg-students .right-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-students .students-list {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+  min-height: 360px;
+}
+
+.pg-students .students-placeholder,
+.pg-students .no-students-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.pg-students .placeholder-content,
+.pg-students .no-students-content {
+  text-align: center;
+  color: var(--text-3);
+  padding: var(--sp-8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.pg-students .placeholder-content h3,
+.pg-students .no-students-content h3 {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.pg-students .placeholder-content p,
+.pg-students .no-students-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-3);
+}
+
+/* ---------- Table header + add button ---------- */
+.pg-students .table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.pg-students .table-header h3 {
+  margin: 0;
+  color: var(--text-1);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.pg-students .add-student-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.6rem 1.1rem;
+  background: var(--brand);
+  color: #fff;
+  border: 1px solid var(--brand);
+  border-radius: var(--r-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.pg-students .add-student-button:hover:not(:disabled) {
+  background: var(--brand-600);
+  box-shadow: var(--shadow-sm);
+}
+
+.pg-students .add-student-button:active {
+  transform: translateY(1px);
+}
+
+.pg-students .add-student-button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.pg-students .add-student-button:disabled {
+  background: var(--text-4);
+  border-color: var(--text-3);
+  cursor: not-allowed;
+}
+
+/* ---------- Table ---------- */
+.pg-students .table-container {
+  margin: var(--sp-4) 0 0;
+}
+
+.pg-students .students-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+
+.pg-students .students-table th {
+  padding: 0.8rem 1rem;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.pg-students .students-table th.number-column {
+  text-align: center;
+  width: 60px;
+  min-width: 60px;
+}
+
+.pg-students .students-table th.actions-column {
+  text-align: right;
+}
+
+.pg-students .students-table th:last-child {
+  text-align: right;
+}
+
+.pg-students .students-table td {
+  padding: 0.8rem 1rem;
+  font-size: 0.9rem;
+  color: var(--text-1);
+  border-bottom: 1px solid var(--border);
+}
+
+.pg-students .students-table td.number-column {
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--surface-2);
+}
+
+.pg-students .students-table tr:last-child td {
+  border-bottom: none;
+}
+
+.pg-students .students-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.pg-students .students-table tbody tr:hover {
+  background: var(--brand-50);
+}
+
+.pg-students .students-table td.status-cell {
+  text-align: center;
+  font-weight: 600;
+}
+
+.pg-students .students-table td.status-cell.active-text {
+  color: var(--success);
+}
+
+.pg-students .students-table td.status-cell.inactive-text {
+  color: var(--danger);
+}
+
+.pg-students .students-table td.actions-cell {
+  text-align: right;
+  white-space: nowrap;
+  padding: 0.6rem 1rem;
+}
+
+/* Action links in rows */
+.pg-students .action-link {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin: 0 0 0 var(--sp-3);
+  user-select: none;
+  transition: color 0.15s ease;
+  /* Reset de estilos nativos de <button>: antes eran <span>, se
+     convirtieron a <button> para que sean accesibles por teclado sin
+     agregar tabindex/role manualmente; esto evita que se vean con el
+     borde/fondo por defecto del navegador. */
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+.pg-students .action-link:first-child {
+  margin-left: 0;
+}
+
+.pg-students .action-link.edit-text,
+.pg-students .action-link.active-text {
+  color: var(--brand);
+}
+
+.pg-students .action-link.edit-text:hover,
+.pg-students .action-link.active-text:hover {
+  color: var(--brand-600);
+  text-decoration: underline;
+}
+
+.pg-students .action-link.inactive-text {
+  color: var(--success);
+}
+
+.pg-students .action-link.inactive-text:hover {
+  color: #15803d;
+  text-decoration: underline;
+}
+
+.pg-students .action-link.delete-text {
+  color: var(--danger);
+}
+
+.pg-students .action-link.delete-text:hover {
+  color: #b91c1c;
+  text-decoration: underline;
+}
+
+.pg-students .action-link:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.pg-students .student-name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.pg-students .parent-status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: var(--shadow-xs);
+}
+
+.pg-students .parent-status-dot.has-parent {
+  background: var(--success);
+}
+
+.pg-students .parent-status-dot.no-parent {
+  background: var(--danger);
+}
+
+/* ---------- Print button ---------- */
+.pg-students .print-button-container {
+  display: flex;
+  justify-content: center;
+  padding: var(--sp-5) 0 0;
+  width: 100%;
+}
+
+.pg-students .print-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: var(--surface);
+  color: var(--text-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.pg-students .print-button:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: var(--brand-50);
+}
+
+.pg-students .print-button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Modals
+   ============================================================ */
+.pg-students .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 15, 42, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--sp-4);
+  z-index: 1000;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.pg-students .modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlideIn 0.25s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from { transform: translateY(-16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.pg-students .confirm-modal.modal-content {
+  max-width: 440px;
+}
+
+.pg-students .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-5);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+}
+
+.pg-students .modal-header h3 {
+  margin: 0;
+  color: var(--text-1);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.pg-students .close-button {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.pg-students .close-button:hover {
+  background: var(--border);
+  color: var(--text-1);
+}
+
+.pg-students .close-button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.pg-students .modal-body {
+  padding: var(--sp-5);
+}
+
+.pg-students .form-group {
+  margin-bottom: var(--sp-4);
+}
+
+.pg-students .form-group label {
+  display: block;
+  margin-bottom: var(--sp-2);
+  font-weight: 600;
+  color: var(--text-2);
+  font-size: 0.85rem;
+}
+
+.pg-students .form-group input {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  font-size: 0.92rem;
+  font-family: inherit;
+  color: var(--text-1);
+  background: var(--surface);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  box-sizing: border-box;
+}
+
+.pg-students .form-group input:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(74, 29, 233, 0.15);
+}
+
+.pg-students .readonly-input {
+  background: var(--surface-2) !important;
+  color: var(--text-3) !important;
+  cursor: not-allowed;
+}
+
+.pg-students .modal-actions {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: flex-end;
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border);
+}
+
+.pg-students .cancel-button {
+  padding: 0.6rem 1.2rem;
+  background: var(--surface);
+  color: var(--text-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.pg-students .cancel-button:hover {
+  background: var(--surface-2);
+  border-color: var(--text-3);
+  color: var(--text-1);
+}
+
+.pg-students .save-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: 0.6rem 1.2rem;
+  background: var(--brand);
+  color: #fff;
+  border: 1px solid var(--brand);
+  border-radius: var(--r-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.pg-students .save-button:hover:not(:disabled) {
+  background: var(--brand-600);
+  box-shadow: var(--shadow-sm);
+}
+
+.pg-students .save-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pg-students .delete-confirm-button {
+  padding: 0.6rem 1.2rem;
+  background: var(--danger);
+  color: #fff;
+  border: 1px solid var(--danger);
+  border-radius: var(--r-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+
+.pg-students .delete-confirm-button:hover {
+  background: #b91c1c;
+}
+
+.pg-students .confirm-message {
+  font-size: 0.95rem;
+  color: var(--text-2);
+  line-height: 1.6;
+  text-align: center;
+  margin: 0 0 var(--sp-4);
+}
+
+.pg-students .confirm-message strong {
+  color: var(--text-1);
+}
+
+/* ============================================================
+   Notifications
+   ============================================================ */
+.pg-students .notification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(22, 15, 42, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.pg-students .notification-content {
+  background: var(--surface);
+  border-radius: var(--r-md);
+  padding: var(--sp-5) var(--sp-6);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+  border-left: 5px solid var(--success);
+  animation: notificationSlideIn 0.25s ease-out;
+}
+
+@keyframes notificationSlideIn {
+  from { transform: translateY(-20px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.pg-students .notification-success { border-left-color: var(--success); }
+.pg-students .notification-error { border-left-color: var(--danger); }
+
+.pg-students .notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--success);
+}
+
+.pg-students .notification-error .notification-icon { background: var(--danger); }
+
+.pg-students .checkmark,
+.pg-students .error-mark {
+  width: 28px;
+  height: 28px;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pg-students .checkmark__check {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: checkmarkStroke 0.6s ease forwards;
+}
+
+.pg-students .error-mark__x {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: checkmarkStroke 0.6s ease forwards;
+}
+
+@keyframes checkmarkStroke {
+  100% { stroke-dashoffset: 0; }
+}
+
+.pg-students .notification-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.pg-students .notification-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.pg-students .notification-success .notification-title { color: #14532d; }
+.pg-students .notification-error .notification-title { color: #7f1d1d; }
+
+.pg-students .notification-message {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.pg-students .notification-close {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 50%;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.pg-students .notification-close:hover {
+  background: var(--border);
+  color: var(--text-1);
+}
+
+/* ============================================================
+   Print
+   ============================================================ */
+@media print {
+  .pg-students .grades-sidebar,
+  .pg-students .print-button-container,
+  .pg-students .students-placeholder,
+  .pg-students .no-students-message {
+    display: none !important;
+  }
+
+  .pg-students .students-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-family: Arial, sans-serif !important;
+  }
+
+  .pg-students .students-table th {
+    background: #f0f0f0 !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    border: 1px solid #000 !important;
+    padding: 8px !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    color: #000 !important;
+  }
+
+  .pg-students .students-table td {
+    border: 1px solid #000 !important;
+    padding: 8px !important;
+    font-size: 12px !important;
+    color: #000 !important;
+  }
+
+  .pg-students .students-table td.number-column {
+    font-weight: bold !important;
+    text-align: center !important;
+  }
+
+  .pg-students .students-table td.status-cell.active-text { color: #155724 !important; }
+  .pg-students .students-table td.status-cell.inactive-text { color: #856404 !important; }
+
+  .pg-students .table-container { margin: 0 !important; padding: 0 !important; }
+  .pg-students .table-header { display: none !important; }
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+  .pg-students .students-container { padding: var(--sp-4); }
+
+  .pg-students .grades-row { gap: var(--sp-3); }
+
+  .pg-students .grade-section { min-width: 120px; padding: var(--sp-3) var(--sp-2); }
+  .pg-students .grade-section h3 { font-size: 0.8rem; }
+  .pg-students .classroom-btn { padding: 0.5rem 0.75rem; font-size: 0.8rem; }
+
+  .pg-students .students-list { padding: var(--sp-4); }
+
+  .pg-students .table-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-3);
+  }
+
+  .pg-students .add-student-button { justify-content: center; }
+
+  .pg-students .students-table th,
+  .pg-students .students-table td {
+    padding: 0.7rem 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .pg-students .students-table td.actions-cell .action-link {
+    display: inline-block;
+    margin: 0 0.4rem 0.2rem 0;
+  }
+
+  .pg-students .modal-content { width: 100%; max-height: 95vh; }
+  .pg-students .modal-header { padding: var(--sp-4); }
+  .pg-students .modal-body { padding: var(--sp-4); }
+  .pg-students .modal-actions { flex-direction: column-reverse; }
+  .pg-students .cancel-button, .pg-students .save-button, .pg-students .delete-confirm-button { width: 100%; }
+
+  .pg-students .notification-content { flex-direction: row; padding: var(--sp-4); gap: var(--sp-3); }
+  .pg-students .notification-icon { width: 40px; height: 40px; }
+  .pg-students .checkmark, .pg-students .error-mark { width: 24px; height: 24px; }
+}
+
+
+/* Estudiantes sin salón (tras adelantar el año) */
+.pg-students .sin-salon-btn { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
+.pg-students .sin-salon-btn.selected { background: #f97316; color: #fff; border-color: #f97316; }
+.pg-students .sin-salon-help { margin: 0 0 12px; color: #706b80; font-size: .9rem; }
+.pg-students .salon-pick-btn {
+  width: 44px; height: 36px; margin-right: 8px; border-radius: 10px; border: 1px solid #d7c8fd;
+  background: #f3eeff; color: #5b31a2; font-weight: 700; font-size: 1rem; cursor: pointer;
+}
+.pg-students .salon-pick-btn:hover:not(:disabled) { background: #8248e3; color: #fff; }
+.pg-students .salon-pick-btn:disabled { opacity: .5; cursor: progress; }

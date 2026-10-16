@@ -1,0 +1,151 @@
+.pg-consent-gate .consent-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(19, 15, 25, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.pg-consent-gate .consent-modal {
+  background: #ffffff;
+  color: #211a2e;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.pg-consent-gate .consent-header {
+  padding: 1.5rem 1.5rem 0.5rem;
+}
+
+.pg-consent-gate .consent-header h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.3rem;
+}
+
+.pg-consent-gate .consent-header p {
+  margin: 0;
+  color: #504a5a;
+  font-size: 0.9rem;
+}
+
+.pg-consent-gate .consent-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid #e5e2ea;
+}
+
+.pg-consent-gate .consent-tab {
+  background: none;
+  border: none;
+  padding: 0.6rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #504a5a;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.pg-consent-gate .consent-tab.active {
+  color: #6340b4;
+  border-bottom-color: #6340b4;
+}
+
+.pg-consent-gate .consent-tab:focus-visible,
+.pg-consent-gate .consent-check input:focus-visible,
+.pg-consent-gate .consent-logout:focus-visible,
+.pg-consent-gate .consent-confirm:focus-visible {
+  outline: 2px solid #6340b4;
+  outline-offset: 2px;
+}
+
+.pg-consent-gate .consent-body {
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.pg-consent-gate .consent-body h4 {
+  margin: 1rem 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+.pg-consent-gate .consent-body h4:first-child {
+  margin-top: 0;
+}
+
+.pg-consent-gate .consent-checks {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid #e5e2ea;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pg-consent-gate .consent-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #211a2e;
+  cursor: pointer;
+}
+
+.pg-consent-gate .consent-check input {
+  margin-top: 0.15rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+}
+
+.pg-consent-gate .consent-error {
+  margin: 0 1.5rem;
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+.pg-consent-gate .consent-actions {
+  padding: 1rem 1.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pg-consent-gate .consent-logout {
+  background: none;
+  border: none;
+  color: #716b7b;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.4rem 0;
+}
+
+.pg-consent-gate .consent-confirm {
+  background: #6340b4;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.pg-consent-gate .consent-confirm:disabled {
+  background: #ad9bd5;
+  cursor: not-allowed;
+}

@@ -13,4 +13,9 @@ __pycache__/
 *.pyc
 backend
 branding
-src
+frontend/src/components
+frontend/src/context
+frontend/src/api
+frontend/src/legal
+frontend/src/services
+frontend/src/utils

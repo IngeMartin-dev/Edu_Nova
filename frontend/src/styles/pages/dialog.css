@@ -1,0 +1,132 @@
+.pg-dialog .app-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 20px;
+  animation: app-dialog-fade-in 0.15s ease;
+}
+
+@keyframes app-dialog-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pg-dialog .app-dialog-box {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 28px 26px 22px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  animation: app-dialog-pop-in 0.18s ease;
+}
+
+@keyframes app-dialog-pop-in {
+  from { transform: scale(0.94); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.pg-dialog .app-dialog-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--brand-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+
+.pg-dialog .app-dialog-icon .material-icons {
+  color: var(--brand);
+  font-size: 26px;
+}
+
+.pg-dialog .app-dialog-box.danger .app-dialog-icon {
+  background: var(--danger-bg);
+}
+
+.pg-dialog .app-dialog-box.danger .app-dialog-icon .material-icons {
+  color: var(--danger);
+}
+
+.pg-dialog .app-dialog-title {
+  color: var(--text-1);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.pg-dialog .app-dialog-message {
+  color: var(--text-3);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin: 0 0 22px;
+  white-space: pre-line;
+}
+
+.pg-dialog .app-dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.pg-dialog .app-dialog-btn {
+  flex: 1;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: all 0.15s ease;
+}
+
+.pg-dialog .app-dialog-btn.cancel {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.pg-dialog .app-dialog-btn.cancel:hover {
+  border-color: var(--text-3);
+}
+
+.pg-dialog .app-dialog-btn.confirm {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.pg-dialog .app-dialog-btn.confirm:hover {
+  background: var(--brand-600);
+}
+
+.pg-dialog .app-dialog-btn.confirm.danger {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+.pg-dialog .app-dialog-btn.confirm.danger:hover {
+  background: #b3261e;
+}
+
+.pg-dialog .app-dialog-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-1);
+  font-size: 0.95rem;
+  margin-bottom: 18px;
+  outline: none;
+}
+
+.pg-dialog .app-dialog-input:focus {
+  border-color: var(--brand);
+}
