@@ -590,7 +590,7 @@ export default function Settings() {
               <p className="about-description">Plataforma de gestión académica de EduNova: calificaciones, boletines, reportes y comunicación entre estudiantes, docentes y familias.</p>
               <div className="about-contact">
                 <span className="material-icons about-contact-icon">mail</span>
-                <div className="about-contact-text"><span className="about-contact-label">Contacto de soporte</span><a href="mailto:soporte@edunova.edu.co">soporte@edunova.edu.co</a></div>
+                <div className="about-contact-text"><span className="about-contact-label">Contacto de soporte</span><a href="mailto:soporte@edunova.edu.co">edunovacorreo@gmail.com</a></div>
               </div>
             </div>
 
