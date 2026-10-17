@@ -16,7 +16,6 @@ backend/assets
 backend/public
 backend/scripts
 backend/sql
-backend/src/utils
 backend/templates
 backend/tests
 backend/uploads
