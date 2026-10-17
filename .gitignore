@@ -11,11 +11,11 @@ firebase-service-account.json
 dist/
 __pycache__/
 *.pyc
+backend/.venv
 backend/assets
 backend/public
 backend/scripts
 backend/sql
-backend/src/services
 backend/src/utils
 backend/templates
 backend/tests
