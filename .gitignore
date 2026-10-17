@@ -12,7 +12,6 @@ dist/
 __pycache__/
 *.pyc
 backend/.venv
-backend/assets
 backend/public
 backend/scripts
 backend/sql
