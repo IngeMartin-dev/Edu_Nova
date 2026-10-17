@@ -12,6 +12,5 @@ dist/
 __pycache__/
 *.pyc
 backend/.venv
-backend/public
 backend/templates
 backend/uploads
