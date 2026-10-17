@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no, url=no" />
+<title>Consolidado</title>
+<style>
+/* =====================================================================
+   PLANTILLA CONSOLIDADO — UN SOLO ARCHIVO, TODO CON MARCADORES {{ASI}}
+   ============================================================
+   Mismo espíritu que "Boletin Base/BoletinBaseS++.html": sin motor de
+   plantillas, todos los marcadores se resuelven con String.replace()
+   desde ConsolidadoService.java. Aquí NO hay un archivo de fila aparte:
+   las 32 filas y sus 22 columnas de materia ya están escritas
+   explícitamente abajo, cada una con sus propios marcadores
+   {{FILA_n_...}} / {{COL_c_...}}.
+
+   CUPOS FIJOS que se colapsan si sobran (igual que materia-block--vacio
+   en el boletín):
+     * 32 CUPOS DE FILA (data-fila="1".."32"). Si el salón tiene menos
+       estudiantes, el backend agrega la clase "fila--vacia" al <tr>
+       sobrante (display:none) en vez de borrarlo.
+     * 22 CUPOS DE COLUMNA DE MATERIA (data-col="1".."22"). Si el
+       grado/salón tiene menos materias, el backend agrega la clase
+       "col--vacia" al <th> Y a cada <td> de esa columna (22 x 32
+       reemplazos posibles, uno por celda) para ocultarla completa.
+
+   PAGINACIÓN (> 32 estudiantes): ConsolidadoService concatena N copias
+   de este documento completo -una por cada grupo de 32- usando solo el
+   <div class="page">...</div> de cada copia adicional (mismo mecanismo
+   que ya usás para las páginas del boletín).
+   ===================================================================== */
+
+@page { size: landscape; margin: 8mm; }
+
+* { box-sizing: border-box; color: inherit !important; text-decoration: none !important; }
+
+body {
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  background-color: #777;
+  font-family: "Times New Roman", Times, serif;
+}
+
+@media print {
+  body { background-color: #fff; margin: 0; padding: 0; }
+  html { margin: 0; padding: 0; }
+  .page { margin: 0; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+}
+
+.page {
+  width: 1056px;      /* 11in x 96dpi -> escala 1:1 con @page landscape */
+  min-height: 780px;  /* referencia en pantalla; NO poner 816px exacto:
+                          Chromium redondea y agrega una hoja en blanco
+                          de más al exportar a PDF (probado). */
+  margin: 5px auto;
+  background: #fff;
+  box-sizing: border-box;
+  padding: 20px 26px 12px 26px;
+  color: #3B0764;
+  text-align: left;
+  overflow: hidden;
+  position: relative;
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 2px solid #3B0764;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+}
+.encabezado--oculto { display: none; }
+.encabezado .logo { width: 58px; height: 58px; object-fit: contain; flex-shrink: 0; }
+.encabezado .titulo-institucion { flex: 1; }
+.encabezado .titulo-institucion h1 {
+  font-size: 15px; font-weight: 700; margin: 0 0 4px 0;
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+.encabezado .meta-linea { font-size: 10px; margin: 1px 0; }
+.encabezado .meta-linea b { font-weight: 700; }
+.encabezado .pagina-indicador { font-size: 9px; text-align: right; align-self: flex-start; white-space: nowrap; }
+
+/* Barra angosta de continuación: SOLO se muestra en la página 2 en
+   adelante (en vez del encabezado completo con logo, que solo va en la
+   página 1). Da contexto mínimo (grado/salón/período y número de
+   página) sin repetir el logo y el nombre completo del colegio. */
+.continuacion {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  border-bottom: 1px solid #3B0764;
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+.continuacion--oculto { display: none; }
+
+table.consolidado { width: 100%; border-collapse: collapse; table-layout: fixed; }
+table.consolidado th, table.consolidado td {
+  border: 1px solid #3B0764; text-align: center; overflow: hidden;
+  white-space: nowrap; padding: 1px 2px;
+}
+table.consolidado thead th {
+  background: #EDE9FE; font-weight: 700; font-size: 7.2px;
+  height: 24px; vertical-align: middle; text-transform: uppercase;
+}
+table.consolidado tbody td { font-size: 7.5px; height: 15.2px; vertical-align: middle; }
+.nombre-td { text-align: left; padding-left: 4px; }
+
+tr.fila--vacia { display: none; }
+th.col--vacia, td.col--vacia { display: none; }
+
+.pie {
+  position: absolute; bottom: 8px; left: 26px; right: 26px;
+  display: flex; justify-content: space-between; font-size: 8px; color: #6D28D9;
+}
+
+.leyenda-materias {
+  margin-top: 6px;
+  font-size: 7px;
+  line-height: 1.5;
+  color: #6D28D9;
+  padding-right: 4px;
+}
+.leyenda-materias b { font-weight: 700; }
+</style>
+</head>
+<body data-doc="consolidado"><!-- El atributo data-doc="consolidado" que trae la etiqueta body de
+     arriba es el sentinel que python/playwright_generator.py usa para
+     saber que debe renderizar en horizontal 11in x 8.5in (Carta
+     apaisada) en vez del tamaño fijo del boletín. No lo borres. -->
+
+<div class="page" data-pagina="1">
+
+  <div class="encabezado{{CLASE_ENCABEZADO_OCULTO}}">
+    <img class="logo" src="{{LOGO_PATH}}" alt="Logo" />
+    <div class="titulo-institucion">
+      <h1>{{NOMBRE_INSTITUCION}}</h1>
+      <div class="meta-linea"><b>AÑO LECTIVO:</b> {{AÑO}} &nbsp;&nbsp; <b>GRADO/CURSO:</b> {{GRADO}} {{SALON}} &nbsp;&nbsp; <b>PERIODO:</b> {{PERIODO}}</div>
+      <div class="meta-linea"><b>DIRECTOR DE GRUPO:</b> {{DIRECTOR_GRUPO}}</div>
+    </div>
+    <div class="pagina-indicador">Pág. {{PAGINA_ACTUAL}} / {{PAGINA_TOTAL}}</div>
+  </div>
+
+  <div class="continuacion{{CLASE_CONTINUACION_OCULTO}}">
+    <span><b>{{NOMBRE_INSTITUCION}}</b> — {{GRADO}} {{SALON}} · Periodo {{PERIODO}}</span>
+    <span>Pág. {{PAGINA_ACTUAL}} / {{PAGINA_TOTAL}}</span>
+  </div>
+
+  <table class="consolidado">
+    <colgroup>
+      <col style="width:2.4%" /><col style="width:22%" />
+      <col class="colgrp-1" style="width:3.25%" />
+      <col class="colgrp-2" style="width:3.25%" />
+      <col class="colgrp-3" style="width:3.25%" />
+      <col class="colgrp-4" style="width:3.25%" />
+      <col class="colgrp-5" style="width:3.25%" />
+      <col class="colgrp-6" style="width:3.25%" />
+      <col class="colgrp-7" style="width:3.25%" />
+      <col class="colgrp-8" style="width:3.25%" />
+      <col class="colgrp-9" style="width:3.25%" />
+      <col class="colgrp-10" style="width:3.25%" />
+      <col class="colgrp-11" style="width:3.25%" />
+      <col class="colgrp-12" style="width:3.25%" />
+      <col class="colgrp-13" style="width:3.25%" />
+      <col class="colgrp-14" style="width:3.25%" />
+      <col class="colgrp-15" style="width:3.25%" />
+      <col class="colgrp-16" style="width:3.25%" />
+      <col class="colgrp-17" style="width:3.25%" />
+      <col class="colgrp-18" style="width:3.25%" />
+      <col class="colgrp-19" style="width:3.25%" />
+      <col class="colgrp-20" style="width:3.25%" />
+      <col class="colgrp-21" style="width:3.25%" />
+      <col class="colgrp-22" style="width:3.25%" />
+      <col style="width:3.6%" /><col style="width:3.2%" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th>N&ordm;</th>
+        <th>Estudiante</th>
+        <th class="col--M1{{COL_1_CLASE_VACIA}}" data-col="1">{{COL_1_LABEL}}</th>
+        <th class="col--M2{{COL_2_CLASE_VACIA}}" data-col="2">{{COL_2_LABEL}}</th>
+        <th class="col--M3{{COL_3_CLASE_VACIA}}" data-col="3">{{COL_3_LABEL}}</th>
+        <th class="col--M4{{COL_4_CLASE_VACIA}}" data-col="4">{{COL_4_LABEL}}</th>
+        <th class="col--M5{{COL_5_CLASE_VACIA}}" data-col="5">{{COL_5_LABEL}}</th>
+        <th class="col--M6{{COL_6_CLASE_VACIA}}" data-col="6">{{COL_6_LABEL}}</th>
+        <th class="col--M7{{COL_7_CLASE_VACIA}}" data-col="7">{{COL_7_LABEL}}</th>
+        <th class="col--M8{{COL_8_CLASE_VACIA}}" data-col="8">{{COL_8_LABEL}}</th>
+        <th class="col--M9{{COL_9_CLASE_VACIA}}" data-col="9">{{COL_9_LABEL}}</th>
+        <th class="col--M10{{COL_10_CLASE_VACIA}}" data-col="10">{{COL_10_LABEL}}</th>
+        <th class="col--M11{{COL_11_CLASE_VACIA}}" data-col="11">{{COL_11_LABEL}}</th>
+        <th class="col--M12{{COL_12_CLASE_VACIA}}" data-col="12">{{COL_12_LABEL}}</th>
+        <th class="col--M13{{COL_13_CLASE_VACIA}}" data-col="13">{{COL_13_LABEL}}</th>
+        <th class="col--M14{{COL_14_CLASE_VACIA}}" data-col="14">{{COL_14_LABEL}}</th>
+        <th class="col--M15{{COL_15_CLASE_VACIA}}" data-col="15">{{COL_15_LABEL}}</th>
+        <th class="col--M16{{COL_16_CLASE_VACIA}}" data-col="16">{{COL_16_LABEL}}</th>
+        <th class="col--M17{{COL_17_CLASE_VACIA}}" data-col="17">{{COL_17_LABEL}}</th>
+        <th class="col--M18{{COL_18_CLASE_VACIA}}" data-col="18">{{COL_18_LABEL}}</th>
+        <th class="col--M19{{COL_19_CLASE_VACIA}}" data-col="19">{{COL_19_LABEL}}</th>
+        <th class="col--M20{{COL_20_CLASE_VACIA}}" data-col="20">{{COL_20_LABEL}}</th>
+        <th class="col--M21{{COL_21_CLASE_VACIA}}" data-col="21">{{COL_21_LABEL}}</th>
+        <th class="col--M22{{COL_22_CLASE_VACIA}}" data-col="22">{{COL_22_LABEL}}</th>
+        <th>PROM.</th>
+        <th>PUEST</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="fila{{FILA_1_CLASE_VACIA}}" data-fila="1">
+        <td>{{FILA_1_NUM}}</td>
+        <td class="nombre-td">{{FILA_1_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_1_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_1_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_1_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_1_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_1_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_1_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_1_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_1_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_1_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_1_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_1_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_1_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_1_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_1_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_1_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_1_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_1_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_1_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_1_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_1_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_1_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_1_COL_22}}</td>
+        <td><b>{{FILA_1_PROM}}</b></td>
+        <td><b>{{FILA_1_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_2_CLASE_VACIA}}" data-fila="2">
+        <td>{{FILA_2_NUM}}</td>
+        <td class="nombre-td">{{FILA_2_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_2_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_2_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_2_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_2_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_2_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_2_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_2_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_2_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_2_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_2_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_2_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_2_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_2_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_2_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_2_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_2_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_2_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_2_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_2_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_2_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_2_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_2_COL_22}}</td>
+        <td><b>{{FILA_2_PROM}}</b></td>
+        <td><b>{{FILA_2_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_3_CLASE_VACIA}}" data-fila="3">
+        <td>{{FILA_3_NUM}}</td>
+        <td class="nombre-td">{{FILA_3_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_3_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_3_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_3_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_3_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_3_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_3_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_3_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_3_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_3_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_3_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_3_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_3_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_3_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_3_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_3_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_3_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_3_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_3_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_3_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_3_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_3_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_3_COL_22}}</td>
+        <td><b>{{FILA_3_PROM}}</b></td>
+        <td><b>{{FILA_3_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_4_CLASE_VACIA}}" data-fila="4">
+        <td>{{FILA_4_NUM}}</td>
+        <td class="nombre-td">{{FILA_4_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_4_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_4_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_4_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_4_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_4_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_4_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_4_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_4_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_4_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_4_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_4_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_4_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_4_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_4_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_4_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_4_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_4_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_4_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_4_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_4_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_4_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_4_COL_22}}</td>
+        <td><b>{{FILA_4_PROM}}</b></td>
+        <td><b>{{FILA_4_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_5_CLASE_VACIA}}" data-fila="5">
+        <td>{{FILA_5_NUM}}</td>
+        <td class="nombre-td">{{FILA_5_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_5_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_5_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_5_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_5_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_5_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_5_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_5_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_5_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_5_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_5_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_5_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_5_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_5_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_5_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_5_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_5_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_5_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_5_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_5_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_5_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_5_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_5_COL_22}}</td>
+        <td><b>{{FILA_5_PROM}}</b></td>
+        <td><b>{{FILA_5_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_6_CLASE_VACIA}}" data-fila="6">
+        <td>{{FILA_6_NUM}}</td>
+        <td class="nombre-td">{{FILA_6_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_6_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_6_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_6_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_6_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_6_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_6_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_6_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_6_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_6_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_6_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_6_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_6_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_6_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_6_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_6_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_6_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_6_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_6_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_6_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_6_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_6_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_6_COL_22}}</td>
+        <td><b>{{FILA_6_PROM}}</b></td>
+        <td><b>{{FILA_6_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_7_CLASE_VACIA}}" data-fila="7">
+        <td>{{FILA_7_NUM}}</td>
+        <td class="nombre-td">{{FILA_7_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_7_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_7_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_7_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_7_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_7_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_7_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_7_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_7_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_7_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_7_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_7_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_7_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_7_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_7_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_7_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_7_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_7_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_7_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_7_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_7_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_7_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_7_COL_22}}</td>
+        <td><b>{{FILA_7_PROM}}</b></td>
+        <td><b>{{FILA_7_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_8_CLASE_VACIA}}" data-fila="8">
+        <td>{{FILA_8_NUM}}</td>
+        <td class="nombre-td">{{FILA_8_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_8_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_8_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_8_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_8_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_8_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_8_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_8_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_8_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_8_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_8_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_8_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_8_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_8_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_8_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_8_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_8_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_8_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_8_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_8_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_8_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_8_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_8_COL_22}}</td>
+        <td><b>{{FILA_8_PROM}}</b></td>
+        <td><b>{{FILA_8_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_9_CLASE_VACIA}}" data-fila="9">
+        <td>{{FILA_9_NUM}}</td>
+        <td class="nombre-td">{{FILA_9_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_9_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_9_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_9_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_9_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_9_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_9_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_9_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_9_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_9_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_9_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_9_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_9_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_9_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_9_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_9_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_9_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_9_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_9_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_9_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_9_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_9_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_9_COL_22}}</td>
+        <td><b>{{FILA_9_PROM}}</b></td>
+        <td><b>{{FILA_9_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_10_CLASE_VACIA}}" data-fila="10">
+        <td>{{FILA_10_NUM}}</td>
+        <td class="nombre-td">{{FILA_10_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_10_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_10_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_10_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_10_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_10_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_10_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_10_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_10_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_10_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_10_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_10_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_10_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_10_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_10_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_10_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_10_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_10_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_10_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_10_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_10_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_10_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_10_COL_22}}</td>
+        <td><b>{{FILA_10_PROM}}</b></td>
+        <td><b>{{FILA_10_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_11_CLASE_VACIA}}" data-fila="11">
+        <td>{{FILA_11_NUM}}</td>
+        <td class="nombre-td">{{FILA_11_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_11_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_11_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_11_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_11_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_11_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_11_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_11_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_11_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_11_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_11_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_11_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_11_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_11_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_11_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_11_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_11_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_11_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_11_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_11_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_11_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_11_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_11_COL_22}}</td>
+        <td><b>{{FILA_11_PROM}}</b></td>
+        <td><b>{{FILA_11_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_12_CLASE_VACIA}}" data-fila="12">
+        <td>{{FILA_12_NUM}}</td>
+        <td class="nombre-td">{{FILA_12_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_12_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_12_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_12_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_12_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_12_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_12_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_12_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_12_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_12_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_12_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_12_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_12_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_12_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_12_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_12_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_12_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_12_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_12_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_12_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_12_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_12_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_12_COL_22}}</td>
+        <td><b>{{FILA_12_PROM}}</b></td>
+        <td><b>{{FILA_12_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_13_CLASE_VACIA}}" data-fila="13">
+        <td>{{FILA_13_NUM}}</td>
+        <td class="nombre-td">{{FILA_13_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_13_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_13_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_13_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_13_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_13_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_13_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_13_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_13_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_13_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_13_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_13_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_13_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_13_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_13_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_13_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_13_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_13_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_13_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_13_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_13_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_13_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_13_COL_22}}</td>
+        <td><b>{{FILA_13_PROM}}</b></td>
+        <td><b>{{FILA_13_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_14_CLASE_VACIA}}" data-fila="14">
+        <td>{{FILA_14_NUM}}</td>
+        <td class="nombre-td">{{FILA_14_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_14_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_14_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_14_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_14_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_14_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_14_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_14_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_14_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_14_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_14_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_14_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_14_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_14_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_14_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_14_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_14_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_14_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_14_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_14_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_14_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_14_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_14_COL_22}}</td>
+        <td><b>{{FILA_14_PROM}}</b></td>
+        <td><b>{{FILA_14_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_15_CLASE_VACIA}}" data-fila="15">
+        <td>{{FILA_15_NUM}}</td>
+        <td class="nombre-td">{{FILA_15_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_15_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_15_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_15_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_15_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_15_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_15_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_15_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_15_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_15_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_15_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_15_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_15_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_15_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_15_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_15_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_15_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_15_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_15_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_15_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_15_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_15_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_15_COL_22}}</td>
+        <td><b>{{FILA_15_PROM}}</b></td>
+        <td><b>{{FILA_15_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_16_CLASE_VACIA}}" data-fila="16">
+        <td>{{FILA_16_NUM}}</td>
+        <td class="nombre-td">{{FILA_16_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_16_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_16_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_16_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_16_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_16_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_16_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_16_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_16_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_16_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_16_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_16_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_16_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_16_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_16_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_16_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_16_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_16_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_16_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_16_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_16_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_16_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_16_COL_22}}</td>
+        <td><b>{{FILA_16_PROM}}</b></td>
+        <td><b>{{FILA_16_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_17_CLASE_VACIA}}" data-fila="17">
+        <td>{{FILA_17_NUM}}</td>
+        <td class="nombre-td">{{FILA_17_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_17_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_17_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_17_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_17_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_17_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_17_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_17_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_17_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_17_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_17_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_17_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_17_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_17_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_17_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_17_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_17_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_17_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_17_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_17_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_17_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_17_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_17_COL_22}}</td>
+        <td><b>{{FILA_17_PROM}}</b></td>
+        <td><b>{{FILA_17_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_18_CLASE_VACIA}}" data-fila="18">
+        <td>{{FILA_18_NUM}}</td>
+        <td class="nombre-td">{{FILA_18_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_18_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_18_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_18_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_18_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_18_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_18_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_18_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_18_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_18_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_18_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_18_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_18_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_18_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_18_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_18_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_18_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_18_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_18_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_18_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_18_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_18_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_18_COL_22}}</td>
+        <td><b>{{FILA_18_PROM}}</b></td>
+        <td><b>{{FILA_18_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_19_CLASE_VACIA}}" data-fila="19">
+        <td>{{FILA_19_NUM}}</td>
+        <td class="nombre-td">{{FILA_19_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_19_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_19_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_19_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_19_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_19_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_19_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_19_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_19_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_19_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_19_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_19_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_19_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_19_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_19_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_19_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_19_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_19_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_19_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_19_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_19_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_19_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_19_COL_22}}</td>
+        <td><b>{{FILA_19_PROM}}</b></td>
+        <td><b>{{FILA_19_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_20_CLASE_VACIA}}" data-fila="20">
+        <td>{{FILA_20_NUM}}</td>
+        <td class="nombre-td">{{FILA_20_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_20_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_20_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_20_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_20_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_20_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_20_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_20_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_20_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_20_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_20_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_20_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_20_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_20_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_20_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_20_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_20_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_20_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_20_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_20_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_20_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_20_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_20_COL_22}}</td>
+        <td><b>{{FILA_20_PROM}}</b></td>
+        <td><b>{{FILA_20_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_21_CLASE_VACIA}}" data-fila="21">
+        <td>{{FILA_21_NUM}}</td>
+        <td class="nombre-td">{{FILA_21_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_21_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_21_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_21_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_21_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_21_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_21_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_21_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_21_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_21_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_21_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_21_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_21_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_21_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_21_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_21_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_21_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_21_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_21_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_21_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_21_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_21_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_21_COL_22}}</td>
+        <td><b>{{FILA_21_PROM}}</b></td>
+        <td><b>{{FILA_21_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_22_CLASE_VACIA}}" data-fila="22">
+        <td>{{FILA_22_NUM}}</td>
+        <td class="nombre-td">{{FILA_22_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_22_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_22_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_22_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_22_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_22_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_22_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_22_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_22_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_22_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_22_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_22_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_22_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_22_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_22_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_22_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_22_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_22_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_22_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_22_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_22_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_22_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_22_COL_22}}</td>
+        <td><b>{{FILA_22_PROM}}</b></td>
+        <td><b>{{FILA_22_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_23_CLASE_VACIA}}" data-fila="23">
+        <td>{{FILA_23_NUM}}</td>
+        <td class="nombre-td">{{FILA_23_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_23_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_23_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_23_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_23_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_23_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_23_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_23_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_23_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_23_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_23_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_23_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_23_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_23_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_23_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_23_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_23_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_23_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_23_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_23_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_23_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_23_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_23_COL_22}}</td>
+        <td><b>{{FILA_23_PROM}}</b></td>
+        <td><b>{{FILA_23_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_24_CLASE_VACIA}}" data-fila="24">
+        <td>{{FILA_24_NUM}}</td>
+        <td class="nombre-td">{{FILA_24_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_24_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_24_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_24_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_24_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_24_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_24_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_24_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_24_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_24_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_24_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_24_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_24_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_24_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_24_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_24_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_24_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_24_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_24_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_24_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_24_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_24_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_24_COL_22}}</td>
+        <td><b>{{FILA_24_PROM}}</b></td>
+        <td><b>{{FILA_24_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_25_CLASE_VACIA}}" data-fila="25">
+        <td>{{FILA_25_NUM}}</td>
+        <td class="nombre-td">{{FILA_25_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_25_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_25_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_25_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_25_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_25_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_25_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_25_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_25_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_25_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_25_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_25_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_25_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_25_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_25_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_25_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_25_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_25_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_25_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_25_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_25_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_25_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_25_COL_22}}</td>
+        <td><b>{{FILA_25_PROM}}</b></td>
+        <td><b>{{FILA_25_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_26_CLASE_VACIA}}" data-fila="26">
+        <td>{{FILA_26_NUM}}</td>
+        <td class="nombre-td">{{FILA_26_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_26_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_26_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_26_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_26_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_26_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_26_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_26_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_26_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_26_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_26_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_26_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_26_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_26_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_26_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_26_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_26_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_26_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_26_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_26_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_26_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_26_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_26_COL_22}}</td>
+        <td><b>{{FILA_26_PROM}}</b></td>
+        <td><b>{{FILA_26_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_27_CLASE_VACIA}}" data-fila="27">
+        <td>{{FILA_27_NUM}}</td>
+        <td class="nombre-td">{{FILA_27_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_27_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_27_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_27_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_27_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_27_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_27_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_27_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_27_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_27_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_27_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_27_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_27_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_27_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_27_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_27_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_27_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_27_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_27_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_27_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_27_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_27_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_27_COL_22}}</td>
+        <td><b>{{FILA_27_PROM}}</b></td>
+        <td><b>{{FILA_27_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_28_CLASE_VACIA}}" data-fila="28">
+        <td>{{FILA_28_NUM}}</td>
+        <td class="nombre-td">{{FILA_28_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_28_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_28_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_28_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_28_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_28_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_28_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_28_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_28_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_28_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_28_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_28_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_28_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_28_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_28_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_28_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_28_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_28_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_28_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_28_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_28_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_28_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_28_COL_22}}</td>
+        <td><b>{{FILA_28_PROM}}</b></td>
+        <td><b>{{FILA_28_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_29_CLASE_VACIA}}" data-fila="29">
+        <td>{{FILA_29_NUM}}</td>
+        <td class="nombre-td">{{FILA_29_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_29_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_29_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_29_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_29_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_29_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_29_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_29_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_29_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_29_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_29_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_29_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_29_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_29_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_29_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_29_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_29_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_29_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_29_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_29_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_29_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_29_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_29_COL_22}}</td>
+        <td><b>{{FILA_29_PROM}}</b></td>
+        <td><b>{{FILA_29_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_30_CLASE_VACIA}}" data-fila="30">
+        <td>{{FILA_30_NUM}}</td>
+        <td class="nombre-td">{{FILA_30_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_30_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_30_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_30_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_30_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_30_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_30_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_30_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_30_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_30_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_30_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_30_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_30_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_30_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_30_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_30_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_30_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_30_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_30_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_30_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_30_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_30_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_30_COL_22}}</td>
+        <td><b>{{FILA_30_PROM}}</b></td>
+        <td><b>{{FILA_30_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_31_CLASE_VACIA}}" data-fila="31">
+        <td>{{FILA_31_NUM}}</td>
+        <td class="nombre-td">{{FILA_31_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_31_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_31_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_31_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_31_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_31_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_31_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_31_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_31_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_31_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_31_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_31_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_31_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_31_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_31_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_31_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_31_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_31_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_31_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_31_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_31_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_31_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_31_COL_22}}</td>
+        <td><b>{{FILA_31_PROM}}</b></td>
+        <td><b>{{FILA_31_PUESTO}}</b></td>
+      </tr>
+      <tr class="fila{{FILA_32_CLASE_VACIA}}" data-fila="32">
+        <td>{{FILA_32_NUM}}</td>
+        <td class="nombre-td">{{FILA_32_NOMBRE}}</td>
+        <td class="col--M1{{COL_1_CLASE_VACIA}}">{{FILA_32_COL_1}}</td>
+        <td class="col--M2{{COL_2_CLASE_VACIA}}">{{FILA_32_COL_2}}</td>
+        <td class="col--M3{{COL_3_CLASE_VACIA}}">{{FILA_32_COL_3}}</td>
+        <td class="col--M4{{COL_4_CLASE_VACIA}}">{{FILA_32_COL_4}}</td>
+        <td class="col--M5{{COL_5_CLASE_VACIA}}">{{FILA_32_COL_5}}</td>
+        <td class="col--M6{{COL_6_CLASE_VACIA}}">{{FILA_32_COL_6}}</td>
+        <td class="col--M7{{COL_7_CLASE_VACIA}}">{{FILA_32_COL_7}}</td>
+        <td class="col--M8{{COL_8_CLASE_VACIA}}">{{FILA_32_COL_8}}</td>
+        <td class="col--M9{{COL_9_CLASE_VACIA}}">{{FILA_32_COL_9}}</td>
+        <td class="col--M10{{COL_10_CLASE_VACIA}}">{{FILA_32_COL_10}}</td>
+        <td class="col--M11{{COL_11_CLASE_VACIA}}">{{FILA_32_COL_11}}</td>
+        <td class="col--M12{{COL_12_CLASE_VACIA}}">{{FILA_32_COL_12}}</td>
+        <td class="col--M13{{COL_13_CLASE_VACIA}}">{{FILA_32_COL_13}}</td>
+        <td class="col--M14{{COL_14_CLASE_VACIA}}">{{FILA_32_COL_14}}</td>
+        <td class="col--M15{{COL_15_CLASE_VACIA}}">{{FILA_32_COL_15}}</td>
+        <td class="col--M16{{COL_16_CLASE_VACIA}}">{{FILA_32_COL_16}}</td>
+        <td class="col--M17{{COL_17_CLASE_VACIA}}">{{FILA_32_COL_17}}</td>
+        <td class="col--M18{{COL_18_CLASE_VACIA}}">{{FILA_32_COL_18}}</td>
+        <td class="col--M19{{COL_19_CLASE_VACIA}}">{{FILA_32_COL_19}}</td>
+        <td class="col--M20{{COL_20_CLASE_VACIA}}">{{FILA_32_COL_20}}</td>
+        <td class="col--M21{{COL_21_CLASE_VACIA}}">{{FILA_32_COL_21}}</td>
+        <td class="col--M22{{COL_22_CLASE_VACIA}}">{{FILA_32_COL_22}}</td>
+        <td><b>{{FILA_32_PROM}}</b></td>
+        <td><b>{{FILA_32_PUESTO}}</b></td>
+      </tr>
+    
+  </table>
+
+  <div class="leyenda-materias">
+    <b>Convenciones de materias:</b> {{LEYENDA_MATERIAS}}
+  </div>
+
+  <div class="pie">
+    <span>{{CIUDAD}} — generado el {{FECHA_GENERACION}}</span>
+    <span>Consolidado de calificaciones — Sistema Académico EduNova</span>
+  </div>
+
+</div>
+<!-- FIN DE LA PÁGINA. Para más de 32 estudiantes, ConsolidadoService.java
+     concatena copias completas de este mismo documento (una por cada
+     grupo de 32), tomando solo el <div class="page">...</div> de cada
+     copia adicional. -->
+<!-- El atributo data-doc="consolidado" que trae la etiqueta body de
+     arriba es el sentinel que python/playwright_generator.py usa para
+     saber que debe renderizar en horizontal 11in x 8.5in (Carta
+     apaisada) en vez del tamaño fijo del boletín. No lo borres. -->
+</body>
+</html>
