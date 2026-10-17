@@ -1,0 +1,40 @@
+{
+  "name": "edunova-backend",
+  "version": "1.0.0",
+  "description": "EduNova - API de gestión académica (Node.js + Express + MySQL)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:init": "node src/utils/initDb.js",
+    "test": "node --test \"tests/**/*.test.js\"",
+    "db:demo": "node src/utils/initDb.js --demo",
+    "db:reset": "node src/utils/initDb.js --reset",
+    "mail:test": "node scripts/test-mail.js",
+    "ai:test": "node scripts/test-ai.js",
+    "build:front": "cd ../frontend && npm install && npm run build && node -e \"const fs=require('fs');fs.rmSync('../backend/public',{recursive:true,force:true});fs.cpSync('dist','../backend/public',{recursive:true})\""
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.5",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "firebase": "^13.0.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.4.0",
+    "mysql2": "^3.24.5",
+    "node-cron": "^4.6.0",
+    "nodemailer": "^10.0.15"
+  },
+  "optionalDependencies": {
+    "firebase-admin": "^14.5.0"
+  }
+}
