@@ -15,7 +15,6 @@ backend/assets
 backend/public
 backend/scripts
 backend/sql
-backend/src/middleware
 backend/src/routes
 backend/src/services
 backend/src/utils
