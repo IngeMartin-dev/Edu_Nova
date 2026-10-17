@@ -15,6 +15,6 @@ backend
 branding
 frontend/src/components
 frontend/src/context
-frontend/src/api
+
 
 
