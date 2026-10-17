@@ -13,7 +13,6 @@ __pycache__/
 *.pyc
 backend/.venv
 backend/public
-backend/sql
 backend/templates
 backend/tests
 backend/uploads
