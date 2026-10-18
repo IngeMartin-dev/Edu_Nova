@@ -264,7 +264,7 @@ export default function Dashboard() {
       api.get(`/subjects/teacher/${user.id}`).then((s) => setTeacherSubjects(s.filter((x) => x.name && x.name.trim()).map((x) => x.name.trim()))).catch(() => setTeacherSubjects([]));
     }
     if (roleName === 'ADMIN' || user.additionalAdmin) {
-      api.get('/school-year/fecha-alcanzada').then((r) => { if (r.alcanzada && window.location.pathname !== '/school-year-config') nav('/school-year-config'); }).catch(() => {});
+      api.get('/school-year/fecha-alcanzada').then((r) => { if (r.alcanzada && !window.location.pathname.endsWith('/school-year-config')) nav('/school-year-config'); }).catch(() => {});
     }
   }, [user?.id]); // eslint-disable-line
 

@@ -38,7 +38,7 @@ export async function registerPushToken() {
     const messaging = getMessaging(app);
 
     const params = new URLSearchParams(cfg.config);
-    const registration = await navigator.serviceWorker.register(`/firebase-messaging-sw.js?${params.toString()}`);
+    const registration = await navigator.serviceWorker.register(`${import.meta.env.BASE_URL}firebase-messaging-sw.js?${params.toString()}`);
     const token = await getToken(messaging, { vapidKey: cfg.vapidKey, serviceWorkerRegistration: registration });
     if (!token) return null;
 

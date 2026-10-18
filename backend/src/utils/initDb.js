@@ -17,6 +17,7 @@ async function main() {
   const conn = await mysql.createConnection({
     host: env.db.host, port: env.db.port, user: env.db.user, password: env.db.password,
     multipleStatements: true, charset: 'utf8mb4',
+    ssl: env.db.ssl ? { minVersion: 'TLSv1.2', rejectUnauthorized: true } : undefined,
   });
   const db = env.db.name;
   try {

@@ -21,6 +21,8 @@ const env = {
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD ?? '',
     connectionLimit: int(process.env.DB_POOL_SIZE, 10),
+    // TiDB Cloud (y la mayoría de MySQL en la nube) exige TLS: DB_SSL=true
+    ssl: bool(process.env.DB_SSL, false),
   },
 
   jwt: {

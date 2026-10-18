@@ -584,7 +584,7 @@ export default function Settings() {
             <h2>Acerca de</h2>
             <div className="about-card">
               <div className="about-card-header">
-                <img src="/logo-symbol.svg" alt="Logo de EduNova" className="about-logo" />
+                <img src={`${import.meta.env.BASE_URL}logo-symbol.svg`} alt="Logo de EduNova" className="about-logo" />
                 <div className="about-header-text"><h3>EduNova</h3><span className="about-version-badge">Versión 1.0.0</span></div>
               </div>
               <p className="about-description">Plataforma de gestión académica de EduNova: calificaciones, boletines, reportes y comunicación entre estudiantes, docentes y familias.</p>

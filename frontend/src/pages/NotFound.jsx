@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../styles/pages/not-found.css';
+import { API_ORIGIN } from '../api/client.js';
 
 /** Página 404 (y variante "sin conexión" con ?reason=connection) del original. */
 export default function NotFound() {
@@ -17,7 +18,7 @@ export default function NotFound() {
     const ctrl = new AbortController();
     const to = setTimeout(() => ctrl.abort(), 4000);
     let ok = false;
-    try { await fetch('/api/health', { signal: ctrl.signal, cache: 'no-store' }); ok = true; } catch { ok = false; }
+    try { await fetch(`${API_ORIGIN}/api/health`, { signal: ctrl.signal, cache: 'no-store' }); ok = true; } catch { ok = false; }
     clearTimeout(to);
     setChecking(false);
     if (ok) { stop.current = true; nav('/login'); } else timer.current = setTimeout(poll, 4000);

@@ -86,7 +86,7 @@ export default function ConsentGate() {
           {errorMessage && <p className="consent-error">{errorMessage}</p>}
 
           <div className="consent-actions">
-            <button type="button" className="consent-logout" onClick={() => { logout(); window.location.href = '/login'; }}>
+            <button type="button" className="consent-logout" onClick={() => { logout(); window.location.href = import.meta.env.BASE_URL + 'login'; }}>
               Prefiero no aceptar (cerrar sesión)
             </button>
             <button type="button" className="consent-confirm" disabled={!canContinue || submitting} onClick={confirm}>

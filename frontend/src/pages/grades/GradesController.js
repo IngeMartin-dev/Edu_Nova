@@ -1,3 +1,4 @@
+import { API_ORIGIN } from '../../api/client.js';
 import { http as http_, authService as authService_, realtimeService as realtimeService_, gradesUpdateService as gradesUpdateService_, gradeColumnConfigService as gradeColumnConfigService_, sanitizer as sanitizer_, firstValueFrom, deps } from './compat.js';
 
 const setTimeout = (fn, ms, ...a) => globalThis.setTimeout((...x) => { try { return fn(...x); } finally { deps.tick && deps.tick(); } }, ms, ...a);
@@ -119,7 +120,7 @@ export class Grades {
   // (Administrador). Por defecto 3.5 hasta que se cargue la configurada.
   minPassingGrade = 3.5;
   loadMinPassingGrade() {
-    this.http.get("http://localhost:8080/api/school-year/min-passing-grade").subscribe({
+    this.http.get(API_ORIGIN + "/api/school-year/min-passing-grade").subscribe({
       next: (res) => {
         if (typeof res.minPassingGrade === "number") {
           this.minPassingGrade = res.minPassingGrade;
@@ -188,7 +189,7 @@ export class Grades {
     this.ngZone.runOutside(() => {
       this.periodCheckInterval = setInterval(() => {
         const previousPeriods = [...this.availablePeriods];
-        this.http.get("http://localhost:8080/api/periods").subscribe({
+        this.http.get(API_ORIGIN + "/api/periods").subscribe({
           next: (periods) => {
             const unlockedPeriods = periods.filter((p) => p.isUnlocked).map((p) => p.periodNumber);
             const newPeriods = unlockedPeriods.length > 0 ? unlockedPeriods : [1];
@@ -330,7 +331,7 @@ export class Grades {
     this.recoverySaveTimers.clear();
   }
   loadUnlockedPeriods() {
-    this.http.get("http://localhost:8080/api/periods").subscribe({
+    this.http.get(API_ORIGIN + "/api/periods").subscribe({
       next: (periods) => {
         const unlockedPeriods = periods.filter((p) => p.isUnlocked).map((p) => p.periodNumber);
         this.availablePeriods = unlockedPeriods.length > 0 ? unlockedPeriods : [1];
@@ -346,7 +347,7 @@ export class Grades {
   }
   // Load existing recovery plans for students
   loadExistingRecoveryPlans() {
-    this.http.get(`http://localhost:8080/api/grades/recovery-plans${this.teacherIdQuery()}`).subscribe({
+    this.http.get(`${API_ORIGIN}/api/grades/recovery-plans${this.teacherIdQuery()}`).subscribe({
       next: (plans) => {
         this.generatedPlans = {};
         if (plans) {
@@ -804,7 +805,7 @@ export class Grades {
       if (pending <= 0) this.markWeightsReady();
     };
     for (const student of this.students) {
-      const url = `http://localhost:8080/api/grades/student/${student.id}/period/${this.selectedPeriod}`;
+      const url = `${API_ORIGIN}/api/grades/student/${student.id}/period/${this.selectedPeriod}`;
       this.http.get(url).subscribe({
         next: (grades) => {
           const forSubject = grades.filter(
@@ -873,7 +874,7 @@ export class Grades {
   }
   loadData() {
     if (!this.selectedGrade || !this.selectedClassroom) return;
-    const url = `http://localhost:8080/api/students/grade/${encodeURIComponent(this.selectedGrade)}/class/${encodeURIComponent(this.selectedClassroom)}`;
+    const url = `${API_ORIGIN}/api/students/grade/${encodeURIComponent(this.selectedGrade)}/class/${encodeURIComponent(this.selectedClassroom)}`;
     this.http.get(url).subscribe({
       next: (students) => {
         this.students = students.sort((a, b) => (a.surname || "").localeCompare(b.surname || ""));
@@ -902,7 +903,7 @@ export class Grades {
     const compositeKey = `${keySuffix}|${this.selectedPeriod}`;
     for (const student of this.students) {
       const subjectIdParam = this.selectedSubjectId != null ? `&subjectId=${this.selectedSubjectId}` : "";
-      const url = `http://localhost:8080/api/grades/recovery/${student.id}?period=${this.selectedPeriod}${teacherId != null ? "&teacherId=" + teacherId : ""}&subjectName=${encodeURIComponent(subjectName)}${subjectIdParam}`;
+      const url = `${API_ORIGIN}/api/grades/recovery/${student.id}?period=${this.selectedPeriod}${teacherId != null ? "&teacherId=" + teacherId : ""}&subjectName=${encodeURIComponent(subjectName)}${subjectIdParam}`;
       this.http.get(url).subscribe({
         next: (data) => {
           if (data && data.length > 0) {
@@ -943,7 +944,7 @@ export class Grades {
     }
     const subjectParam = this.selectedSubject ? `&subjectName=${encodeURIComponent(this.selectedSubject)}` : "";
     const subjectIdParam = this.selectedSubjectId != null ? `&subjectId=${this.selectedSubjectId}` : "";
-    const url = `http://localhost:8080/api/grades/classroom?grade=${encodeURIComponent(this.selectedGrade)}&classroom=${encodeURIComponent(this.selectedClassroom)}&period=${this.selectedPeriod}${this.teacherIdParam()}${subjectParam}${subjectIdParam}`;
+    const url = `${API_ORIGIN}/api/grades/classroom?grade=${encodeURIComponent(this.selectedGrade)}&classroom=${encodeURIComponent(this.selectedClassroom)}&period=${this.selectedPeriod}${this.teacherIdParam()}${subjectParam}${subjectIdParam}`;
     this.http.get(url).subscribe({
       next: (response) => {
         if (response.grades && response.grades.length > 0) {
@@ -1071,7 +1072,7 @@ export class Grades {
       this.hasTeacherGradeRange = false;
       return;
     }
-    this.http.get(`http://localhost:8080/api/subjects/teacher/${currentUser.id}`).subscribe({
+    this.http.get(`${API_ORIGIN}/api/subjects/teacher/${currentUser.id}`).subscribe({
       next: (subjects) => {
         this.teacherSubjects = subjects;
         const chosen = subjects.find((s) => s.gradeMin != null && s.gradeMax != null) || subjects[0] || null;
@@ -2040,7 +2041,7 @@ export class Grades {
     return availableVideos;
   }
   loadExistingPlan(studentId, period) {
-    this.http.get(`http://localhost:8080/api/grades/study-plans/${studentId}${this.teacherIdQuery()}`).subscribe({
+    this.http.get(`${API_ORIGIN}/api/grades/study-plans/${studentId}${this.teacherIdQuery()}`).subscribe({
       next: (plans) => {
         const plan = plans.find((p) => p.period === period);
         if (plan) {
@@ -2628,7 +2629,7 @@ AHORA genera el plan completo de una sola vez.`;
       day1Content: day1Content || "",
       teacherId: this.getCurrentTeacherId()
     };
-    this.http.post("http://localhost:8080/api/grades/study-plan", payload).subscribe({
+    this.http.post(API_ORIGIN + "/api/grades/study-plan", payload).subscribe({
       next: () => {
         if (this.selectedStudentForPlan) {
           const studentId = this.selectedStudentForPlan.id;
@@ -2837,7 +2838,7 @@ AHORA genera el plan completo de una sola vez.`;
       <head>
         <meta charset="utf-8">
         <title>Plan de Estudio</title>
-        <link href="/katex/katex.min.css" rel="stylesheet">
+        <link href="${location.origin}${import.meta.env.BASE_URL}katex/katex.min.css" rel="stylesheet">
         <style>
           @page { size: A4; margin: 15mm; }
           html, body { height: 100%; margin: 0; padding: 0; }

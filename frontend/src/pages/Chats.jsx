@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/pages/chats.css';
-import { api } from '../api/client.js';
+import { api, imageUrl } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
 // Pack de stickers integrado (emoji grandes): no depende de ningún servicio externo.
@@ -37,7 +37,7 @@ const getMessageDate = (c) => {
   return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 const getInitials = (name, surname) => ((name?.charAt(0) || '') + (surname?.charAt(0) || '')).toUpperCase();
-const imgUrl = (p) => (!p ? '' : /^https?:/i.test(p) ? p : p.startsWith('/') ? p : `/${p}`);
+const imgUrl = (p) => (!p ? '' : /^https?:/i.test(p) ? p : imageUrl(p));
 
 /** Chat entre usuarios: lista de contactos, conversación, stickers, GIF y adjuntos (chats del original). */
 export default function Chats() {

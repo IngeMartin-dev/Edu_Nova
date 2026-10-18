@@ -1,4 +1,5 @@
 import { createStore, useStore } from './store.js';
+import { API_ORIGIN } from '../api/client.js';
 
 /**
  * Estado de la conexión con el servidor (ConnectionService del original).
@@ -19,7 +20,7 @@ async function serverReachable() {
   const ctrl = new AbortController();
   const to = setTimeout(() => ctrl.abort(), 4000);
   try {
-    const res = await fetch('/api/health', { signal: ctrl.signal, cache: 'no-store' });
+    const res = await fetch(`${API_ORIGIN}/api/health`, { signal: ctrl.signal, cache: 'no-store' });
     return res.status < 500;
   } catch { return false; } finally { clearTimeout(to); }
 }

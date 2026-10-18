@@ -2,7 +2,11 @@ import { connection } from '../services/connection.js';
 
 // Cliente HTTP mínimo: añade el token, renueva la sesión si expira (401)
 // y entrega JSON, texto o archivos (blob) según se pida.
-const BASE = '/api';
+// En GitHub Pages el frontend y la API viven en dominios distintos: VITE_API_URL
+// (p. ej. https://edunova-api.koyeb.app, sin "/" final) apunta al backend.
+// Vacío = mismo dominio (desarrollo con proxy de Vite o Express sirviendo el build).
+export const API_ORIGIN = String(import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+const BASE = `${API_ORIGIN}/api`;
 
 export class ApiError extends Error {
   constructor(message, status, data) {
@@ -129,8 +133,9 @@ export const api = {
   },
 };
 
+/** URL de un archivo del backend (fotos, adjuntos del chat…): siempre sobre el dominio de la API. */
 export function imageUrl(p) {
   if (!p) return '';
-  if (/^https?:/i.test(p)) return p.replace(/^https?:\/\/[^/]+/, '');
-  return p.startsWith('/') ? p : `/${p}`;
+  const path = /^https?:/i.test(p) ? p.replace(/^https?:\/\/[^/]+/, '') : (p.startsWith('/') ? p : `/${p}`);
+  return API_ORIGIN + path;
 }

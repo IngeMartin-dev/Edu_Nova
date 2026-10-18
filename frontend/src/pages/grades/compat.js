@@ -1,6 +1,6 @@
 // Capa de compatibilidad: expone con la forma esperada los servicios que usa
 // la lógica de Calificaciones (HttpClient, AuthService, DialogService, etc.).
-import { api, session } from '../../api/client.js';
+import { api, session, API_ORIGIN } from '../../api/client.js';
 import { bus } from '../../services/events.js';
 
 const ORIGIN = /^(https?:\/\/[^/]+)?\/api/i;
@@ -34,7 +34,7 @@ export const authService = {
   getCurrentUserValue() { try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch { return null; } },
   getToken: () => session.token,
   refreshToken() {
-    const p = fetch('/api/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: session.refresh }) })
+    const p = fetch(`${API_ORIGIN}/api/auth/refresh`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: session.refresh }) })
       .then((r) => { if (!r.ok) throw new Error('refresh'); return r.json(); });
     return fromPromise(p);
   },

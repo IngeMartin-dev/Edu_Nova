@@ -51,7 +51,7 @@ export default function Layout() {
   useEffect(() => {
     if (!isAdmin) return;
     api.get('/school-year/fecha-alcanzada').then((res) => {
-      if (res?.alcanzada && !window.location.pathname.includes('/school-year-config')) nav('/school-year-config');
+      if (res?.alcanzada && !window.location.pathname.endsWith('/school-year-config')) nav('/school-year-config');
     }).catch(() => {});
   }, [isAdmin]); // eslint-disable-line
 
@@ -114,7 +114,7 @@ export default function Layout() {
           <aside className={`sidebar sidebar-animated${sidebarOpen ? ' open' : ''}`}>
             <div className="sidebar-header">
               <div className="logo-container">
-                <img src="/logo-symbol.svg" alt="Logo" className="logo" />
+                <img src={`${import.meta.env.BASE_URL}logo-symbol.svg`} alt="Logo" className="logo" />
                 <h1>Edu<span>Nova</span></h1>
               </div>
             </div>

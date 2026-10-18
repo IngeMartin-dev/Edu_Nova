@@ -131,7 +131,7 @@ export default function Login() {
           <span className="orb orb-2" />
           <span className="orb orb-3" />
           <div className="logo-container">
-            <div className="logo-badge"><img src="/logo-symbol.svg" alt="Logo EduNova" className="school-logo" /></div>
+            <div className="logo-badge"><img src={`${import.meta.env.BASE_URL}logo-symbol.svg`} alt="Logo EduNova" className="school-logo" /></div>
             <h1>Edu<span>Nova</span></h1>
             <p>Gestión académica clara, rápida y segura.</p>
             <ul className="feature-chips">

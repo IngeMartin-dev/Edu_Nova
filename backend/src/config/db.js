@@ -44,6 +44,7 @@ const pool = mysql.createPool({
   connectionLimit: env.db.connectionLimit,
   waitForConnections: true,
   charset: 'utf8mb4',
+  ssl: env.db.ssl ? { minVersion: 'TLSv1.2', rejectUnauthorized: true } : undefined,
   typeCast,
   namedPlaceholders: false,
 });

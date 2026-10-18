@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import '../styles/pages/notification-details.css';
 import { markNotificationRead } from '../services/notifications.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { imageUrl } from '../api/client.js';
 
 const ICON = { ADMIN_MESSAGE: 'admin_panel_settings', REPORT_CARD_SENT: 'assignment', REPORT_CARD_SIGNED: 'verified', REPLY: 'reply' };
 const COLOR = { ADMIN_MESSAGE: '#4523f1', REPORT_CARD_SENT: '#FF9800', REPORT_CARD_SIGNED: '#4CAF50', REPLY: '#d710e7' };
@@ -66,7 +67,7 @@ export default function NotificationDetails({ notification, isOpen, readOnly, on
                     {n?.user && (
                       <span className="sender">
                         {n.user.profilePicture
-                          ? <img src={n.user.profilePicture} alt={`${n.user.name || ''} ${n.user.surname || ''}`} title={`${n.user.name || ''} ${n.user.surname || ''}`} className="sender-profile-picture" />
+                          ? <img src={imageUrl(n.user.profilePicture)} alt={`${n.user.name || ''} ${n.user.surname || ''}`} title={`${n.user.name || ''} ${n.user.surname || ''}`} className="sender-profile-picture" />
                           : <div className="sender-initials">{getInitials(n.user.name, n.user.surname)}</div>}
                         {n.user.name || ''} {n.user.surname || ''}
                       </span>
