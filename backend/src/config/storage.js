@@ -24,6 +24,8 @@ function ensure(dir) {
 /** Borra una carpeta completa (sin fallar si no existe). */
 function removeDir(dir) {
   try { fs.rmSync(dir, { recursive: true, force: true }); } catch (_) { /* ignora */ }
+  // también del respaldo en la base (carga perezosa para evitar dependencia circular)
+  try { require('../services/fileVault').removeTree(dir); } catch (_) { /* ignora */ }
 }
 
 /** Evita "../" y rutas fuera de la carpeta base. */

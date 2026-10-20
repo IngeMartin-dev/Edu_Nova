@@ -20,6 +20,10 @@ async function main() {
     console.log(`  Base de datos: ${env.db.name} @ ${env.db.host}:${env.db.port}`);
     console.log(`  Correo: ${env.mail.enabled ? 'SMTP activo' : 'sin SMTP (los códigos 2FA se imprimen en consola)'} · Push: ${env.firebase.enabled ? 'Firebase' : 'desactivado'} · IA: ${env.ai.enabled ? 'activa' : 'desactivada'}\n`);
     schedulers.start();
+    // Restaura en segundo plano los archivos (boletines, firmas, chat…) respaldados en la base
+    require('./services/fileVault').restoreAll()
+      .then((r) => { if (r.total) console.log(`  Archivos respaldados: ${r.total} (restaurados a disco: ${r.restored})`); })
+      .catch((e) => console.warn('[fileVault] no se pudo restaurar:', e.message));
     const pdfState = require('./services/pdf').status();
     if (!pdfState.python || !pdfState.dependencias) {
       console.warn('⚠ PDF: falta Python o sus dependencias (boletines/consolidados no se podrán generar).');

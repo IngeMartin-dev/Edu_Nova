@@ -465,6 +465,7 @@ async function saveBoletinPdf(data) {
   if (!bytes || !bytes.length) return null;
   const target = path.join(periodoSalonDir(data.period, data.grade, data.classroom), nombreArchivoBoletin(data.student));
   fs.writeFileSync(target, bytes);
+  await require('./fileVault').persist(target, bytes);
   return target;
 }
 
@@ -532,6 +533,7 @@ function saveSignature(buffer) {
   ensure(dirs.firmas);
   const filename = `signature_${Date.now()}_${crypto.randomBytes(6).toString('hex')}.${ext}`;
   fs.writeFileSync(path.join(dirs.firmas, filename), buffer);
+  require('./fileVault').persist(path.join(dirs.firmas, filename), buffer);
   return `/Firmas/${filename}`;
 }
 

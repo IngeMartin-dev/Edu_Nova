@@ -178,6 +178,7 @@ router.post('/messages/adjunto', upload.single('file'), asyncHandler(async (req,
   ensure(dirs.chat);
   const safeName = `${Date.now()}_${crypto.randomBytes(6).toString('hex')}.${ext}`;
   fs.writeFileSync(path.join(dirs.chat, safeName), f.buffer);
+  await require('../services/fileVault').persist(path.join(dirs.chat, safeName), f.buffer);
   const type = parseType(req.body.type);
   const content = type === 'IMAGE' ? '📷 Foto' : type === 'GIF' ? 'GIF' : type === 'STICKER' ? 'Sticker' : `📎 ${original}`;
   res.json(await saveAndNotify(sender, receiver, { type, content, fileUrl: `/uploads/chat/${safeName}`, fileName: original }));

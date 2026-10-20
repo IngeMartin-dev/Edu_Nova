@@ -159,11 +159,14 @@ router.post('/:id/profile-picture', requireAdminOrSelf(), upload.single('file'),
   fs.mkdirSync(dir, { recursive: true });
   const fileName = `${id}_${crypto.randomUUID()}.${ext}`;
   fs.writeFileSync(path.join(dir, fileName), req.file.buffer);
+  await require('../services/fileVault').persist(path.join(dir, fileName), req.file.buffer);
 
   // borra la foto anterior si era un archivo local nuestro
   const prev = await one('SELECT profile_picture FROM users WHERE id = ?', [id]);
   if (prev && prev.profilePicture && prev.profilePicture.startsWith('/uploads/profile-pictures/')) {
-    fs.promises.unlink(path.join(UPLOAD_ROOT, 'profile-pictures', path.basename(prev.profilePicture))).catch(() => {});
+    const oldFile = path.join(UPLOAD_ROOT, 'profile-pictures', path.basename(prev.profilePicture));
+    fs.promises.unlink(oldFile).catch(() => {});
+    require('../services/fileVault').remove(oldFile);
   }
   const url = `/uploads/profile-pictures/${fileName}`;
   await exec('UPDATE users SET profile_picture = ? WHERE id = ?', [url, id]);

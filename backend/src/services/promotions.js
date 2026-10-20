@@ -32,7 +32,11 @@ async function archiveStudent(s, academicYear) {
     const entries = Object.entries(origins || {});
     if (entries.length) {
       const dest = ensure(safeJoin(dirs.promociones, folder));
-      for (const [per, file] of entries) fs.copyFileSync(file, path.join(dest, `Periodo_${per}.pdf`));
+      for (const [per, file] of entries) {
+        const copia = path.join(dest, `Periodo_${per}.pdf`);
+        fs.copyFileSync(file, copia);
+        await require('./fileVault').persist(copia);
+      }
     }
   } catch (_) { /* si falla la copia, igual se registra la promoción */ }
 

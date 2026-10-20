@@ -32,7 +32,12 @@ GitHub Pages (frontend React) → Koyeb (API Express) → TiDB Cloud (MySQL)
 2. **Settings → Secrets and variables → Actions → Variables** → crea `VITE_API_URL` = `https://TU-SERVICIO.koyeb.app` (sin `/` final).
 3. Haz push a `main`: el workflow `.github/workflows/deploy-pages.yml` compila y publica en `https://ingemartin-dev.github.io/Edu_Nova/`.
 
+## Dónde se guardan los archivos
+Los boletines, consolidados, promociones, firmas, archivos del chat y fotos de perfil se **respaldan automáticamente en TiDB** (tabla `stored_files`, se crea sola al arrancar). Cada vez que el backend guarda un archivo en disco también lo copia a la base, y al iniciar restaura los que falten. Así sobreviven a los redeploys y reinicios de Koyeb.
+- Límite: **5 MB por archivo** (los más grandes quedan solo en disco y se avisa en los logs).
+- Para desactivarlo: `FILE_VAULT=false`.
+- El plan Starter de TiDB da varios GB gratis; revisa su uso en el panel si generas muchos boletines.
+
 ## Limitaciones del plan gratis
-- **PDF de boletines/consolidados**: necesitan Python + Chromium, que no caben en Koyeb free (512 MB). Esas funciones fallarán hasta moverlas a otro servicio o generarlas en el navegador.
-- **Archivos subidos** (fotos, chat, firmas) y PDF generados se guardan en disco y **se pierden en cada redeploy**; migrarlos a un almacenamiento externo (p. ej. Cloudflare R2) es el siguiente paso.
+- **Generar los PDF** de boletines y consolidados necesita Python + Chromium, que no caben en Koyeb free (512 MB). Los PDF ya generados se guardan y se descargan bien, pero generarlos nuevos requiere correr el backend en otro lugar con más memoria.
 - El código 2FA se imprime en consola si no configuras `SMTP_*`.

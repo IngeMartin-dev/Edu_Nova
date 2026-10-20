@@ -150,6 +150,7 @@ function guardarConsolidado(grade, classroom, period, bytes, fileName) {
   const dir = ensure(safeJoin(dirs.consolidados, `Periodo ${period || 1}`, salonFolder(grade, classroom)));
   const destino = path.join(dir, fileName);
   fs.writeFileSync(destino, bytes);
+  require('./fileVault').persist(destino, bytes);
   return destino;
 }
 
