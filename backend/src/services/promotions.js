@@ -1,8 +1,6 @@
 'use strict';
-const fs = require('fs');
-const path = require('path');
 const { query, one, exec } = require('../config/db');
-const { dirs, ensure, removeDir, safeJoin } = require('../config/storage');
+const files = require('./files');
 const { todaySql } = require('../utils/dates');
 const students = require('./students');
 
@@ -12,7 +10,7 @@ const YEARS_TO_KEEP = 5;
 /**
  * Localizador de los PDF de boletines de un estudiante. Lo registra el módulo de
  * boletines (Fase 2); mientras no exista, no se copian PDF (la promoción se guarda igual).
- * Debe devolver un objeto { 1: '/ruta/p1.pdf', 2: ... }.
+ * Debe devolver un objeto { 1: 'clave/p1.pdf', 2: ... } con claves del almacenamiento.
  */
 let pdfLocator = async () => ({});
 const setPdfLocator = (fn) => { pdfLocator = fn; };
@@ -31,11 +29,8 @@ async function archiveStudent(s, academicYear) {
     const origins = await pdfLocator(s);
     const entries = Object.entries(origins || {});
     if (entries.length) {
-      const dest = ensure(safeJoin(dirs.promociones, folder));
-      for (const [per, file] of entries) {
-        const copia = path.join(dest, `Periodo_${per}.pdf`);
-        fs.copyFileSync(file, copia);
-        await require('./fileVault').persist(copia);
+      for (const [per, key] of entries) {
+        await files.copy(key, `promociones/${folder}/Periodo_${per}.pdf`, 'application/pdf');
       }
     }
   } catch (_) { /* si falla la copia, igual se registra la promoción */ }
@@ -50,28 +45,23 @@ async function archiveStudent(s, academicYear) {
 
 const list = () => query('SELECT * FROM promotions ORDER BY academic_year DESC, surname ASC, name ASC');
 const find = (id) => one('SELECT * FROM promotions WHERE id = ?', [id]);
-const fileOf = (p, periodo) => safeJoin(dirs.promociones, p.folder, `Periodo_${periodo}.pdf`);
+const fileOf = (p, periodo) => `promociones/${p.folder}/Periodo_${periodo}.pdf`;
 
-function availablePeriods(p) {
+async function availablePeriods(p) {
   const out = [];
   for (let per = 1; per <= 4; per++) {
-    try { if (fs.statSync(fileOf(p, per)).isFile()) out.push(per); } catch (_) { /* no existe */ }
+    if (await files.exists(fileOf(p, per))) out.push(per);
   }
   return out;
 }
 
-function deleteFolder(p) {
-  try {
-    const dir = safeJoin(dirs.promociones, p.folder);
-    removeDir(dir);
-    const parent = path.dirname(dir);
-    if (parent !== dirs.promociones && fs.existsSync(parent) && fs.readdirSync(parent).length === 0) fs.rmdirSync(parent);
-  } catch (_) { /* ignora */ }
+async function deleteFolder(p) {
+  try { await files.removeTree(`promociones/${p.folder}`); } catch (_) { /* ignora */ }
 }
 
 async function removeByStudent(studentId) {
   for (const p of await query('SELECT * FROM promotions WHERE student_id = ?', [studentId])) {
-    deleteFolder(p);
+    await deleteFolder(p);
     await exec('DELETE FROM promotions WHERE id = ?', [p.id]);
   }
 }
@@ -82,7 +72,7 @@ async function purgeExpired() {
   let n = 0;
   for (const p of vencidas) {
     try {
-      deleteFolder(p);
+      await deleteFolder(p);
       if (p.studentId) {
         const s = await students.findById(p.studentId);
         if (s && !s.active && s.grade === GRADO_PROMOCIONES) await students.deleteById(s.id);

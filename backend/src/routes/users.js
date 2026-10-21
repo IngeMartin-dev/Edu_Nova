@@ -1,13 +1,13 @@
 'use strict';
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { one, exec, query } = require('../config/db');
 const { asyncHandler, HttpError, EMAIL_RE, numericParams } = require('../utils/http');
 const password = require('../utils/password');
 const { requireAuth, requireRole, requireAdminOrSelf } = require('../middleware/auth');
-const { memory, sniffImage, UPLOAD_ROOT } = require('../middleware/upload');
+const { memory, sniffImage } = require('../middleware/upload');
+const files = require('../services/files');
 const userService = require('../services/userService');
 const students = require('../services/students');
 const {
@@ -155,18 +155,13 @@ router.post('/:id/profile-picture', requireAdminOrSelf(), upload.single('file'),
   const ext = sniffImage(req.file.buffer);
   if (!ext) throw new HttpError(400, 'El archivo debe ser una imagen (jpg, png, gif o webp)');
 
-  const dir = path.join(UPLOAD_ROOT, 'profile-pictures');
-  fs.mkdirSync(dir, { recursive: true });
   const fileName = `${id}_${crypto.randomUUID()}.${ext}`;
-  fs.writeFileSync(path.join(dir, fileName), req.file.buffer);
-  await require('../services/fileVault').persist(path.join(dir, fileName), req.file.buffer);
+  await files.put(`profile-pictures/${fileName}`, req.file.buffer, `image/${ext === 'jpg' ? 'jpeg' : ext}`);
 
   // borra la foto anterior si era un archivo local nuestro
   const prev = await one('SELECT profile_picture FROM users WHERE id = ?', [id]);
   if (prev && prev.profilePicture && prev.profilePicture.startsWith('/uploads/profile-pictures/')) {
-    const oldFile = path.join(UPLOAD_ROOT, 'profile-pictures', path.basename(prev.profilePicture));
-    fs.promises.unlink(oldFile).catch(() => {});
-    require('../services/fileVault').remove(oldFile);
+    files.remove(`profile-pictures/${path.basename(prev.profilePicture)}`).catch(() => {});
   }
   const url = `/uploads/profile-pictures/${fileName}`;
   await exec('UPDATE users SET profile_picture = ? WHERE id = ?', [url, id]);

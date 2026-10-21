@@ -9,7 +9,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { query, one, exec } = require('../config/db');
 const env = require('../config/env');
-const { dirs, ensure, safeJoin } = require('../config/storage');
+const files = require('./files');
 const { norm } = require('../utils/http');
 const { nowSql } = require('../utils/dates');
 const { fmt, escapeHtml, fileSafe, salonFolder } = require('../utils/format');
@@ -455,64 +455,63 @@ function nombreArchivoBoletin(student) {
   return `${base || 'BOLETIN_estudiante'}.pdf`;
 }
 
-function periodoSalonDir(period, grade, classroom) {
-  return ensure(safeJoin(dirs.boletines, `Periodo ${period || 1}`, salonFolder(grade, classroom)));
-}
+/** Clave del PDF en el almacenamiento:  boletines/Periodo 1/5A/BOLETIN_Perez_Ana.pdf */
+const boletinKey = (period, grade, classroom, fileName) => `boletines/Periodo ${period || 1}/${salonFolder(grade, classroom)}/${fileName}`;
+const isoOrEmpty = (v) => (v ? new Date(v).toISOString() : '');
 
+/** Genera el PDF, lo guarda y devuelve { key, bytes }. */
 async function saveBoletinPdf(data) {
   const html = buildBoletinHtml(data);
   const bytes = await pdf.htmlToPdf(html);
   if (!bytes || !bytes.length) return null;
-  const target = path.join(periodoSalonDir(data.period, data.grade, data.classroom), nombreArchivoBoletin(data.student));
-  fs.writeFileSync(target, bytes);
-  await require('./fileVault').persist(target, bytes);
-  return target;
+  const key = boletinKey(data.period, data.grade, data.classroom, nombreArchivoBoletin(data.student));
+  await files.put(key, bytes, 'application/pdf');
+  return { key, bytes };
 }
 
-function generatedPath(student, period) {
+function generatedKey(student, period) {
   if (!student || !student.grade || !student.classGroup) return null;
-  return path.join(periodoSalonDir(period, student.grade, student.classGroup), nombreArchivoBoletin(student));
+  return boletinKey(period, student.grade, student.classGroup, nombreArchivoBoletin(student));
 }
 
-function listGeneratedForStudent(student) {
+async function listGeneratedForStudent(student) {
   const out = [];
   for (let p = 1; p <= 4; p++) {
-    const f = generatedPath(student, p);
-    if (f && fs.existsSync(f)) {
-      const st = fs.statSync(f);
-      out.push({ period: p, fileName: path.basename(f), sizeBytes: st.size, generatedAt: st.mtime.toISOString() });
-    }
+    const key = generatedKey(student, p);
+    const st = key ? await files.stat(key) : null;
+    if (st) out.push({ period: p, fileName: nombreArchivoBoletin(student), sizeBytes: st.size, generatedAt: isoOrEmpty(st.updatedAt) });
   }
   return out;
 }
 
-function readGeneratedFile(student, period) {
-  const f = generatedPath(student, period);
-  return f && fs.existsSync(f) ? fs.readFileSync(f) : null;
+async function readGeneratedFile(student, period) {
+  const key = generatedKey(student, period);
+  return key ? files.get(key) : null;
 }
 
-/** Rutas de los PDF de un estudiante por período (las usa el archivo de promociones). */
+/** Claves de los PDF de un estudiante por período (las usa el archivo de promociones). */
 async function locateStudentBoletines(student) {
   const out = {};
   const s = { ...student, classGroup: student.classGroup ?? student.class_group };
   const archivo = nombreArchivoBoletin(s);
-  const folder = salonFolder(s.grade, s.classGroup);
   for (let p = 1; p <= 4; p++) {
-    const f = path.join(dirs.boletines, `Periodo ${p}`, folder, archivo);
-    if (fs.existsSync(f) && fs.statSync(f).isFile()) out[p] = f;
+    const key = boletinKey(p, s.grade, s.classGroup, archivo);
+    if (await files.exists(key)) out[p] = key;
   }
   return out;
 }
 promotions.setPdfLocator(locateStudentBoletines);
 
 /** "/Firmas/xxx.png" -> data URI (solo dentro de la carpeta de firmas) o data URI ya válido. */
-function signatureToUri(p) {
+async function signatureToUri(p) {
   if (!p || typeof p !== 'string') return '';
   if (/^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(p)) return p;
   if (!p.startsWith('/Firmas/')) return '';
   try {
-    const file = safeJoin(dirs.firmas, p.slice('/Firmas/'.length));
-    const buf = fs.readFileSync(file);
+    const name = p.slice('/Firmas/'.length);
+    if (!name || name.includes('/')) return '';
+    const buf = await files.get(`firmas/${name}`);
+    if (!buf) return '';
     const ext = sniffImage(buf);
     if (!ext) return '';
     const mime = ext === 'jpg' ? 'jpeg' : ext;
@@ -520,20 +519,17 @@ function signatureToUri(p) {
   } catch (_) { return ''; }
 }
 
-function listSignatures() {
+async function listSignatures() {
   try {
-    ensure(dirs.firmas);
-    return fs.readdirSync(dirs.firmas, { withFileTypes: true }).filter((e) => e.isFile()).map((e) => `/Firmas/${e.name}`);
+    return (await files.list('firmas')).filter((e) => !e.isDir).map((e) => `/Firmas/${e.name}`);
   } catch (_) { return []; }
 }
 
-function saveSignature(buffer) {
+async function saveSignature(buffer) {
   const ext = sniffImage(buffer);
   if (!ext) throw new Error('Solo se permiten imágenes (jpg, png, gif o webp)');
-  ensure(dirs.firmas);
   const filename = `signature_${Date.now()}_${crypto.randomBytes(6).toString('hex')}.${ext}`;
-  fs.writeFileSync(path.join(dirs.firmas, filename), buffer);
-  require('./fileVault').persist(path.join(dirs.firmas, filename), buffer);
+  await files.put(`firmas/${filename}`, buffer, `image/${ext === 'jpg' ? 'jpeg' : ext}`);
   return `/Firmas/${filename}`;
 }
 
@@ -582,9 +578,9 @@ async function buildFromRequest(req, ctx = null) {
     data._ctx.valoraciones.set(`${studentId}|${period}`, notaGuardar);
   }
 
-  if (req.directorSignature) data.rightSignatureUri = signatureToUri(String(req.directorSignature));
+  if (req.directorSignature) data.rightSignatureUri = await signatureToUri(String(req.directorSignature));
   if (req.directorName !== undefined && req.directorName !== null) data.directorName = String(req.directorName);
-  if (req.leftSignature) data.leftSignatureUri = signatureToUri(String(req.leftSignature));
+  if (req.leftSignature) data.leftSignatureUri = await signatureToUri(String(req.leftSignature));
   if (Array.isArray(req.studentSubjectIndicators)) applySubjectIndicators(data, req.studentSubjectIndicators);
   return { data };
 }
@@ -607,7 +603,8 @@ async function generateSingleFromPayload(req, ctx = null) {
     }
     if (!saved) { result.error = 'Ruta de PDF vacía'; return result; }
     result.success = true;
-    result.savedPath = saved;
+    result.savedPath = saved.key;
+    result.bytes = saved.bytes;
     result.fileName = nombreArchivoBoletin(data.student);
     result.data = data;
     return result;

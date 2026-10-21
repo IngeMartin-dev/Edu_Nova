@@ -31,6 +31,17 @@ const env = {
     ssl: bool(process.env.DB_SSL, false),
   },
 
+  // Archivos (PDF, firmas, fotos, adjuntos del chat).
+  // Con SUPABASE_URL + SUPABASE_SECRET_KEY se guardan en Supabase Storage (bucket privado);
+  // sin ellas, en la carpeta STORAGE_DIR (desarrollo local).
+  storage: {
+    supabaseUrl: (process.env.SUPABASE_URL || '').replace(/\/+$/, ''),
+    supabaseKey: process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+    bucket: process.env.SUPABASE_BUCKET || 'edunova',
+    dir: process.env.STORAGE_DIR || '',
+    chatMaxMb: int(process.env.CHAT_MAX_MB, 4),
+  },
+
   jwt: {
     secret: process.env.JWT_SECRET || '',
     // 7 días el access token, 30 días el refresh token (igual que el sistema original)

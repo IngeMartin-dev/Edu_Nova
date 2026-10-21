@@ -83,7 +83,7 @@ reportCards.delete('/:id', asyncHandler(async (req, res) => { await exec('DELETE
 async function pdfOf(rc) {
   const student = rc.student && (await students.findById(rc.student.id));
   const period = toInt(String(rc.academicPeriod || '').replace(/[^0-9]/g, ''));
-  return student && period ? boletin.readGeneratedFile(student, period) : null;
+  return student && period ? await boletin.readGeneratedFile(student, period) : null;
 }
 
 reportCards.post('/:id/send', asyncHandler(async (req, res) => {

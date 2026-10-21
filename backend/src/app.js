@@ -8,7 +8,6 @@ const rateLimit = require('express-rate-limit');
 const env = require('./config/env');
 const { authenticate, requireRole } = require('./middleware/auth');
 const { notFound, errorHandler } = require('./middleware/errors');
-const { UPLOAD_ROOT } = require('./middleware/upload');
 
 function createApp() {
   const app = express();
@@ -79,22 +78,8 @@ function createApp() {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-  // --- Archivos subidos (fotos de perfil, etc.) ---
-  app.use('/uploads/profile-pictures', express.static(path.join(UPLOAD_ROOT, 'profile-pictures'), {
-    index: false, dotfiles: 'deny', setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
-  }));
-
-  // --- Archivos del chat (nombres aleatorios; solo las imágenes se muestran en línea) ---
-  app.use('/uploads/chat', express.static(require('./config/storage').dirs.chat, {
-    index: false, dotfiles: 'deny',
-    setHeaders: (r, file) => {
-      r.setHeader('X-Content-Type-Options', 'nosniff');
-      if (!/\.(jpe?g|png|gif|webp)$/i.test(file)) r.setHeader('Content-Disposition', 'attachment');
-    },
-  }));
-
-  // --- Firmas de directores (nombres no adivinables; se listan solo con sesión) ---
-  app.use('/Firmas', express.static(require('./config/storage').dirs.firmas, { index: false, dotfiles: 'deny', setHeaders: (r) => r.setHeader('X-Content-Type-Options', 'nosniff') }));
+  // --- Archivos subidos (fotos de perfil, chat, firmas): salen del almacenamiento (Supabase Storage o disco) ---
+  app.use(require('./routes/uploads'));
 
   // --- Logos e imágenes de marca ---
   app.use('/img', express.static(path.resolve(__dirname, '../assets/img'), { index: false, maxAge: '1d' }));

@@ -1,13 +1,13 @@
 'use strict';
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { query, one, exec } = require('../config/db');
 const { asyncHandler, HttpError, numericParams } = require('../utils/http');
 const { requireRole } = require('../middleware/auth');
 const { memory, sniffImage } = require('../middleware/upload');
-const { dirs, ensure } = require('../config/storage');
+const env = require('../config/env');
+const files = require('../services/files');
 const { nowSql } = require('../utils/dates');
 const push = require('../services/push');
 
@@ -17,8 +17,9 @@ router.use(requireRole('ADMIN', 'TEACHER', 'DIRECTOR_DE_GRUPO', 'PARENT'));
 
 const ALLOWED_EXT = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt']);
 const IMAGE_EXT = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp']);
-const MAX_FILE = 15 * 1024 * 1024;
-const upload = memory(15);
+const MAX_MB = env.storage.chatMaxMb;
+const MAX_FILE = MAX_MB * 1024 * 1024;
+const upload = memory(MAX_MB);
 const STAFF = ['ADMIN', 'TEACHER', 'DIRECTOR_DE_GRUPO'];
 const isStaff = (r) => STAFF.includes(String(r || '').toUpperCase());
 const isParent = (r) => String(r || '').toUpperCase() === 'PARENT';
@@ -164,7 +165,7 @@ router.post('/messages/adjunto', upload.single('file'), asyncHandler(async (req,
   if (!validUser(req, senderId)) return forbidden(res);
   const f = req.file;
   if (!f || !f.size) throw new HttpError(400, 'Archivo vacío');
-  if (f.size > MAX_FILE) throw new HttpError(400, 'El archivo supera el máximo de 15 MB');
+  if (f.size > MAX_FILE) throw new HttpError(400, `El archivo supera el máximo de ${MAX_MB} MB`);
 
   const original = path.basename(f.originalname || 'archivo');
   const ext = (original.includes('.') ? original.split('.').pop() : '').toLowerCase();
@@ -175,10 +176,8 @@ router.post('/messages/adjunto', upload.single('file'), asyncHandler(async (req,
   const { sender, receiver } = await loadPair(senderId, receiverId);
   if (!pairAllowed(sender.roleName, receiver.roleName)) return res.status(403).json({ error: 'No se puede enviar mensajes a este usuario' });
 
-  ensure(dirs.chat);
   const safeName = `${Date.now()}_${crypto.randomBytes(6).toString('hex')}.${ext}`;
-  fs.writeFileSync(path.join(dirs.chat, safeName), f.buffer);
-  await require('../services/fileVault').persist(path.join(dirs.chat, safeName), f.buffer);
+  await files.put(`chat/${safeName}`, f.buffer, f.mimetype || 'application/octet-stream');
   const type = parseType(req.body.type);
   const content = type === 'IMAGE' ? '📷 Foto' : type === 'GIF' ? 'GIF' : type === 'STICKER' ? 'Sticker' : `📎 ${original}`;
   res.json(await saveAndNotify(sender, receiver, { type, content, fileUrl: `/uploads/chat/${safeName}`, fileName: original }));

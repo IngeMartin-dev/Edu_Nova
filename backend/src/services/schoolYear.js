@@ -1,6 +1,6 @@
 'use strict';
 const { query, one, exec, tx } = require('../config/db');
-const { dirs, removeDir } = require('../config/storage');
+const files = require('./files');
 const { nowSql, todaySql } = require('../utils/dates');
 const { normalizeClassroom } = require('../utils/http');
 const promotions = require('./promotions');
@@ -43,8 +43,8 @@ async function clearGradesAndDocuments(c) {
   for (const t of ['subject_grades', 'recovery_data', 'recovery_plans', 'report_card_history', 'report_cards', 'boletin_objetivos', 'boletin_valoraciones']) {
     await exec(`DELETE FROM ${t}`, [], c);
   }
-  removeDir(dirs.boletines);
-  removeDir(dirs.consolidados);
+  await files.removeTree('boletines');
+  await files.removeTree('consolidados');
 }
 
 async function wipeYearData() {

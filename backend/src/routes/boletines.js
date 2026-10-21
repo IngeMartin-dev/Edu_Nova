@@ -1,11 +1,10 @@
 'use strict';
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const { asyncHandler, HttpError, toInt, numericParams } = require('../utils/http');
 const { requireAuth, requireRole } = require('../middleware/auth');
 const { memory, sniffImage } = require('../middleware/upload');
-const { dirs, safeJoin } = require('../config/storage');
+const files = require('../services/files');
 const { salonFolder, gradeNumberText } = require('../utils/format');
 const boletin = require('../services/boletin');
 const students = require('../services/students');
@@ -74,7 +73,7 @@ router.get('/materias-perdidas', STAFF, asyncHandler(async (req, res) => {
 router.post('/generar', STAFF, asyncHandler(async (req, res) => {
   const r = await boletin.generateSingleFromPayload(req.body || {});
   if (!r.success) return res.status(400).json({ error: r.error, ...(r.trace ? { trace: r.trace } : {}) });
-  const bytes = fs.readFileSync(r.savedPath);
+  const bytes = r.bytes;
   const d = r.data;
   const fileName = `Boletin_${d.academicLevel || ''}_G${gradeNumberText(d.grade)}_${d.student.name}_${d.student.surname}.pdf`;
   res.setHeader('X-Boletin-Path', path.basename(r.savedPath));
@@ -95,8 +94,10 @@ router.get('/generaciones/:jobId/archivo/:studentId', STAFF, asyncHandler(async 
   const job = boletin.getJob(req.params.jobId);
   if (!job) return res.status(404).end();
   const f = job.files.find((x) => x.studentId === Number(req.params.studentId));
-  if (!f || !f.filePath || !fs.existsSync(f.filePath)) return res.status(404).end();
-  return safeSend(res, fs.readFileSync(f.filePath), f.fileName || 'boletin.pdf');
+  if (!f || !f.filePath) return res.status(404).end();
+  const bytes = await files.get(f.filePath);
+  if (!bytes) return res.status(404).end();
+  return safeSend(res, bytes, f.fileName || 'boletin.pdf');
 }));
 
 // --- Objetivos predeterminados ---
@@ -122,12 +123,12 @@ router.get('/objetivos-predeterminados/:period', STAFF, asyncHandler(async (req,
 }));
 
 // --- Firmas ---
-router.get('/firmas', STAFF, (req, res) => res.json(boletin.listSignatures().map((p) => ({ path: p, name: p.slice(p.lastIndexOf('/') + 1) }))));
+router.get('/firmas', STAFF, asyncHandler(async (req, res) => res.json((await boletin.listSignatures()).map((p) => ({ path: p, name: p.slice(p.lastIndexOf('/') + 1) })))));
 
 router.post('/firmas/upload', STAFF, upload.single('file'), asyncHandler(async (req, res) => {
   if (!req.file || !req.file.size) throw new HttpError(400, 'Archivo vacío');
   if (!sniffImage(req.file.buffer)) throw new HttpError(400, 'Solo se permiten imágenes');
-  const p = boletin.saveSignature(req.file.buffer);
+  const p = await boletin.saveSignature(req.file.buffer);
   res.json({ path: p, name: p.slice(p.lastIndexOf('/') + 1) });
 }));
 
@@ -141,12 +142,9 @@ router.get('/generados', ADMIN, asyncHandler(async (req, res) => {
   const periodos = req.query.period ? [toInt(req.query.period)] : [1, 2, 3, 4];
   const out = [];
   for (const p of periodos) {
-    const dir = path.join(dirs.boletines, `Periodo ${p}`, folder);
-    if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) continue;
-    for (const f of fs.readdirSync(dir)) {
-      if (!f.toLowerCase().endsWith('.pdf')) continue;
-      const st = fs.statSync(path.join(dir, f));
-      out.push({ fileName: f, period: p, grade, classroom, sizeBytes: st.size, generatedAt: st.mtime.toISOString() });
+    for (const e of await files.list(`boletines/Periodo ${p}/${folder}`)) {
+      if (e.isDir || !e.name.toLowerCase().endsWith('.pdf')) continue;
+      out.push({ fileName: e.name, period: p, grade, classroom, sizeBytes: e.size, generatedAt: e.updatedAt ? new Date(e.updatedAt).toISOString() : '' });
     }
   }
   out.sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
@@ -155,23 +153,20 @@ router.get('/generados', ADMIN, asyncHandler(async (req, res) => {
 
 router.get('/generados/descargar', ADMIN, asyncHandler(async (req, res) => {
   need(req.query, 'period', 'grade', 'classroom', 'fileName');
-  let target;
-  try {
-    target = safeJoin(dirs.boletines, `Periodo ${toInt(req.query.period)}`, salonFolder(req.query.grade, req.query.classroom), String(req.query.fileName));
-  } catch (_) { return res.status(404).end(); }
-  if (!fs.existsSync(target) || !fs.statSync(target).isFile()) return res.status(404).end();
-  return safeSend(res, fs.readFileSync(target), req.query.fileName);
+  const fileName = String(req.query.fileName);
+  if (fileName.includes('/') || fileName.includes('\\') || fileName.includes('..')) return res.status(404).end();
+  const bytes = await files.get(`boletines/Periodo ${toInt(req.query.period)}/${salonFolder(req.query.grade, req.query.classroom)}/${fileName}`);
+  if (!bytes) return res.status(404).end();
+  return safeSend(res, bytes, fileName);
 }));
 
-router.get('/generados/salones', ADMIN, (req, res) => {
+router.get('/generados/salones', ADMIN, asyncHandler(async (req, res) => {
   const set = new Set();
-  if (fs.existsSync(dirs.boletines)) {
-    for (const p of fs.readdirSync(dirs.boletines, { withFileTypes: true }).filter((e) => e.isDirectory())) {
-      for (const s of fs.readdirSync(path.join(dirs.boletines, p.name), { withFileTypes: true }).filter((e) => e.isDirectory())) set.add(s.name);
-    }
+  for (const p of (await files.list('boletines')).filter((e) => e.isDir)) {
+    for (const s of (await files.list(`boletines/${p.name}`)).filter((e) => e.isDir)) set.add(s.name);
   }
   res.json([...set].sort());
-});
+}));
 
 // --- Padres: mis boletines ---
 async function activeChildren(req) {
@@ -182,7 +177,7 @@ async function activeChildren(req) {
 router.get('/mis-boletines', asyncHandler(async (req, res) => {
   const out = [];
   for (const h of await activeChildren(req)) {
-    for (const item of boletin.listGeneratedForStudent(h)) {
+    for (const item of await boletin.listGeneratedForStudent(h)) {
       out.push({ ...item, studentId: h.id, studentName: `${h.name} ${h.surname}`.trim(), grade: h.grade, classroom: h.classGroup });
     }
   }
@@ -195,7 +190,7 @@ router.get('/mis-boletines/:studentId/descargar', asyncHandler(async (req, res) 
   if (!hijo) return res.status(403).json({ error: 'No tienes acceso a este boletín' });
   const period = toInt(req.query.period);
   if (!period || period < 1 || period > 4) throw new HttpError(400, 'period inválido');
-  const bytes = boletin.readGeneratedFile(hijo, period);
+  const bytes = await boletin.readGeneratedFile(hijo, period);
   if (!bytes) return res.status(404).end();
   return safeSend(res, bytes, `boletin_${hijo.name}_${hijo.surname}_P${period}.pdf`);
 }));

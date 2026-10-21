@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const env = require('../config/env');
-const { dirs, ensure, safeJoin } = require('../config/storage');
+const files = require('./files');
 const { query, one } = require('../config/db');
 const { escapeHtml, fileSafe, salonFolder } = require('../utils/format');
 const grades = require('./grades');
@@ -146,12 +146,11 @@ async function generarConsolidadoPdf(grade, classroom, period, estudiantes, mate
   return pdf.htmlToPdf(await construirHtml(grade, classroom, period, estudiantes, materias));
 }
 
-function guardarConsolidado(grade, classroom, period, bytes, fileName) {
-  const dir = ensure(safeJoin(dirs.consolidados, `Periodo ${period || 1}`, salonFolder(grade, classroom)));
-  const destino = path.join(dir, fileName);
-  fs.writeFileSync(destino, bytes);
-  require('./fileVault').persist(destino, bytes);
-  return destino;
+/** Guarda el consolidado:  consolidados/Periodo 1/5A/Consolidado_….pdf  (devuelve la clave). */
+async function guardarConsolidado(grade, classroom, period, bytes, fileName) {
+  const key = `consolidados/Periodo ${period || 1}/${salonFolder(grade, classroom)}/${fileName}`;
+  await files.put(key, bytes, 'application/pdf');
+  return key;
 }
 
 const nombreArchivo = (grade, classroom, period) => `Consolidado_${fileSafe(`${grade}_${classroom}`) || 'consolidado'}_Periodo${period}.pdf`;
