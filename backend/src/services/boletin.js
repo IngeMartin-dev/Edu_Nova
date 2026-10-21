@@ -577,7 +577,7 @@ async function buildFromRequest(req, ctx = null) {
   if (notaGuardar !== null && notaGuardar > 0) {
     await exec(
       `INSERT INTO boletin_valoraciones (student_id, period, nota, updated_at) VALUES (?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE nota = VALUES(nota), updated_at = VALUES(updated_at)`,
+       ON CONFLICT (student_id, period) DO UPDATE SET nota = EXCLUDED.nota, updated_at = EXCLUDED.updated_at`,
       [studentId, period, notaGuardar, nowSql()]);
     data._ctx.valoraciones.set(`${studentId}|${period}`, notaGuardar);
   }
@@ -710,7 +710,7 @@ async function lostSubjectsOfSalon(grade, classroom, period) {
 async function saveObjetivos(grade, classroom, period, payload) {
   await exec(
     `INSERT INTO boletin_objetivos (grade, classroom, period, payload, updated_at) VALUES (?, ?, ?, ?, ?)
-     ON DUPLICATE KEY UPDATE payload = VALUES(payload), updated_at = VALUES(updated_at)`,
+     ON CONFLICT (grade, classroom, period) DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at`,
     [grade, classroom, period, payload, nowSql()]);
   return one('SELECT id FROM boletin_objetivos WHERE grade = ? AND classroom = ? AND period = ?', [grade, classroom, period]);
 }

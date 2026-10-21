@@ -1,12 +1,11 @@
 -- =====================================================================
 -- EduNova · Datos iniciales (se ejecuta después de schema.sql)
--- Requiere la variable de sesión @teacher_id (la define src/utils/initDb.js)
+-- Requiere el marcador @teacher_id, que src/utils/initDb.js reemplaza por el id del profesor
 -- =====================================================================
-SET NAMES utf8mb4;
 
 -- Configuración del año escolar (fila única, id = 1)
 INSERT INTO school_year_config (id, year_end_date, min_passing_grade, current_academic_year)
-VALUES (1, CONCAT(YEAR(CURDATE()), '-11-30'), 3.5, YEAR(CURDATE()));
+VALUES (1, make_date(EXTRACT(YEAR FROM CURRENT_DATE)::int, 11, 30), 3.5, EXTRACT(YEAR FROM CURRENT_DATE)::int);
 
 -- Períodos académicos
 INSERT INTO academic_periods (period_number, is_unlocked, description, is_automatic) VALUES

@@ -22,11 +22,11 @@ function errorHandler(err, req, res, next) {
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(413).json({ error: 'El archivo supera el tamaño permitido' });
   }
-  // Duplicados / integridad referencial de MySQL
-  if (err.code === 'ER_DUP_ENTRY') {
+  // Duplicados / integridad referencial (PostgreSQL)
+  if (err.code === '23505') {
     return res.status(409).json({ error: 'Ya existe un registro con esos datos' });
   }
-  if (err.code === 'ER_ROW_IS_REFERENCED_2' || err.code === 'ER_ROW_IS_REFERENCED') {
+  if (err.code === '23503' && /update or delete/i.test(err.message || '')) {
     return res.status(409).json({ error: 'No se puede eliminar: el registro está en uso' });
   }
   console.error('[Error]', req.method, req.originalUrl, '\n', err);

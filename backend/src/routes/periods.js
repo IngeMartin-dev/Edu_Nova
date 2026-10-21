@@ -62,7 +62,9 @@ router.put('/:n/schedule', requireRole('ADMIN'), asyncHandler(async (req, res) =
     if (!p.lockDate || String(p.lockDate).replace('T', ' ').slice(0, 19) !== dt) { sets.push('notified_close_7d = 0'); }
     sets.push('lock_date = ?', 'is_automatic = 1'); params.push(dt);
   }
-  if (sets.length) await exec(`UPDATE academic_periods SET ${sets.join(', ')} WHERE id = ?`, [...params, p.id]);
+  // PostgreSQL no admite asignar dos veces la misma columna: se quitan las repetidas (is_automatic = 1)
+  const uniqueSets = [...new Set(sets)];
+  if (uniqueSets.length) await exec(`UPDATE academic_periods SET ${uniqueSets.join(', ')} WHERE id = ?`, [...params, p.id]);
 
   const saved = await one('SELECT * FROM academic_periods WHERE id = ?', [p.id]);
   res.json({

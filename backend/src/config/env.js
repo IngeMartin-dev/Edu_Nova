@@ -6,6 +6,9 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env'), quiet: true });
 
+// Hora de Colombia en todo el backend (en Vercel el servidor corre en UTC)
+process.env.TZ = process.env.TZ || 'America/Bogota';
+
 const bool = (v, def = false) => (v === undefined || v === '' ? def : /^(1|true|yes|on)$/i.test(String(v)));
 const int = (v, def) => (v === undefined || v === '' || Number.isNaN(Number(v)) ? def : Number(v));
 const list = (v) => (v ? String(v).split(',').map((s) => s.trim()).filter(Boolean) : []);
@@ -14,14 +17,17 @@ const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: int(process.env.PORT, 8080),
 
+  // PostgreSQL (Supabase). Lo más simple: DATABASE_URL (cadena del "Transaction pooler", puerto 6543).
+  // Alternativa: DB_HOST / DB_PORT / DB_USER / DB_PASSWORD / DB_NAME.
   db: {
+    url: process.env.DATABASE_URL || '',
     host: process.env.DB_HOST || 'localhost',
-    port: int(process.env.DB_PORT, 3306),
-    name: process.env.DB_NAME || 'edu_nova',
-    user: process.env.DB_USER || 'root',
+    port: int(process.env.DB_PORT, 5432),
+    name: process.env.DB_NAME || 'postgres',
+    user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD ?? '',
-    connectionLimit: int(process.env.DB_POOL_SIZE, 10),
-    // TiDB Cloud (y la mayoría de MySQL en la nube) exige TLS: DB_SSL=true
+    connectionLimit: int(process.env.DB_POOL_SIZE, 5),
+    // Supabase exige TLS: DB_SSL=true
     ssl: bool(process.env.DB_SSL, false),
   },
 

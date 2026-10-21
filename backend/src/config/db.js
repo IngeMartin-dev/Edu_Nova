@@ -1,53 +1,64 @@
 'use strict';
-const mysql = require('mysql2/promise');
+/**
+ * Acceso a PostgreSQL (Supabase). Mantiene la misma interfaz que tenía con MySQL
+ * (query / one / exec / tx con marcadores "?") para no tocar el resto del backend:
+ *  - "?" se convierte a $1, $2… y las listas en "IN (?)" se expanden.
+ *  - INSERT devuelve { insertId } (se añade "RETURNING id" si la tabla tiene columna id).
+ *  - SMALLINT (indicadores 0/1)  -> boolean      · true/false al guardar -> 1/0
+ *  - NUMERIC / BIGINT            -> number
+ *  - DATE                        -> "YYYY-MM-DD"
+ *  - TIMESTAMP                   -> "YYYY-MM-DDTHH:mm:ss" (ISO local, sin zona)
+ *  - snake_case -> camelCase en las claves de cada fila.
+ */
+const { Pool, types } = require('pg');
 const env = require('./env');
 
-/**
- * Convierte tipos de MySQL a los que el frontend (React) espera,
- * igual que lo hacía Jackson en el backend Java:
- *  - TINYINT(1)      -> boolean
- *  - DATETIME/TIMESTAMP -> "YYYY-MM-DDTHH:mm:ss" (ISO local, sin zona)
- *  - DATE            -> "YYYY-MM-DD"
- *  - DECIMAL/NEWDECIMAL -> number
- */
-function typeCast(field, next) {
-  switch (field.type) {
-    case 'TINY':
-      if (field.length === 1) {
-        const v = field.string();
-        return v === null ? null : v === '1';
-      }
-      return next();
-    case 'DATETIME':
-    case 'TIMESTAMP': {
-      const v = field.string();
-      return v ? v.replace(' ', 'T') : null;
-    }
-    case 'DATE':
-      return field.string();
-    case 'NEWDECIMAL':
-    case 'DECIMAL': {
-      const v = field.string();
-      return v === null ? null : Number(v);
-    }
-    default:
-      return next();
-  }
-}
+types.setTypeParser(20, (v) => (v === null ? null : Number(v)));          // BIGINT
+types.setTypeParser(1700, (v) => (v === null ? null : Number(v)));       // NUMERIC
+types.setTypeParser(21, (v) => (v === null ? null : v !== '0'));         // SMALLINT (indicadores)
+types.setTypeParser(1082, (v) => v);                                      // DATE
+types.setTypeParser(1114, (v) => (v ? v.replace(' ', 'T').replace(/\.\d+$/, '') : v)); // TIMESTAMP
 
-const pool = mysql.createPool({
-  host: env.db.host,
-  port: env.db.port,
-  user: env.db.user,
-  password: env.db.password,
-  database: env.db.name,
-  connectionLimit: env.db.connectionLimit,
-  waitForConnections: true,
-  charset: 'utf8mb4',
-  ssl: env.db.ssl ? { minVersion: 'TLSv1.2', rejectUnauthorized: true } : undefined,
-  typeCast,
-  namedPlaceholders: false,
+const poolConfig = env.db.url
+  ? { connectionString: env.db.url }
+  : { host: env.db.host, port: env.db.port, user: env.db.user, password: env.db.password, database: env.db.name };
+if (env.db.ssl) poolConfig.ssl = { rejectUnauthorized: false }; // el pooler de Supabase usa su propia CA
+
+const pool = new Pool({
+  ...poolConfig,
+  max: env.db.connectionLimit,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 15000,
+  allowExitOnIdle: true,
 });
+pool.on('error', (e) => console.error('[db] error en conexión inactiva:', e.message));
+
+/** "?" -> $n (omite texto entre comillas), expande listas y convierte booleanos a 1/0. */
+function compile(sql, params = []) {
+  let out = '';
+  const values = [];
+  let i = 0;
+  let quote = null;
+  for (let k = 0; k < sql.length; k += 1) {
+    const ch = sql[k];
+    if (quote) {
+      out += ch;
+      if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === "'" || ch === '"') { quote = ch; out += ch; continue; }
+    if (ch !== '?') { out += ch; continue; }
+    const p = params[i]; i += 1;
+    if (Array.isArray(p)) {
+      if (!p.length) { out += 'NULL'; continue; }
+      out += p.map((v) => { values.push(typeof v === 'boolean' ? (v ? 1 : 0) : v); return `$${values.length}`; }).join(', ');
+    } else {
+      values.push(typeof p === 'boolean' ? (p ? 1 : 0) : p);
+      out += `$${values.length}`;
+    }
+  }
+  return { text: out, values };
+}
 
 /** snake_case -> camelCase en las claves de una fila. */
 const camel = (s) => s.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
@@ -58,10 +69,20 @@ function camelize(row) {
   return out;
 }
 
+let idTables = null; // tablas que tienen columna "id" (para RETURNING id)
+async function tablesWithId() {
+  if (!idTables) {
+    const r = await pool.query("SELECT table_name FROM information_schema.columns WHERE table_schema = 'public' AND column_name = 'id'");
+    idTables = new Set(r.rows.map((x) => x.table_name));
+  }
+  return idTables;
+}
+
 /** Ejecuta una consulta y devuelve las filas (camelizadas). */
 async function query(sql, params = [], conn = pool) {
-  const [rows] = await conn.query(sql, params);
-  return Array.isArray(rows) ? rows.map(camelize) : rows;
+  const { text, values } = compile(sql, params);
+  const res = await conn.query(text, values);
+  return res.rows.map(camelize);
 }
 
 /** Devuelve la primera fila o null. */
@@ -72,24 +93,29 @@ async function one(sql, params = [], conn = pool) {
 
 /** INSERT/UPDATE/DELETE: devuelve { insertId, affectedRows }. */
 async function exec(sql, params = [], conn = pool) {
-  const [res] = await conn.query(sql, params);
-  return { insertId: res.insertId, affectedRows: res.affectedRows };
+  let stmt = sql;
+  const ins = /^\s*INSERT\s+INTO\s+"?([a-z_0-9]+)"?/i.exec(stmt);
+  const wantsId = ins && !/\bRETURNING\b/i.test(stmt) && (await tablesWithId()).has(ins[1].toLowerCase());
+  if (wantsId) stmt = `${stmt.replace(/;\s*$/, '')} RETURNING id`;
+  const { text, values } = compile(stmt, params);
+  const res = await conn.query(text, values);
+  return { insertId: wantsId && res.rows[0] ? Number(res.rows[0].id) : null, affectedRows: res.rowCount };
 }
 
-/** Ejecuta fn(conn) dentro de una transacción; hace rollback si falla. */
+/** Ejecuta fn(client) dentro de una transacción; hace rollback si falla. */
 async function tx(fn) {
-  const conn = await pool.getConnection();
+  const client = await pool.connect();
   try {
-    await conn.beginTransaction();
-    const result = await fn(conn);
-    await conn.commit();
+    await client.query('BEGIN');
+    const result = await fn(client);
+    await client.query('COMMIT');
     return result;
   } catch (e) {
-    try { await conn.rollback(); } catch (_) { /* ignore */ }
+    try { await client.query('ROLLBACK'); } catch (_) { /* ignore */ }
     throw e;
   } finally {
-    conn.release();
+    client.release();
   }
 }
 
-module.exports = { pool, query, one, exec, tx, camelize };
+module.exports = { pool, query, one, exec, tx, camelize, compile };
