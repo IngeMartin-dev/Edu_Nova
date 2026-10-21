@@ -23,6 +23,10 @@ branding/   Logo, símbolo, versión monocromática y favicon
 | 2 | Boletines y consolidados en PDF (Python + Playwright), recuperaciones y planes de estudio, chat con archivos, firmas, boletines para acudientes, exportación de datos | ✅ |
 | 3 | Frontend React rediseñado en morado, servido por Express + .zip final | ✅ |
 
+## Despliegue gratis (GitHub Pages + tu PC + TiDB Cloud)
+
+Ver [DEPLOY.md](DEPLOY.md). En Windows, `scripts/windows/instalar.ps1` deja el backend listo (Node, `.venv`, Chromium y `.env`).
+
 ## Requisitos
 
 - Node.js 18 o superior

@@ -16,7 +16,11 @@ let pythonBin = null;
 
 function detectPython() {
   if (pythonBin) return pythonBin;
-  const candidates = [env.pdf.pythonBin, 'python3', 'python', 'py'].filter(Boolean);
+  // Prioridad: PYTHON_BIN del .env, el .venv de backend (lo crea scripts/windows/instalar.ps1) y luego el Python del sistema.
+  const venvPython = process.platform === 'win32'
+    ? path.resolve(__dirname, '../../.venv/Scripts/python.exe')
+    : path.resolve(__dirname, '../../.venv/bin/python');
+  const candidates = [env.pdf.pythonBin, fs.existsSync(venvPython) && venvPython, 'python3', 'python', 'py'].filter(Boolean);
   for (const c of candidates) {
     const r = spawnSync(c, ['--version'], { encoding: 'utf8' });
     if (!r.error && r.status === 0) { pythonBin = c; return c; }

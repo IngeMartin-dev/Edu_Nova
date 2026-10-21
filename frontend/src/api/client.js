@@ -3,7 +3,7 @@ import { connection } from '../services/connection.js';
 // Cliente HTTP mínimo: añade el token, renueva la sesión si expira (401)
 // y entrega JSON, texto o archivos (blob) según se pida.
 // En GitHub Pages el frontend y la API viven en dominios distintos: VITE_API_URL
-// (p. ej. https://edunova-api.koyeb.app, sin "/" final) apunta al backend.
+// (p. ej. https://mi-pc.mi-red.ts.net, sin "/" final) apunta al backend.
 // Vacío = mismo dominio (desarrollo con proxy de Vite o Express sirviendo el build).
 export const API_ORIGIN = String(import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 const BASE = `${API_ORIGIN}/api`;

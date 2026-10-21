@@ -2,10 +2,9 @@
 /**
  * Respaldo de archivos en la base de datos (tabla stored_files).
  *
- * En hostings gratis (Koyeb, Render…) el disco se borra en cada despliegue. Para no perder
- * boletines, consolidados, promociones, firmas, archivos del chat ni fotos de perfil, cada
- * archivo que el backend escribe a disco se copia también a TiDB/MySQL, y al arrancar se
- * restauran los que falten en disco. El resto del código sigue usando el sistema de archivos.
+ * Para no perder boletines, consolidados, promociones, firmas, archivos del chat ni fotos de
+ * perfil si el disco del servidor se daña o se cambia de equipo, cada archivo que el backend
+ * escribe a disco se copia también a TiDB/MySQL, y al arrancar se restauran los que falten. El resto del código sigue usando el sistema de archivos.
  *
  * Límite por archivo: 5 MB (TiDB Cloud limita una fila a ~6 MB). Si no hay base de datos
  * disponible o FILE_VAULT=false, todo sigue funcionando solo con el disco.
