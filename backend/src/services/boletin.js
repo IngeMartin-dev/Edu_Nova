@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const { query, one, exec } = require('../config/db');
 const env = require('../config/env');
 const files = require('./files');
+const { runInBackground } = require('../utils/background');
 const { norm } = require('../utils/http');
 const { nowSql } = require('../utils/dates');
 const { fmt, escapeHtml, fileSafe, salonFolder } = require('../utils/format');
@@ -615,8 +616,19 @@ async function generateSingleFromPayload(req, ctx = null) {
 }
 
 // --- Trabajos en segundo plano (generación masiva) ---
-const jobs = new Map();
+// El estado se guarda en la tabla generation_jobs: así funciona aunque la petición de consulta
+// caiga en otra instancia (Vercel). El trabajo corre con waitUntil (ver utils/background.js).
 const MAX_JOBS = 100;
+const STALE_MS = 10 * 60 * 1000;
+const nowIso = () => new Date().toISOString().slice(0, 19);
+const parseJson = (t, d) => { try { return t ? JSON.parse(t) : d; } catch (_) { return d; } };
+
+function jobFromRow(r) {
+  return {
+    jobId: r.jobId, grade: r.grade, classroom: r.classroom, period: r.period, total: r.total, prepared: r.prepared, completed: r.completed,
+    status: r.status, phase: r.phase, startedAt: r.startedAt, finishedAt: r.finishedAt, errors: parseJson(r.errors, []), files: parseJson(r.files, []),
+  };
+}
 
 function publicJob(job) {
   return {
@@ -627,14 +639,24 @@ function publicJob(job) {
   };
 }
 
-function startGenerationJob(grade, classroom, period, payloads) {
+const saveJob = (job) => exec(
+  `UPDATE generation_jobs SET prepared = ?, completed = ?, status = ?, phase = ?, finished_at = ?, errors = ?, files = ? WHERE job_id = ?`,
+  [job.prepared, job.completed, job.status, job.phase, job.finishedAt, JSON.stringify(job.errors), JSON.stringify(job.files), job.jobId]);
+
+async function startGenerationJob(grade, classroom, period, payloads) {
   const job = {
     jobId: crypto.randomUUID(), grade, classroom, period, total: payloads.length, prepared: 0, completed: 0,
-    status: 'RUNNING', phase: 'PREPARING', startedAt: new Date().toISOString().slice(0, 19), finishedAt: null, errors: [], files: [],
+    status: 'RUNNING', phase: 'PREPARING', startedAt: nowIso(), finishedAt: null, errors: [], files: [],
   };
-  jobs.set(job.jobId, job);
-  if (jobs.size > MAX_JOBS) jobs.delete(jobs.keys().next().value);
-  processJob(job, payloads).catch((e) => { job.errors.push(`Error general del job: ${e.message}`); job.status = 'ERROR'; job.finishedAt = new Date().toISOString().slice(0, 19); });
+  await exec(
+    `INSERT INTO generation_jobs (job_id, grade, classroom, period, total, prepared, completed, status, phase, started_at, errors, files)
+     VALUES (?, ?, ?, ?, ?, 0, 0, 'RUNNING', 'PREPARING', ?, '[]', '[]')`,
+    [job.jobId, grade, classroom, period, job.total, job.startedAt]);
+  await exec('DELETE FROM generation_jobs WHERE job_id NOT IN (SELECT job_id FROM generation_jobs ORDER BY started_at DESC LIMIT ?)', [MAX_JOBS]);
+  runInBackground(processJob(job, payloads).catch(async (e) => {
+    job.errors.push(`Error general del job: ${e.message}`); job.status = 'ERROR'; job.finishedAt = nowIso();
+    await saveJob(job).catch(() => {});
+  }));
   return publicJob(job);
 }
 
@@ -643,6 +665,7 @@ async function processJob(job, payloads) {
     const ctx = await loadContext(job.grade, job.classroom); // se comparte entre todos los boletines del lote
     job.prepared = job.total;
     job.phase = 'RENDERING';
+    await saveJob(job);
     let next = 0;
     const worker = async () => {
       while (next < payloads.length) {
@@ -653,6 +676,7 @@ async function processJob(job, payloads) {
           else job.errors.push(`${nvl(res.studentName, 'Estudiante')}: ${res.error}`);
         } catch (e) { job.errors.push(`Error inesperado: ${e.message}`); }
         job.completed += 1;
+        await saveJob(job).catch(() => {});
       }
     };
     await Promise.all(Array.from({ length: Math.max(1, env.pdf.concurrency) }, worker));
@@ -661,12 +685,22 @@ async function processJob(job, payloads) {
     job.errors.push(`Error general del job: ${e.message}`);
     job.status = 'ERROR';
   } finally {
-    job.finishedAt = new Date().toISOString().slice(0, 19);
+    job.finishedAt = nowIso();
+    await saveJob(job).catch(() => {});
   }
 }
 
-const listJobs = () => [...jobs.values()].sort((a, b) => String(b.startedAt).localeCompare(String(a.startedAt))).slice(0, 30).map(publicJob);
-const getJob = (id) => jobs.get(id) || null;
+/** Un trabajo "en curso" que lleva mucho sin terminar (la función se cortó) se marca con error. */
+function failIfStale(job) {
+  if (job.status === 'RUNNING' && Date.now() - new Date(`${job.startedAt}Z`).getTime() > STALE_MS) {
+    job.status = 'ERROR'; job.finishedAt = nowIso(); job.errors.push('El trabajo se interrumpió (tiempo agotado).');
+    saveJob(job).catch(() => {});
+  }
+  return job;
+}
+
+const listJobs = async () => (await query('SELECT * FROM generation_jobs ORDER BY started_at DESC LIMIT 30')).map((r) => publicJob(failIfStale(jobFromRow(r))));
+const getJob = async (id) => { const r = await one('SELECT * FROM generation_jobs WHERE job_id = ?', [id]); return r ? failIfStale(jobFromRow(r)) : null; };
 
 // ---------------------------------------------------------------------------
 // Consultas auxiliares para los controladores

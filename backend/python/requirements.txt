@@ -1,3 +1,0 @@
-playwright>=1.45
-beautifulsoup4>=4.12
-pypdf>=4.0

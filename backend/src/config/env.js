@@ -100,7 +100,7 @@ const env = {
 
   // Generación de PDF con Python + Playwright
   pdf: {
-    pythonBin: process.env.PYTHON_BIN || '',
+    chromePath: process.env.CHROME_PATH || '',
     concurrency: int(process.env.PDF_CONCURRENCY, 2),
     timeoutSeconds: int(process.env.PDF_TIMEOUT_SECONDS, 180),
   },

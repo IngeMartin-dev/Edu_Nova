@@ -9,6 +9,3 @@ firebase-service-account.json
 *.log
 .DS_Store
 dist/
-__pycache__/
-*.pyc
-backend/.venv

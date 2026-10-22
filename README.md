@@ -3,14 +3,15 @@
 Plataforma de gestión académica: estudiantes, materias, notas por período, boletines, consolidados,
 acudientes, directores de grupo, notificaciones y autenticación de dos factores.
 
-- **Backend:** Node.js + Express (JavaScript) · **Base de datos:** MySQL 8 (`edu_nova`)
-- **PDF (boletines y consolidados):** Python + Playwright
-- **Frontend:** React 18 (Vite, JavaScript) con tema morado propio (servido por el mismo Express)
+- **Backend:** Node.js + Express (JavaScript) · **Base de datos:** PostgreSQL (Supabase)
+- **Archivos (PDF, firmas, fotos, chat):** Supabase Storage
+- **PDF (boletines y consolidados):** Chromium (puppeteer-core) + pdf-lib, sin Python
+- **Frontend:** React 18 (Vite, JavaScript) con tema morado propio, publicado en GitHub Pages
 
 ## Estructura
 
 ```
-backend/    Express + MySQL (API, PDF con Python/Playwright, sirve el frontend desde backend/public)
+backend/    Express + PostgreSQL (API, PDF con Chromium; despliega en Vercel desde backend/)
 frontend/   React 18 + Vite en JavaScript (.jsx), una página por módulo en src/pages
 branding/   Logo, símbolo, versión monocromática y favicon
 ```
@@ -19,50 +20,36 @@ branding/   Logo, símbolo, versión monocromática y favicon
 
 | Fase | Contenido | Estado |
 |------|-----------|--------|
-| 1 | API Express + MySQL: login, JWT, 2FA, usuarios, estudiantes, materias, profesores, padres, directores de grupo, períodos, notas, año escolar, promociones, notificaciones, logo | ✅ |
-| 2 | Boletines y consolidados en PDF (Python + Playwright), recuperaciones y planes de estudio, chat con archivos, firmas, boletines para acudientes, exportación de datos | ✅ |
-| 3 | Frontend React rediseñado en morado, servido por Express + .zip final | ✅ |
+| 1 | API Express + PostgreSQL: login, JWT, 2FA, usuarios, estudiantes, materias, profesores, padres, directores de grupo, períodos, notas, año escolar, promociones, notificaciones, logo | ✅ |
+| 2 | Boletines y consolidados en PDF (Chromium), recuperaciones y planes de estudio, chat con archivos, firmas, boletines para acudientes, exportación de datos | ✅ |
+| 3 | Frontend React rediseñado en morado, publicado en GitHub Pages | ✅ |
 
-## Despliegue gratis (GitHub Pages + tu PC + TiDB Cloud)
+## Despliegue gratis (GitHub Pages + Vercel + Supabase)
 
-Ver [DEPLOY.md](DEPLOY.md). En Windows, `scripts/windows/instalar.ps1` deja el backend listo (Node, `.venv`, Chromium y `.env`).
+Ver [DEPLOY.md](DEPLOY.md).
 
-## Requisitos
+## Desarrollo local
 
-- Node.js 18 o superior
-- MySQL 8 corriendo en `localhost:3306`
-- Python 3.9+ (solo para generar los PDF)
-
-## Instalación
+Requisitos: Node.js 20+, una base PostgreSQL (local o la de Supabase) y Chrome/Edge para los PDF.
 
 ```bash
 cd backend
 npm install
-cp .env.example .env        # edita DB_PASSWORD y genera JWT_SECRET (ver abajo)
-npm run db:init             # crea la base edu_nova, tablas, roles, períodos y 51 materias
+cp .env.example .env        # pon DATABASE_URL y JWT_SECRET
+npm run db:init             # tablas, roles, períodos y 51 materias
 npm run db:demo             # (opcional) 44 estudiantes y acudientes de ejemplo
-npm run build:front         # compila el frontend y lo copia a backend/public (el .zip ya lo trae)
-npm start                   # app completa en http://localhost:8080
+npm start                   # API en http://localhost:8080
+cd ../frontend && npm install && npm start   # http://localhost:4200
 ```
 
-Abre http://localhost:8080 e ingresa con `admin` / `EduNova2026*`. Para desarrollo del frontend con recarga en vivo: `cd frontend && npm start` (puerto 4200, apunta a la API en 8080).
-
-Generar `JWT_SECRET`:
+Genera `JWT_SECRET` con:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
 
-### PDF de boletines y consolidados
-
-```bash
-pip install -r backend/python/requirements.txt
-playwright install chromium
-```
-
-El administrador puede verificar el estado en `GET /api/system/pdf-status`. Si Python no se llama
-`python3`/`python` en tu sistema, define `PYTHON_BIN` en `.env` (por ejemplo `PYTHON_BIN=py` en Windows).
-Los PDF generados se guardan en `backend/storage/` (ignorado por Git).
+El administrador puede ver el estado del motor de PDF en `GET /api/system/pdf-status`.
+Sin `SUPABASE_*` los archivos se guardan en `backend/storage/` (ignorado por Git).
 
 Reiniciar la base desde cero: `npm run db:reset` (⚠ borra todo).
 

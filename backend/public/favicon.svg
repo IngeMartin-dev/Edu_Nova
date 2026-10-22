@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="EduNova">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6D28D9"/><stop offset="1" stop-color="#A855F7"/></linearGradient></defs>
-  <rect width="64" height="64" rx="15" fill="url(#g)"/>
-  <path d="M32 12 L54 22 L32 32 L10 22 Z" fill="#fff"/>
-  <path d="M17 27 V35 Q17 40 32 40 Q47 40 47 35 V27 L32 33.500 Z" fill="#E9D5FF"/>
-  <path d="M32 44 C 27 40.500 18 40.500 11 42.500 V54 C 18 52 27 52.500 32 56 Z" fill="#fff"/>
-  <path d="M32 44 C 37 40.500 46 40.500 53 42.500 V54 C 46 52 37 52.500 32 56 Z" fill="#fff" opacity=".88"/>
-  <path d="M55 10 l1.600 3.400 3.400 1.600 -3.400 1.600 -1.600 3.400 -1.600 -3.400 -3.400 -1.600 3.400 -1.600z" fill="#F5D0FE"/>
-</svg>

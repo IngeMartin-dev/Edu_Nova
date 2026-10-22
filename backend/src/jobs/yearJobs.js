@@ -1,5 +1,4 @@
 'use strict';
-const cron = require('node-cron');
 const schoolYear = require('../services/schoolYear');
 const promotions = require('../services/promotions');
 const notifications = require('../services/notifications');
@@ -21,8 +20,8 @@ async function reviewYearEnd() {
   }
 }
 
-/** Registra: revisión de fin de año (cada 6 h) y purga diaria de promociones vencidas (3:00 a. m.). */
-function register({ safe, timers }) {
+/** Servidor normal (no serverless): revisión de fin de año cada 6 h y purga diaria de promociones (3:00 a. m.). */
+function register({ safe, timers, cron }) {
   timers.push(setInterval(safe('fin-de-año', reviewYearEnd), 6 * 60 * 60 * 1000));
   timers.push(setTimeout(safe('fin-de-año', reviewYearEnd), 20 * 1000));
   timers.push(setTimeout(safe('purga-promociones', promotions.purgeExpired), 60 * 1000));

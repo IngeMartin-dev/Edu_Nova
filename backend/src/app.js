@@ -12,7 +12,8 @@ const { notFound, errorHandler } = require('./middleware/errors');
 function createApp() {
   const app = express();
   app.disable('x-powered-by');
-  if (env.security.trustProxy) app.set('trust proxy', true);
+  if (process.env.VERCEL) app.set('trust proxy', 1);
+  else if (env.security.trustProxy) app.set('trust proxy', true);
 
   // --- Cabeceras de seguridad ---
   app.use(
@@ -89,6 +90,11 @@ function createApp() {
   app.get('/api/institution', (req, res) => res.json({
     name: env.institution.name, address: env.institution.address, phone: env.institution.phone, logo: env.institution.logo,
   }));
+
+  app.use('/api/cron', require('./routes/cron'));
+
+  // En Vercel no hay procesos permanentes: las revisiones periódicas se disparan con las peticiones.
+  if (process.env.VERCEL) app.use('/api', (req, res, next) => { require('./utils/background').runInBackground(require('./jobs/tasks').tick()); next(); });
 
   app.use('/api', authenticate);
   app.get('/api/system/pdf-status', requireRole('ADMIN'), (req, res) => res.json(require('./services/pdf').status()));

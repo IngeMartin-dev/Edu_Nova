@@ -359,6 +359,23 @@ CREATE TABLE IF NOT EXISTS promotions (
     folder           VARCHAR(255)
 );
 
+-- Generación masiva de boletines (el estado vive en la base para funcionar en serverless)
+CREATE TABLE generation_jobs (
+    job_id       VARCHAR(64) PRIMARY KEY,
+    grade        VARCHAR(100),
+    classroom    VARCHAR(100),
+    period       INT,
+    total        INT NOT NULL DEFAULT 0,
+    prepared     INT NOT NULL DEFAULT 0,
+    completed    INT NOT NULL DEFAULT 0,
+    status       VARCHAR(20) NOT NULL DEFAULT 'RUNNING',
+    phase        VARCHAR(20),
+    started_at   TIMESTAMP,
+    finished_at  TIMESTAMP,
+    errors       TEXT,
+    files        TEXT
+);
+
 -- =====================================================================
 -- Seguridad: la API de datos de Supabase (PostgREST) queda cerrada.
 -- Solo el backend (que se conecta como "postgres") accede a estas tablas.

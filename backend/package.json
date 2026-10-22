@@ -1,7 +1,7 @@
 {
   "name": "edunova-backend",
   "version": "1.0.0",
-  "description": "EduNova - API de gestión académica (Node.js + Express + MySQL)",
+  "description": "EduNova - API de gestión académica (Node.js + Express + PostgreSQL/Supabase)",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
@@ -21,8 +21,11 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@sparticuz/chromium": "^153.0.0",
     "@supabase/supabase-js": "^2.118.0",
+    "@vercel/functions": "^3.10.2",
     "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
@@ -33,7 +36,9 @@
     "multer": "^2.4.0",
     "node-cron": "^4.6.0",
     "nodemailer": "^10.0.15",
-    "pg": "^8.23.1"
+    "pdf-lib": "^1.17.1",
+    "pg": "^8.23.1",
+    "puppeteer-core": "^25.15.0"
   },
   "optionalDependencies": {
     "firebase-admin": "^14.5.0"

@@ -1,71 +1,68 @@
-# Despliegue gratis: GitHub Pages + tu PC + TiDB Cloud
+# Despliegue gratis: GitHub Pages + Vercel + Supabase
 
 ```
-GitHub Pages (frontend) → Tailscale Funnel (URL pública HTTPS) → tu PC (API + PDF) → TiDB Cloud (datos)
+GitHub Pages (frontend)  →  Vercel (API Express + PDF con Chromium)  →  Supabase (PostgreSQL + Storage de PDF/firmas/fotos/chat)
 ```
 
-Todo gratis y sin tarjeta. Tu PC es el servidor: debe estar **encendido y con internet** mientras se use EduNova.
-Genera los PDF de boletines y consolidados (Python + Chromium) y los datos viven en TiDB, no en tu PC.
+Sin tarjeta de crédito. Nada del backend vive en tu PC.
 
-## 1. TiDB Cloud (base de datos)
-1. Crea un cluster **Starter** en https://tidbcloud.com → **Connect**. Guarda host, usuario (con prefijo, p. ej. `abc123.root`), contraseña y puerto **4000**. Si compartiste la contraseña en algún lado, genera una nueva ahí mismo.
-2. No uses la base `sys` (es interna de TiDB): EduNova crea la suya, `edu_nova`.
+> **Seguridad primero.** Si pegaste la `SUPABASE_SECRET_KEY` (o la contraseña de TiDB) en un chat o en un archivo, considérala comprometida:
+> Supabase → *Settings → API Keys* → genera una nueva y bórrala de donde la hayas escrito. La clave secreta **solo** va como variable de entorno en Vercel; nunca en el repo.
 
-## 2. Instalar en tu PC (Windows)
-Instala antes **Node.js 18+** (https://nodejs.org) y **Python 3.9+** (https://www.python.org, marcando *Add python.exe to PATH*). Luego, **fuera de OneDrive**:
+## 1. Supabase
+1. Proyecto **EduNova** → botón **Connect** → copia dos cadenas del **Pooler** (reemplaza `[YOUR-PASSWORD]` por la contraseña de la base, *Settings → Database*):
+   - **Session pooler** (puerto **5432**): para crear las tablas desde tu PC (funciona por IPv4).
+   - **Transaction pooler** (puerto **6543**): para Vercel.
+2. *Settings → API Keys*: toma `SUPABASE_URL` (`https://xxxx.supabase.co`) y la **Secret key** (nueva).
+3. *Storage*: el bucket `edunova` (privado) se crea solo la primera vez que se guarda un archivo. Puedes crearlo tú (privado) si prefieres.
 
-```powershell
-cd C:\
-git clone https://github.com/IngeMartin-dev/Edu_Nova.git EduNova
-cd EduNova
-powershell -ExecutionPolicy Bypass -File scripts\windows\instalar.ps1
-```
-
-El script instala las dependencias, crea `backend\.venv`, descarga Chromium y crea `backend\.env` con `JWT_SECRET`, puerto 4000, SSL y CORS ya puestos. Se abre el `.env`: completa **solo** estas líneas con tus datos de TiDB:
-
-```
-DB_HOST=gateway01.xxxx.prod.aws.tidbcloud.com
-DB_USER=abc123.root
-DB_PASSWORD=tu_contraseña
-DB_NAME=edu_nova
-```
-
-Crea las tablas (una sola vez) y prueba:
-
-```powershell
+## 2. Crear las tablas (una sola vez, desde tu PC)
+```bash
 cd backend
-npm run db:init
-npm start
+npm install
+DATABASE_URL="postgresql://postgres.REF:CLAVE@aws-0-REGION.pooler.supabase.com:5432/postgres" DB_SSL=true npm run db:init
+# opcional: datos de ejemplo
+DATABASE_URL="..." DB_SSL=true npm run db:demo
 ```
-Abre http://localhost:8080/api/health → `{"status":"UP",...}`. Con sesión de administrador, `/api/system/pdf-status` debe mostrar `dependencias: true`.
+(En PowerShell: `$env:DATABASE_URL="..."; $env:DB_SSL="true"; npm run db:init`.)
+Crea 26 tablas con **RLS activado** (la API pública de Supabase queda cerrada; solo el backend entra) y el usuario `admin` / `EduNova2026*` — cámbiala al entrar.
 
-## 3. Hacerlo público con Tailscale Funnel
-1. Instala Tailscale (https://tailscale.com/download) y entra con tu cuenta.
-2. En https://login.tailscale.com/admin/dns activa **MagicDNS** y **HTTPS Certificates**.
-3. Con el servidor corriendo:
-   ```powershell
-   tailscale funnel --bg 8080
-   ```
-   Imprime tu URL pública (`https://tu-pc.tu-red.ts.net`). Pruébala con el celular **con datos móviles**: `TU-URL/api/health`.
-4. No cambies el nombre del PC ni de la red de Tailscale: la URL depende de ellos.
+## 3. Vercel (backend)
+1. https://vercel.com → **Add New → Project** → importa `IngeMartin-dev/Edu_Nova`.
+2. **Root Directory: `backend`**. Framework: *Other*. No pongas Build Command.
+3. **Environment Variables**:
 
-## 4. Que arranque solo
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\windows\autoarranque.ps1
+| Variable | Valor |
+|---|---|
+| `DATABASE_URL` | Transaction pooler (puerto 6543) |
+| `DB_SSL` | `true` |
+| `JWT_SECRET` | texto aleatorio de 32+ caracteres (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`) |
+| `ALLOWED_ORIGINS` | `https://ingemartin-dev.github.io` (sin `/` final) |
+| `SUPABASE_URL` | `https://xxxx.supabase.co` |
+| `SUPABASE_SECRET_KEY` | la clave secreta **nueva** |
+| `SUPABASE_BUCKET` | `edunova` |
+| `CRON_SECRET` | texto aleatorio largo (protege `/api/cron/daily`) |
+
+4. **Deploy**. Prueba `https://TU-PROYECTO.vercel.app/api/health` → `{"status":"UP"…}` y, entrando como admin, `/api/system/pdf-status`.
+
+## 4. GitHub Pages (frontend)
+1. Repo → *Settings → Secrets and variables → Actions → Variables* → crea `VITE_API_URL` = `https://TU-PROYECTO.vercel.app` (sin `/` final).
+2. *Settings → Pages → Source: GitHub Actions*. Cada push a `frontend/**` publica en `https://ingemartin-dev.github.io/Edu_Nova/` (o ejecuta el workflow a mano).
+
+## Límites que conviene conocer (plan Hobby de Vercel)
+- **Términos:** Hobby es para uso personal / no comercial. Revisa los términos de Vercel si el colegio lo usará de forma institucional.
+- **Adjuntos del chat:** máximo **4 MB** (Vercel limita el cuerpo de la petición a 4.5 MB). Se ajusta con `CHAT_MAX_MB`.
+- **Generación masiva de boletines:** corre en segundo plano en la misma función (máx. 300 s). Lotes muy grandes: genera por salón. El avance se guarda en la tabla `generation_jobs`.
+- **Tareas programadas:** Hobby solo permite cron **diario** (`/api/cron/daily`, 08:00 UTC). Abrir/cerrar períodos automáticos y los avisos se revisan además con el uso normal de la API.
+- **Límite de intentos de login/peticiones:** se cuenta por instancia (no es global).
+- **Primer PDF tras un rato sin uso:** tarda unos segundos extra (arranque de Chromium).
+- **Fuentes:** Chromium serverless trae pocas fuentes; si el boletín (Times New Roman) se ve distinto, avísame y se incrusta una fuente.
+- Supabase gratis pausa el proyecto tras 1 semana sin actividad; se reactiva desde el panel.
+
+## Desarrollo local
+```bash
+cd backend && cp .env.example .env     # pon DATABASE_URL (Postgres local o Supabase) y JWT_SECRET
+npm install && npm run db:init && npm start      # http://localhost:8080
+cd ../frontend && npm install && npm start       # http://localhost:4200
 ```
-La API arranca al iniciar sesión en Windows y se reinicia si se cae (log en `backend\server.log`). Además, en Configuración → Sistema → Inicio/apagado, pon que el PC **nunca se suspenda** (al menos enchufado). `tailscale funnel --bg` se conserva tras reiniciar.
-
-## 5. Frontend en GitHub Pages
-1. Repo → **Settings → Pages → Source: GitHub Actions**.
-2. **Settings → Secrets and variables → Actions → Variables** → `VITE_API_URL` = tu URL de Funnel (sin `/` final).
-3. En **Actions**, ejecuta *Deploy frontend to GitHub Pages*. Quedará en `https://ingemartin-dev.github.io/Edu_Nova/`.
-
-## Mantenimiento
-- **Actualizar:** `git pull`, luego reiniciar la API (`Stop-ScheduledTask "EduNova API"; Start-ScheduledTask "EduNova API"`). Si cambió `frontend/`, el push ya vuelve a publicar Pages.
-- **Archivos:** boletines, consolidados, firmas, chat y fotos se guardan en `backend\storage` y `backend\uploads` **y** se respaldan en TiDB (tabla `stored_files`). Si cambias de PC se restauran solos al arrancar. Límite: 5 MB por archivo. Se desactiva con `FILE_VAULT=false`.
-- **Seguridad:** cambia las contraseñas de `admin` y `profesor` (`EduNova2026*` está en el repo público) y nunca subas `backend\.env`.
-
-## Límites
-- Si el PC se apaga, se suspende o pierde internet, EduNova deja de responder.
-- Funnel está en beta y tiene límites de ancho de banda que Tailscale no publica.
-- Sin `SMTP_*`, el código de 2FA se imprime en `server.log`.
+Sin `SUPABASE_*` los archivos van a `backend/storage/`. Para los PDF necesitas Chrome/Edge instalado (o `CHROME_PATH`).

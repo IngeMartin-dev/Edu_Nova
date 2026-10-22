@@ -1,5 +1,4 @@
 'use strict';
-const cron = require('node-cron');
 const periods = require('../services/periods');
 const yearJobs = require('./yearJobs');
 
@@ -20,6 +19,7 @@ function start() {
 
   // Los demás programadores (fin de año, purga de promociones) se registran en
   // sus propios módulos cuando existen (ver registerExtra).
+  const cron = require('node-cron'); // solo en servidor normal; en Vercel se usa /api/cron/daily
   for (const extra of registerExtra) extra({ safe, timers, cron });
   console.log('[Scheduler] Tareas programadas activas.');
 }

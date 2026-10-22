@@ -85,13 +85,13 @@ router.post('/generaciones', STAFF, asyncHandler(async (req, res) => {
   const b = req.body || {};
   if (!b.grade || !b.classroom || !Array.isArray(b.students)) throw new HttpError(400, 'Faltan parámetros: grade, classroom o students');
   if (!b.students.length) throw new HttpError(400, 'La lista de estudiantes está vacía');
-  res.json(boletin.startGenerationJob(String(b.grade), String(b.classroom), toInt(b.period), b.students));
+  res.json(await boletin.startGenerationJob(String(b.grade), String(b.classroom), toInt(b.period), b.students));
 }));
 
-router.get('/generaciones', STAFF, (req, res) => res.json(boletin.listJobs()));
+router.get('/generaciones', STAFF, asyncHandler(async (req, res) => res.json(await boletin.listJobs())));
 
 router.get('/generaciones/:jobId/archivo/:studentId', STAFF, asyncHandler(async (req, res) => {
-  const job = boletin.getJob(req.params.jobId);
+  const job = await boletin.getJob(req.params.jobId);
   if (!job) return res.status(404).end();
   const f = job.files.find((x) => x.studentId === Number(req.params.studentId));
   if (!f || !f.filePath) return res.status(404).end();

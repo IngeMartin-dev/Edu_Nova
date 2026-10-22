@@ -21,10 +21,7 @@ async function main() {
     console.log(`  Correo: ${env.mail.enabled ? 'SMTP activo' : 'sin SMTP (los códigos 2FA se imprimen en consola)'} · Push: ${env.firebase.enabled ? 'Firebase' : 'desactivado'} · IA: ${env.ai.enabled ? 'activa' : 'desactivada'}\n`);
     schedulers.start();
     const pdfState = require('./services/pdf').status();
-    if (!pdfState.python || !pdfState.dependencias) {
-      console.warn('⚠ PDF: falta Python o sus dependencias (boletines/consolidados no se podrán generar).');
-      console.warn('  Ejecuta:  pip install -r backend/python/requirements.txt  &&  playwright install chromium\n');
-    }
+    if (!pdfState.disponible) console.warn('⚠ PDF: no se encontró Chrome/Chromium/Edge (define CHROME_PATH en .env).\n');
   });
 
   const shutdown = async (signal) => {
