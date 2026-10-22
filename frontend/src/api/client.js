@@ -3,9 +3,11 @@ import { connection } from '../services/connection.js';
 // Cliente HTTP mínimo: añade el token, renueva la sesión si expira (401)
 // y entrega JSON, texto o archivos (blob) según se pida.
 // En GitHub Pages el frontend y la API viven en dominios distintos: VITE_API_URL
-// (p. ej. https://mi-pc.mi-red.ts.net, sin "/" final) apunta al backend.
+// (p. ej. https://mi-proyecto.vercel.app, sin "/" final) apunta al backend.
 // Vacío = mismo dominio (desarrollo con proxy de Vite o Express sirviendo el build).
-export const API_ORIGIN = String(import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+const rawOrigin = String(import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
+// Si olvidan el "https://", se agrega (sin esto el navegador lo toma como ruta relativa).
+export const API_ORIGIN = rawOrigin && !/^https?:\/\//i.test(rawOrigin) ? `https://${rawOrigin}` : rawOrigin;
 const BASE = `${API_ORIGIN}/api`;
 
 export class ApiError extends Error {
