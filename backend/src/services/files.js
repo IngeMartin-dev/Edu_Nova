@@ -52,9 +52,10 @@ function diskDriver() {
 // ---------------------------------------------------------------------------
 // Supabase Storage
 // ---------------------------------------------------------------------------
-/** Supabase solo admite ciertos caracteres en las claves: el resto se codifica como ~hex~ (reversible). */
-const encSeg = (s) => s.replace(/[^A-Za-z0-9_.-]/gu, (ch) => `~${Buffer.from(ch, 'utf8').toString('hex')}~`);
-const decSeg = (s) => s.replace(/~([0-9a-f]+)~/g, (_, h) => Buffer.from(h, 'hex').toString('utf8'));
+/** Supabase solo admite letras, números y  ! - _ . * ' ( )  en las claves: el resto se codifica como (hex) (reversible).
+ *  Los paréntesis literales también se codifican, así que (hex) nunca es ambiguo. */
+const encSeg = (s) => s.replace(/[^A-Za-z0-9_.-]/gu, (ch) => `(${Buffer.from(ch, 'utf8').toString('hex')})`);
+const decSeg = (s) => s.replace(/\(([0-9a-f]+)\)/g, (_, h) => Buffer.from(h, 'hex').toString('utf8'));
 const encKey = (key) => segments(key).map(encSeg).join('/');
 
 function supabaseDriver() {
