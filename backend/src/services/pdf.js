@@ -52,7 +52,8 @@ let idleTimer = null;
 let active = 0;
 
 async function launch() {
-  const puppeteer = require('puppeteer-core');
+  const pm = await import('puppeteer-core'); // paquete ESM: no se puede usar require() en Vercel
+  const puppeteer = pm.default || pm;
   if (isServerless() && !env.pdf.chromePath) {
     const chromium = (await import('@sparticuz/chromium')).default; // paquete ESM
     return puppeteer.launch({ args: chromium.args, executablePath: await chromium.executablePath(), headless: 'shell' });
@@ -103,7 +104,7 @@ async function render(html, opts) {
 // Combinar páginas y reescalarlas a CARTA vertical (sin deformar, centradas, nunca agranda)
 // ---------------------------------------------------------------------------
 async function toLetter(buffers) {
-  const { PDFDocument } = require('pdf-lib');
+  const { PDFDocument } = await import('pdf-lib');
   const out = await PDFDocument.create();
   for (const buf of buffers) {
     const src = await PDFDocument.load(buf);
@@ -123,7 +124,7 @@ const designSize = (heightPx) => ({ width: `${ORIG_W_IN}in`, height: heightPx ? 
 /** Si el boletín trae materias adicionales, lo parte en páginas; si no, devuelve null (modo simple). */
 async function splitBoletin(htmlText) {
   if (!htmlText.includes('materia-ext-page')) return null;
-  const cheerio = require('cheerio');
+  const cheerio = await import('cheerio');
   const $ = cheerio.load(htmlText);
   if (!$('.materia-ext-page').length) return null;
   const pageDivs = $('div.page').toArray();
