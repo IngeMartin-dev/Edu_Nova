@@ -7,7 +7,9 @@ import { createStore, useStore } from './store.js';
  * sondea las generaciones activas/recientes en TODA la app para que la notificación
  * de progreso aparezca en cualquier pantalla y sobreviva a un F5.
  */
-const POLL_INTERVAL_MS = 500;
+// Rápido solo mientras hay una generación en curso; en reposo, despacio (cada consulta es una función serverless + la base).
+const POLL_ACTIVE_MS = 1500;
+const POLL_IDLE_MS = 20000;
 const jobs = createStore([]);
 export const useGenerationJobs = () => useStore(jobs);
 
@@ -20,10 +22,16 @@ export const generation = {
   get currentJobs() { return jobs.get(); },
   startPolling() {
     if (handle) return;
-    this.refresh();
-    handle = setInterval(() => this.refresh(), POLL_INTERVAL_MS);
+    const loop = async () => {
+      await this.refresh();
+      if (!handle) return;
+      const active = (jobs.get() || []).some((j) => j.status === 'RUNNING');
+      handle = setTimeout(loop, active ? POLL_ACTIVE_MS : POLL_IDLE_MS);
+    };
+    handle = setTimeout(() => {}, 0);
+    loop();
   },
-  stopPolling() { clearInterval(handle); handle = null; },
+  stopPolling() { clearTimeout(handle); handle = null; },
   async refresh() {
     if (!localStorage.getItem('token')) return; // antes del login no se consulta
     try { jobs.set((await api.get('/boletines/generaciones')) || []); } catch (e) {
@@ -31,7 +39,11 @@ export const generation = {
     }
   },
   /** Inserta/actualiza un job de inmediato (optimista). */
-  upsertJobLocal(job) { jobs.set((cur) => [job, ...cur.filter((j) => j.jobId !== job.jobId)]); },
+  upsertJobLocal(job) {
+    jobs.set((cur) => [job, ...cur.filter((j) => j.jobId !== job.jobId)]);
+    // Despierta el sondeo para seguir el avance sin esperar al ciclo lento.
+    if (handle) { clearTimeout(handle); handle = null; generation.startPolling(); }
+  },
   /** Click en una notificación: navega a Boletines y deja marcado qué job enfocar. */
   openJob(job) {
     focusJobId = job.jobId;

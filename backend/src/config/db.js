@@ -26,7 +26,8 @@ if (env.db.ssl) poolConfig.ssl = { rejectUnauthorized: false }; // el pooler de 
 
 const pool = new Pool({
   ...poolConfig,
-  max: env.db.connectionLimit,
+  // En Vercel cada instancia es pequeña y hay muchas: pocas conexiones por instancia (Supabase tiene un cupo total).
+  max: process.env.VERCEL ? Math.min(env.db.connectionLimit, 3) : env.db.connectionLimit,
   idleTimeoutMillis: 10000,
   connectionTimeoutMillis: 15000,
   allowExitOnIdle: true,
