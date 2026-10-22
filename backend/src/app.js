@@ -139,4 +139,11 @@ function createApp() {
   return app;
 }
 
-module.exports = { createApp };
+// Vercel (autodetección de Express) puede tomar este archivo como entrada: debe exportar una función.
+let lazyApp = null;
+const handler = (req, res) => {
+  if (!lazyApp) { env.validate(); lazyApp = createApp(); }
+  return lazyApp(req, res);
+};
+handler.createApp = createApp;
+module.exports = handler;
