@@ -1176,9 +1176,7 @@
 
 
 /* ===== MODO OSCURO (auto) ===== */
-[data-theme="dark"] .pg-boletines {
-  .pg-boletines .sig-thumb { background: var(--surface); }
-}
+[data-theme="dark"] .pg-boletines .sig-thumb { background: var(--surface); }
 /* Materias perdidas del período (vista previa antes de generar) */
 .pg-boletines .lost-areas-card {
   border-left: 4px solid var(--danger);

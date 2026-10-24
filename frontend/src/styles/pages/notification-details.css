@@ -576,6 +576,4 @@
 }
 
 /* ===== MODO OSCURO (auto) ===== */
-[data-theme="dark"] .pg-notification-details {
-  .pg-notification-details .success-notification .notification-content h3 { color: var(--text-1); }
-}
+[data-theme="dark"] .pg-notification-details .success-notification .notification-content h3 { color: var(--text-1); }

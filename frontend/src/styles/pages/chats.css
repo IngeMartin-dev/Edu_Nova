@@ -697,15 +697,13 @@
 
 
 /* ===== MODO OSCURO (auto) ===== */
-[data-theme="dark"] .pg-chats {
-  .pg-chats .search-bar .material-icons { color: var(--text-3); }
-  .pg-chats .search-bar input { color: var(--text-1); }
-  .pg-chats .search-bar input::placeholder { color: var(--text-3); }
-  /* Empty State */
-.pg-chats .no-chats { color: var(--text-3); }
-  .pg-chats .no-chats h4 { color: var(--text-1); }
-  .pg-chats .no-chats p { color: var(--text-3); }
-}
+[data-theme="dark"] .pg-chats .search-bar .material-icons { color: var(--text-3); }
+[data-theme="dark"] .pg-chats .search-bar input { color: var(--text-1); }
+[data-theme="dark"] .pg-chats .search-bar input::placeholder { color: var(--text-3); }
+/* Empty State */
+[data-theme="dark"] .pg-chats .no-chats { color: var(--text-3); }
+[data-theme="dark"] .pg-chats .no-chats h4 { color: var(--text-1); }
+[data-theme="dark"] .pg-chats .no-chats p { color: var(--text-3); }
 /* ============================================================
    Fase 3 — Adjuntos, imágenes, GIFs y stickers en el chat
    ============================================================ */

@@ -1326,39 +1326,33 @@
 /* ============================================================
    MODO OSCURO — Tech / Cyberpunk (recuperaciones)
    ============================================================ */
-[data-theme="dark"] .pg-recoveries {
-  /* Fase 4: fondos claros fijos que quedaban blancos en modo oscuro. */
-  .pg-recoveries .grades-sidebar { background: var(--surface); }
-  .pg-recoveries .right-content { background: var(--surface); }
-  .pg-recoveries .recoveries-list { background: var(--surface); }
-  .pg-recoveries .no-students-content { background: var(--surface); }
-  .pg-recoveries .recoveries-container { background: var(--bg); }
-
-  .pg-recoveries .grades-sidebar,
-  .pg-recoveries .right-content,
-  .pg-recoveries .recoveries-list {
+/* Fase 4: fondos claros fijos que quedaban blancos en modo oscuro. */
+[data-theme="dark"] .pg-recoveries .grades-sidebar { background: var(--surface); }
+[data-theme="dark"] .pg-recoveries .right-content { background: var(--surface); }
+[data-theme="dark"] .pg-recoveries .recoveries-list { background: var(--surface); }
+[data-theme="dark"] .pg-recoveries .no-students-content { background: var(--surface); }
+[data-theme="dark"] .pg-recoveries .recoveries-container { background: var(--bg); }
+[data-theme="dark"] .pg-recoveries .grades-sidebar,
+[data-theme="dark"] .pg-recoveries .right-content,
+[data-theme="dark"] .pg-recoveries .recoveries-list {
     background: var(--surface);
   }
-
-  .pg-recoveries .grades-sidebar { border-right: 1px solid var(--border); }
-
-  .pg-recoveries .loading-indicator p { color: var(--text-3); }
-  .pg-recoveries .no-students-message { color: var(--text-3); }
-
-  .pg-recoveries .grade-range-indicator {
+[data-theme="dark"] .pg-recoveries .grades-sidebar { border-right: 1px solid var(--border); }
+[data-theme="dark"] .pg-recoveries .loading-indicator p { color: var(--text-3); }
+[data-theme="dark"] .pg-recoveries .no-students-message { color: var(--text-3); }
+[data-theme="dark"] .pg-recoveries .grade-range-indicator {
     background: linear-gradient(135deg, var(--brand-50), rgba(181, 8, 210, 0.05));
     border: 1px solid var(--brand-100);
     color: var(--brand-500);
   }
-
-  /* Selector de períodos */
-  .pg-recoveries .period-selector {
+/* Selector de períodos */
+[data-theme="dark"] .pg-recoveries .period-selector {
     background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
     border-left: 4px solid var(--brand);
     color: var(--text-2);
   }
-  .pg-recoveries .period-selector label { color: var(--text-2); }
-  .pg-recoveries .period-selector select {
+[data-theme="dark"] .pg-recoveries .period-selector label { color: var(--text-2); }
+[data-theme="dark"] .pg-recoveries .period-selector select {
     background: var(--bg);
     color: var(--text-1);
     border: 2px solid var(--border-strong);
@@ -1370,163 +1364,167 @@
     background-position: right 0.7rem center;
     padding-right: 2.2rem;
   }
-  .pg-recoveries .period-selector select option { background: var(--surface-2); color: var(--text-1); }
-  .pg-recoveries .period-selector select:focus {
+[data-theme="dark"] .pg-recoveries .period-selector select option { background: var(--surface-2); color: var(--text-1); }
+[data-theme="dark"] .pg-recoveries .period-selector select:focus {
     outline: none;
     border-color: var(--brand);
     box-shadow: 0 0 0 3px rgba(181, 8, 210, 0.2), 0 0 14px rgba(181, 8, 210, 0.25);
   }
-  .pg-recoveries .period-selector select:hover { border-color: var(--brand); }
-
-  /* Botones de grado/aula */
-  .pg-recoveries .classroom-btn {
+[data-theme="dark"] .pg-recoveries .period-selector select:hover { border-color: var(--brand); }
+/* Botones de grado/aula */
+[data-theme="dark"] .pg-recoveries .classroom-btn {
     background: linear-gradient(135deg, var(--brand) 0%, var(--brand-400) 100%);
     color: #18041a;
     box-shadow: 0 4px 14px rgba(181, 8, 210, 0.3);
   }
-  .pg-recoveries .classroom-btn:hover { background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand) 100%); }
-  .pg-recoveries .classroom-btn.selected {
+[data-theme="dark"] .pg-recoveries .classroom-btn:hover { background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand) 100%); }
+[data-theme="dark"] .pg-recoveries .classroom-btn.selected {
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent-600) 100%);
     box-shadow: 0 0 16px rgba(168, 85, 247, 0.5);
   }
-
-  /* Tarjetas de recuperación */
-  .pg-recoveries .recovery-card {
+/* Tarjetas de recuperación */
+[data-theme="dark"] .pg-recoveries .recovery-card {
     background: var(--surface);
     border: 1px solid rgba(156, 148, 184, 0.1);
     box-shadow: var(--shadow-md);
   }
-  .pg-recoveries .recovery-card:hover {
+[data-theme="dark"] .pg-recoveries .recovery-card:hover {
     border-color: rgba(181, 8, 210, 0.4);
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 22px rgba(181, 8, 210, 0.18);
   }
-
-  .pg-recoveries .grade-section {
+[data-theme="dark"] .pg-recoveries .grade-section {
     background: var(--surface-2);
     color: var(--text-2);
   }
-  .pg-recoveries .grade-section h3 { color: var(--text-1); }
-
-  .pg-recoveries .student-info p { color: var(--text-3); }
-  .pg-recoveries .student-info strong,
-  .pg-recoveries .grade-info .label { color: var(--text-2); }
-
-  .pg-recoveries .grade-value.grade-green { background: rgba(52, 211, 153, 0.16); color: #6ee7b7; }
-  .pg-recoveries .grade-value.grade-yellow { background: rgba(251, 191, 36, 0.16); color: #fcd34d; }
-  .pg-recoveries .grade-value.grade-red { background: rgba(239, 68, 68, 0.16); color: #fca5a5; }
-
-  /* Preview del plan (dentro de la tarjeta) */
-  .pg-recoveries .plan-preview {
+[data-theme="dark"] .pg-recoveries .grade-section h3 { color: var(--text-1); }
+[data-theme="dark"] .pg-recoveries .student-info p { color: var(--text-3); }
+[data-theme="dark"] .pg-recoveries .student-info strong,
+[data-theme="dark"] .pg-recoveries .grade-info .label { color: var(--text-2); }
+[data-theme="dark"] .pg-recoveries .grade-value.grade-green { background: rgba(52, 211, 153, 0.16); color: #6ee7b7; }
+[data-theme="dark"] .pg-recoveries .grade-value.grade-yellow { background: rgba(251, 191, 36, 0.16); color: #fcd34d; }
+[data-theme="dark"] .pg-recoveries .grade-value.grade-red { background: rgba(239, 68, 68, 0.16); color: #fca5a5; }
+/* Preview del plan (dentro de la tarjeta) */
+[data-theme="dark"] .pg-recoveries .plan-preview {
     background: var(--surface-2);
     border: 1px solid var(--border);
   }
-  .pg-recoveries .day-badge.day1 {
+[data-theme="dark"] .pg-recoveries .day-badge.day1 {
     background: rgba(181, 8, 210, 0.14);
     color: var(--brand-500);
     border: 1px solid rgba(181, 8, 210, 0.3);
   }
-  .pg-recoveries .day-badge.day2 {
+[data-theme="dark"] .pg-recoveries .day-badge.day2 {
     background: rgba(168, 85, 247, 0.14);
     color: #d8b4fe;
     border: 1px solid rgba(168, 85, 247, 0.3);
   }
-  .pg-recoveries .plan-topics { color: var(--text-2); }
-
-  .pg-recoveries .no-plan {
+[data-theme="dark"] .pg-recoveries .plan-topics { color: var(--text-2); }
+[data-theme="dark"] .pg-recoveries .no-plan {
     background: rgba(239, 68, 68, 0.10);
     border: 1px solid rgba(239, 68, 68, 0.35);
   }
-  .pg-recoveries .no-plan p { color: #fca5a5; }
-
-  .pg-recoveries .subject-selector { background: var(--surface-2); }
-  .pg-recoveries .subject-selector .subject-btn {
+[data-theme="dark"] .pg-recoveries .no-plan p { color: #fca5a5; }
+[data-theme="dark"] .pg-recoveries .subject-selector { background: var(--surface-2); }
+[data-theme="dark"] .pg-recoveries .subject-selector .subject-btn {
     background: var(--surface);
     color: var(--text-2);
     border-color: var(--border-strong);
   }
-  .pg-recoveries .subject-selector .subject-btn:hover { background: var(--brand-50); color: var(--brand-500); }
-  .pg-recoveries .subject-selector .subject-btn.active {
+[data-theme="dark"] .pg-recoveries .subject-selector .subject-btn:hover { background: var(--brand-50); color: var(--brand-500); }
+[data-theme="dark"] .pg-recoveries .subject-selector .subject-btn.active {
     background: var(--brand);
     color: #18041a;
     border-color: var(--brand);
     box-shadow: 0 0 14px rgba(181, 8, 210, 0.4);
   }
-
-  .pg-recoveries .no-students-content { background: var(--surface); color: var(--text-2); }
-  .pg-recoveries .no-students-content h3 { color: var(--text-1); }
-  .pg-recoveries .no-students-content p { color: var(--text-3); }
-
-  .pg-recoveries .placeholder { color: var(--text-3); }
-
-  .pg-recoveries .spinner { color: var(--text-3); }
-}
+[data-theme="dark"] .pg-recoveries .no-students-content { background: var(--surface); color: var(--text-2); }
+[data-theme="dark"] .pg-recoveries .no-students-content h3 { color: var(--text-1); }
+[data-theme="dark"] .pg-recoveries .no-students-content p { color: var(--text-3); }
+[data-theme="dark"] .pg-recoveries .placeholder { color: var(--text-3); }
+[data-theme="dark"] .pg-recoveries .spinner { color: var(--text-3); }
 /* ── Plan de estudio en modo oscuro ───────────────────────────────────
    El contenido generado por la IA trae fondos claros "en línea" (hojas
    blancas, tarjetas de cada día) mientras el texto heredaba el color claro
    del tema: quedaba texto claro sobre blanco. Se oscurece todo el contenido
    y se fuerzan colores legibles (!important para ganarle a los estilos en línea). */
-[data-theme="dark"] .pg-recoveries {
-  .pg-recoveries .plan-text,
-  .pg-recoveries .plan-text div,
-  .pg-recoveries .plan-text section,
-  .pg-recoveries .plan-text article,
-  .pg-recoveries .plan-text aside,
-  .pg-recoveries .plan-text p,
-  .pg-recoveries .plan-text li,
-  .pg-recoveries .plan-text span,
-  .pg-recoveries .plan-text td,
-  .pg-recoveries .plan-text blockquote,
-  .pg-recoveries .plan-text h1,
-  .pg-recoveries .plan-text h2,
-  .pg-recoveries .plan-text h3,
-  .pg-recoveries .plan-text h4,
-  .pg-recoveries .plan-text h5,
-  .pg-recoveries .plan-text h6,
-  .pg-recoveries .plan-text strong,
-  .pg-recoveries .plan-text b,
-  .pg-recoveries .plan-text em,
-  .pg-recoveries .plan-text i,
-  .pg-recoveries .plan-text label {
+[data-theme="dark"] .pg-recoveries .plan-text,
+[data-theme="dark"] .pg-recoveries .plan-text div,
+[data-theme="dark"] .pg-recoveries .plan-text section,
+[data-theme="dark"] .pg-recoveries .plan-text article,
+[data-theme="dark"] .pg-recoveries .plan-text aside,
+[data-theme="dark"] .pg-recoveries .plan-text p,
+[data-theme="dark"] .pg-recoveries .plan-text li,
+[data-theme="dark"] .pg-recoveries .plan-text span,
+[data-theme="dark"] .pg-recoveries .plan-text td,
+[data-theme="dark"] .pg-recoveries .plan-text blockquote,
+[data-theme="dark"] .pg-recoveries .plan-text h1,
+[data-theme="dark"] .pg-recoveries .plan-text h2,
+[data-theme="dark"] .pg-recoveries .plan-text h3,
+[data-theme="dark"] .pg-recoveries .plan-text h4,
+[data-theme="dark"] .pg-recoveries .plan-text h5,
+[data-theme="dark"] .pg-recoveries .plan-text h6,
+[data-theme="dark"] .pg-recoveries .plan-text strong,
+[data-theme="dark"] .pg-recoveries .plan-text b,
+[data-theme="dark"] .pg-recoveries .plan-text em,
+[data-theme="dark"] .pg-recoveries .plan-text i,
+[data-theme="dark"] .pg-recoveries .plan-text label {
     color: #e6e5eb !important;
   }
-  .pg-recoveries .plan-text div, .pg-recoveries .plan-text section, .pg-recoveries .plan-text article, .pg-recoveries .plan-text aside, .pg-recoveries .plan-text blockquote, .pg-recoveries .plan-text ul, .pg-recoveries .plan-text ol {
+[data-theme="dark"] .pg-recoveries .plan-text div,
+[data-theme="dark"] .pg-recoveries .plan-text section,
+[data-theme="dark"] .pg-recoveries .plan-text article,
+[data-theme="dark"] .pg-recoveries .plan-text aside,
+[data-theme="dark"] .pg-recoveries .plan-text blockquote,
+[data-theme="dark"] .pg-recoveries .plan-text ul,
+[data-theme="dark"] .pg-recoveries .plan-text ol {
     background: transparent !important;
     background-color: transparent !important;
     border-color: #3a3355 !important;
   }
-  /* Tarjetas / hojas: fondo oscuro suave para distinguirlas */
-  .pg-recoveries .plan-text div[style*="border"], .pg-recoveries .plan-text section, .pg-recoveries .plan-text article, .pg-recoveries .plan-text .day-card, .pg-recoveries .plan-text .card {
+/* Tarjetas / hojas: fondo oscuro suave para distinguirlas */
+[data-theme="dark"] .pg-recoveries .plan-text div[style*="border"],
+[data-theme="dark"] .pg-recoveries .plan-text section,
+[data-theme="dark"] .pg-recoveries .plan-text article,
+[data-theme="dark"] .pg-recoveries .plan-text .day-card,
+[data-theme="dark"] .pg-recoveries .plan-text .card {
     background-color: #251e3b !important;
   }
-  .pg-recoveries .plan-text h1, .pg-recoveries .plan-text h2, .pg-recoveries .plan-text h3 { color: #f9f8fc !important; }
-  .pg-recoveries .plan-text strong, .pg-recoveries .plan-text b { color: #a894fc !important; }
-  .pg-recoveries .plan-text a { color: #f27efb !important; }
-  .pg-recoveries .plan-text li::marker { color: #7f62f8; }
-  .pg-recoveries .plan-text ol li, .pg-recoveries .plan-text .ai-list li, .pg-recoveries .plan-text ul li { background: #251e3b !important; border-color: #3a3355 !important; }
-
-  /* Tablas del plan */
-  .pg-recoveries .plan-text table, .pg-recoveries .plan-text .ai-table { border-color: #653df4 !important; }
-  .pg-recoveries .plan-text .ai-table th, .pg-recoveries .plan-text table th { color: #fff !important; background: linear-gradient(135deg, #461fae 0%, #5627e9 50%, #4f1fd6 100%) !important; }
-  .pg-recoveries .plan-text .ai-table td, .pg-recoveries .plan-text table td { background: #251e3b !important; border-color: #3a3355 !important; color: #e6e5eb !important; }
-  .pg-recoveries .plan-text .ai-table tr:nth-child(2n) td, .pg-recoveries .plan-text table tr:nth-child(2n) td { background: #1e1733 !important; }
-  .pg-recoveries .plan-text .ai-table tr:hover td { background: #2c1f5e !important; }
-
-  /* Encabezados con degradado: se mantiene texto blanco / azul legible */
-  .pg-recoveries .plan-text .ai-h2 { color: #fff !important; }
-  .pg-recoveries .plan-text .ai-h3 { background: rgba(86, 39, 233, 0.25) !important; color: #ccc0fd !important; }
-  .pg-recoveries .plan-text .ai-h4 { background: #251e3b !important; color: #cfcbe1 !important; }
-
-  /* Videos */
-  .pg-recoveries .plan-text .video-card { background: #251e3b !important; border-color: #3a3355 !important; }
-  .pg-recoveries .plan-text .video-content .video-link { color: #f27efb !important; }
-  .pg-recoveries .plan-text .video-source { background: #160f2a !important; color: #9c94b8 !important; }
-  .pg-recoveries .plan-text .no-videos-message { background: #251e3b !important; color: #9c94b8 !important; border-color: #4e4769 !important; }
-  .pg-recoveries .plan-text .video-unavailable { background: rgba(239, 68, 68, 0.15) !important; border-color: rgba(239, 68, 68, 0.4) !important; }
-  .pg-recoveries .plan-text .video-unavailable, .pg-recoveries .plan-text .video-unavailable-title, .pg-recoveries .plan-text .video-unavailable-message, .pg-recoveries .plan-text .video-unavailable-url { color: #fca5a5 !important; }
-
-  /* Fórmulas (KaTeX) heredan el color del texto */
-  .pg-recoveries .plan-text .katex, .pg-recoveries .plan-text .katex * { color: #e6e5eb !important; }
-
-  /* Título del plan y contenedor */
-  .pg-recoveries .plan-content-fullscreen { background: #160f2a; border-color: #251e3b; box-shadow: none; }
-}
+[data-theme="dark"] .pg-recoveries .plan-text h1,
+[data-theme="dark"] .pg-recoveries .plan-text h2,
+[data-theme="dark"] .pg-recoveries .plan-text h3 { color: #f9f8fc !important; }
+[data-theme="dark"] .pg-recoveries .plan-text strong,
+[data-theme="dark"] .pg-recoveries .plan-text b { color: #a894fc !important; }
+[data-theme="dark"] .pg-recoveries .plan-text a { color: #f27efb !important; }
+[data-theme="dark"] .pg-recoveries .plan-text li::marker { color: #7f62f8; }
+[data-theme="dark"] .pg-recoveries .plan-text ol li,
+[data-theme="dark"] .pg-recoveries .plan-text .ai-list li,
+[data-theme="dark"] .pg-recoveries .plan-text ul li { background: #251e3b !important; border-color: #3a3355 !important; }
+/* Tablas del plan */
+[data-theme="dark"] .pg-recoveries .plan-text table,
+[data-theme="dark"] .pg-recoveries .plan-text .ai-table { border-color: #653df4 !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .ai-table th,
+[data-theme="dark"] .pg-recoveries .plan-text table th { color: #fff !important; background: linear-gradient(135deg, #461fae 0%, #5627e9 50%, #4f1fd6 100%) !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .ai-table td,
+[data-theme="dark"] .pg-recoveries .plan-text table td { background: #251e3b !important; border-color: #3a3355 !important; color: #e6e5eb !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .ai-table tr:nth-child(2n) td,
+[data-theme="dark"] .pg-recoveries .plan-text table tr:nth-child(2n) td { background: #1e1733 !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .ai-table tr:hover td { background: #2c1f5e !important; }
+/* Encabezados con degradado: se mantiene texto blanco / azul legible */
+[data-theme="dark"] .pg-recoveries .plan-text .ai-h2 { color: #fff !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .ai-h3 { background: rgba(86, 39, 233, 0.25) !important; color: #ccc0fd !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .ai-h4 { background: #251e3b !important; color: #cfcbe1 !important; }
+/* Videos */
+[data-theme="dark"] .pg-recoveries .plan-text .video-card { background: #251e3b !important; border-color: #3a3355 !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .video-content .video-link { color: #f27efb !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .video-source { background: #160f2a !important; color: #9c94b8 !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .no-videos-message { background: #251e3b !important; color: #9c94b8 !important; border-color: #4e4769 !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .video-unavailable { background: rgba(239, 68, 68, 0.15) !important; border-color: rgba(239, 68, 68, 0.4) !important; }
+[data-theme="dark"] .pg-recoveries .plan-text .video-unavailable,
+[data-theme="dark"] .pg-recoveries .plan-text .video-unavailable-title,
+[data-theme="dark"] .pg-recoveries .plan-text .video-unavailable-message,
+[data-theme="dark"] .pg-recoveries .plan-text .video-unavailable-url { color: #fca5a5 !important; }
+/* Fórmulas (KaTeX) heredan el color del texto */
+[data-theme="dark"] .pg-recoveries .plan-text .katex,
+[data-theme="dark"] .pg-recoveries .plan-text .katex * { color: #e6e5eb !important; }
+/* Título del plan y contenedor */
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen { background: #160f2a; border-color: #251e3b; box-shadow: none; }

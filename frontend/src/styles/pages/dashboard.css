@@ -1202,311 +1202,250 @@
 /* ============================================================
    MODO OSCURO — Tech / Cyberpunk (aplica dentro del componente)
    ============================================================ */
-[data-theme="dark"] .pg-dashboard {
-  .pg-dashboard .dashboard-header h1 {
+[data-theme="dark"] .pg-dashboard .dashboard-header h1 {
     color: var(--text-1);
     text-shadow: 0 0 16px rgba(232, 58, 246, 0.2);
   }
-
-  .pg-dashboard .dashboard-header p {
+[data-theme="dark"] .pg-dashboard .dashboard-header p {
     color: var(--text-3);
   }
-
-  /* Stat cards */
-  .pg-dashboard .stat-card {
+/* Stat cards */
+[data-theme="dark"] .pg-dashboard .stat-card {
     background: var(--surface);
     border: 1px solid rgba(156, 148, 184, 0.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
-
-  .pg-dashboard .stat-card:hover {
+[data-theme="dark"] .pg-dashboard .stat-card:hover {
     transform: translateY(-4px);
     border-color: rgba(181, 8, 210, 0.4);
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 22px rgba(181, 8, 210, 0.2);
   }
-
-  .pg-dashboard .stat-icon {
+[data-theme="dark"] .pg-dashboard .stat-icon {
     background: linear-gradient(135deg, var(--brand) 0%, var(--brand-600) 100%);
     box-shadow: 0 4px 14px rgba(181, 8, 210, 0.4);
     color: #18041a;
   }
-
-  .pg-dashboard .stat-info h3 {
+[data-theme="dark"] .pg-dashboard .stat-info h3 {
     color: var(--text-1);
     text-shadow: 0 0 12px rgba(232, 58, 246, 0.15);
   }
-
-  .pg-dashboard .stat-info p {
+[data-theme="dark"] .pg-dashboard .stat-info p {
     color: var(--text-3);
   }
-
-  /* Quick actions */
-  .pg-dashboard .quick-actions h2,
-  .pg-dashboard .recent-activity h2 {
+/* Quick actions */
+[data-theme="dark"] .pg-dashboard .quick-actions h2,
+[data-theme="dark"] .pg-dashboard .recent-activity h2 {
     color: var(--text-1);
   }
-
-  .pg-dashboard .action-btn {
+[data-theme="dark"] .pg-dashboard .action-btn {
     background: var(--surface);
     border: 2px solid var(--border-strong);
     color: var(--text-2);
   }
-
-  .pg-dashboard .action-btn:hover {
+[data-theme="dark"] .pg-dashboard .action-btn:hover {
     border-color: var(--brand);
     background: var(--brand-50);
     color: var(--brand-500);
     transform: translateY(-2px);
     box-shadow: 0 8px 22px rgba(181, 8, 210, 0.18), 0 0 18px rgba(181, 8, 210, 0.2);
   }
-
-  .pg-dashboard .action-btn .material-icons {
+[data-theme="dark"] .pg-dashboard .action-btn .material-icons {
     color: var(--brand-500);
     filter: drop-shadow(0 0 8px rgba(232, 58, 246, 0.45));
   }
-
-  .pg-dashboard .action-btn span:last-child {
+[data-theme="dark"] .pg-dashboard .action-btn span:last-child {
     color: inherit;
   }
-
-  /* Activity content */
-  .pg-dashboard .activity-item {
+/* Activity content */
+[data-theme="dark"] .pg-dashboard .activity-item {
     background: var(--surface);
     border: 1px solid rgba(156, 148, 184, 0.1);
   }
-
-  .pg-dashboard .activity-item:hover {
+[data-theme="dark"] .pg-dashboard .activity-item:hover {
     border-color: rgba(181, 8, 210, 0.4);
     box-shadow: 0 0 18px rgba(181, 8, 210, 0.15);
   }
-
-  .pg-dashboard .activity-icon {
+[data-theme="dark"] .pg-dashboard .activity-icon {
     background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
     color: #04231a;
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
   }
-
-  .pg-dashboard .activity-content p {
+[data-theme="dark"] .pg-dashboard .activity-content p {
     color: var(--text-1);
   }
-
-  .pg-dashboard .activity-content small {
+[data-theme="dark"] .pg-dashboard .activity-content small {
     color: var(--text-3);
   }
-
-  /* Empty state */
-  .pg-dashboard .empty-activity {
+/* Empty state */
+[data-theme="dark"] .pg-dashboard .empty-activity {
     color: var(--text-3);
   }
-
-  .pg-dashboard .empty-activity p {
+[data-theme="dark"] .pg-dashboard .empty-activity p {
     color: var(--text-2);
   }
-
-  .pg-dashboard .empty-activity small {
+[data-theme="dark"] .pg-dashboard .empty-activity small {
     color: var(--text-3);
   }
-
-  .pg-dashboard .mini-spinner {
+[data-theme="dark"] .pg-dashboard .mini-spinner {
     border-color: rgba(156, 148, 184, 0.25);
     border-top-color: var(--brand);
   }
-
-  /* Profile card */
-  .pg-dashboard .profile-card {
+/* Profile card */
+[data-theme="dark"] .pg-dashboard .profile-card {
     background: linear-gradient(135deg, #160f2a 0%, #4a1de9 60%, #b508d2 100%);
     box-shadow: 0 8px 32px rgba(181, 8, 210, 0.18);
     border: 1px solid rgba(181, 8, 210, 0.25);
   }
-
-  .pg-dashboard .profile-info h2 {
+[data-theme="dark"] .pg-dashboard .profile-info h2 {
     color: #f2f1f9;
   }
-
-  .pg-dashboard .profile-name {
+[data-theme="dark"] .pg-dashboard .profile-name {
     color: rgba(242, 241, 249, 0.9);
   }
-
-  .pg-dashboard .profile-role {
+[data-theme="dark"] .pg-dashboard .profile-role {
     color: rgba(242, 241, 249, 0.7);
   }
-
-  /* Countdown */
-  .pg-dashboard .countdown-timer-section {
+/* Countdown */
+[data-theme="dark"] .pg-dashboard .countdown-timer-section {
     background: linear-gradient(135deg, #3e17c7 0%, #6d28d9 100%);
     box-shadow: 0 10px 40px rgba(109, 40, 217, 0.35);
   }
-
-  .pg-dashboard .countdown-setup-btn {
+[data-theme="dark"] .pg-dashboard .countdown-setup-btn {
     background: linear-gradient(135deg, #b508d2 0%, #a855f7 100%);
     color: #18041a;
     box-shadow: 0 4px 16px rgba(181, 8, 210, 0.4);
   }
-
-  .pg-dashboard .countdown-setup-btn:hover {
+[data-theme="dark"] .pg-dashboard .countdown-setup-btn:hover {
     box-shadow: 0 6px 22px rgba(168, 85, 247, 0.55);
   }
-
-  /* Modal */
-  .pg-dashboard .modal-overlay {
+/* Modal */
+[data-theme="dark"] .pg-dashboard .modal-overlay {
     background: rgba(7, 3, 18, 0.7);
     backdrop-filter: blur(4px);
   }
-
-  .pg-dashboard .modal-content {
+[data-theme="dark"] .pg-dashboard .modal-content {
     background: var(--surface);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-lg), 0 0 40px rgba(181, 8, 210, 0.08);
   }
-
-  .pg-dashboard .modal-header {
+[data-theme="dark"] .pg-dashboard .modal-header {
     background: var(--surface-2);
     border-bottom-color: var(--border);
   }
-
-  .pg-dashboard .modal-header h3 {
+[data-theme="dark"] .pg-dashboard .modal-header h3 {
     color: var(--text-1);
   }
-
-  .pg-dashboard .close-button {
+[data-theme="dark"] .pg-dashboard .close-button {
     color: var(--text-3);
   }
-
-  .pg-dashboard .close-button:hover {
+[data-theme="dark"] .pg-dashboard .close-button:hover {
     background: var(--border-strong);
     color: var(--text-1);
   }
-
-  .pg-dashboard .modal-body {
+[data-theme="dark"] .pg-dashboard .modal-body {
     background: var(--surface);
   }
-
-  .pg-dashboard .form-group label {
+[data-theme="dark"] .pg-dashboard .form-group label {
     color: var(--text-2);
   }
-
-  .pg-dashboard .form-group input,
-  .pg-dashboard .form-group select {
+[data-theme="dark"] .pg-dashboard .form-group input,
+[data-theme="dark"] .pg-dashboard .form-group select {
     background: var(--bg);
     color: var(--text-1);
     border-color: var(--border-strong);
   }
-
-  .pg-dashboard .form-group input:focus,
-  .pg-dashboard .form-group select:focus {
+[data-theme="dark"] .pg-dashboard .form-group input:focus,
+[data-theme="dark"] .pg-dashboard .form-group select:focus {
     border-color: var(--brand);
     box-shadow: 0 0 0 3px rgba(181, 8, 210, 0.2), 0 0 14px rgba(181, 8, 210, 0.25);
   }
-
-  .pg-dashboard .modal-actions {
+[data-theme="dark"] .pg-dashboard .modal-actions {
     border-top-color: var(--border);
   }
-
-  .pg-dashboard .cancel-button {
+[data-theme="dark"] .pg-dashboard .cancel-button {
     background: var(--surface-2);
     color: var(--text-2);
     border: 1px solid var(--border-strong);
   }
-
-  .pg-dashboard .cancel-button:hover {
+[data-theme="dark"] .pg-dashboard .cancel-button:hover {
     background: var(--border-strong);
   }
-
-  .pg-dashboard .save-button {
+[data-theme="dark"] .pg-dashboard .save-button {
     background: var(--brand);
     color: #18041a;
     box-shadow: 0 4px 14px rgba(181, 8, 210, 0.35);
   }
-
-  .pg-dashboard .save-button:hover:not(:disabled) {
+[data-theme="dark"] .pg-dashboard .save-button:hover:not(:disabled) {
     background: var(--brand-500);
   }
-
-  .pg-dashboard .primary-button {
+[data-theme="dark"] .pg-dashboard .primary-button {
     background: var(--success);
     color: #04231a;
     box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
   }
-
-  .pg-dashboard .primary-button:hover {
+[data-theme="dark"] .pg-dashboard .primary-button:hover {
     background: #059669;
   }
-
-  .pg-dashboard .modal-description {
+[data-theme="dark"] .pg-dashboard .modal-description {
     background: var(--brand-50);
     border: 1px solid var(--brand-100);
   }
-
-  .pg-dashboard .modal-description p {
+[data-theme="dark"] .pg-dashboard .modal-description p {
     color: var(--brand-500);
   }
-
-  .pg-dashboard .current-grades h4,
-  .pg-dashboard .current-subjects h4,
-  .pg-dashboard .reports-section h4 {
+[data-theme="dark"] .pg-dashboard .current-grades h4,
+[data-theme="dark"] .pg-dashboard .current-subjects h4,
+[data-theme="dark"] .pg-dashboard .reports-section h4 {
     color: var(--text-1);
   }
-
-  .pg-dashboard .grade-item,
-  .pg-dashboard .subject-item {
+[data-theme="dark"] .pg-dashboard .grade-item,
+[data-theme="dark"] .pg-dashboard .subject-item {
     background: var(--surface-2);
     color: var(--text-2);
     border: 1px solid var(--border-strong);
   }
-
-  .pg-dashboard .report-card {
+[data-theme="dark"] .pg-dashboard .report-card {
     background: var(--surface);
     border: 1px solid var(--border);
   }
-
-  .pg-dashboard .report-card:hover {
+[data-theme="dark"] .pg-dashboard .report-card:hover {
     background: var(--brand-50);
     border-color: var(--brand);
     box-shadow: 0 0 16px rgba(181, 8, 210, 0.18);
   }
-
-  .pg-dashboard .report-info h5 {
+[data-theme="dark"] .pg-dashboard .report-info h5 {
     color: var(--text-1);
   }
-
-  .pg-dashboard .report-info p {
+[data-theme="dark"] .pg-dashboard .report-info p {
     color: var(--text-3);
   }
-
-  /* Notificación personalizada */
-  .pg-dashboard .notification-content {
+/* Notificación personalizada */
+[data-theme="dark"] .pg-dashboard .notification-content {
     background: var(--surface);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-lg);
   }
-
-  .pg-dashboard .notification-title {
+[data-theme="dark"] .pg-dashboard .notification-title {
     color: var(--text-1);
   }
-
-  .pg-dashboard .notification-success .notification-title,
-  .pg-dashboard .notification-success .notification-message {
+[data-theme="dark"] .pg-dashboard .notification-success .notification-title,
+[data-theme="dark"] .pg-dashboard .notification-success .notification-message {
     color: var(--success);
   }
-
-  .pg-dashboard .notification-error .notification-title,
-  .pg-dashboard .notification-error .notification-message {
+[data-theme="dark"] .pg-dashboard .notification-error .notification-title,
+[data-theme="dark"] .pg-dashboard .notification-error .notification-message {
     color: #fca5a5;
   }
-
-  .pg-dashboard .notification-message {
+[data-theme="dark"] .pg-dashboard .notification-message {
     color: var(--text-2);
   }
-
-  .pg-dashboard .notification-close {
+[data-theme="dark"] .pg-dashboard .notification-close {
     color: var(--text-3);
   }
-
-  .pg-dashboard .notification-close:hover {
+[data-theme="dark"] .pg-dashboard .notification-close:hover {
     background: var(--surface-2);
     color: var(--text-1);
   }
-}
 
 /* ======================================================================
    REDISEÑO: banner por rol, accesos rápidos, escala y vista previa

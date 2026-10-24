@@ -1213,36 +1213,35 @@
 }
 
 /* ===== MODO OSCURO (auto) ===== */
-[data-theme="dark"] .pg-grades {
-  .pg-grades .grade-input:focus,
-.pg-grades .recovery-cell .grade-input:focus { background: var(--surface); }
-  .pg-grades .no-students-content h3 { color: var(--text-2); }
-  .pg-grades .plan-content-fullscreen { background: var(--surface); }
-  .pg-grades .plan-text { color: var(--text-1); }
-  .pg-grades .plan-text h4 { color: var(--text-2); }
-  .pg-grades .plan-text h4 { background: var(--surface-2); }
-  .pg-grades .plan-text .ai-list li, .pg-grades .plan-text ul li { background: var(--surface); }
-  .pg-grades .plan-text ol li { background: var(--surface); }
-  .pg-grades .plan-text .video-card { background: var(--surface); }
-  .pg-grades .plan-text .video-source { color: var(--text-3); }
-  .pg-grades .plan-text .video-source { background: var(--surface-2); }
-  .pg-grades .plan-text .no-videos-message { background: var(--surface); }
-  .pg-grades .plan-text .no-videos-message { color: var(--text-3); }
-  .pg-grades .plan-text .ai-h4 { background: var(--surface-2); }
-  .pg-grades .plan-text .ai-h4 { color: var(--text-2); }
-  .pg-grades .plan-text .ai-table td, .pg-grades .plan-content-fullscreen .ai-table td { background: var(--surface); }
-  .pg-grades .plan-text .ai-table tr:nth-child(2n) td { background: var(--surface); }
-
-  /* Fase 4: texto/fondos fijos que quedaban ilegibles en modo oscuro
+[data-theme="dark"] .pg-grades .grade-input:focus,
+[data-theme="dark"] .pg-grades .recovery-cell .grade-input:focus { background: var(--surface); }
+[data-theme="dark"] .pg-grades .no-students-content h3 { color: var(--text-2); }
+[data-theme="dark"] .pg-grades .plan-content-fullscreen { background: var(--surface); }
+[data-theme="dark"] .pg-grades .plan-text { color: var(--text-1); }
+[data-theme="dark"] .pg-grades .plan-text h4 { color: var(--text-2); }
+[data-theme="dark"] .pg-grades .plan-text h4 { background: var(--surface-2); }
+[data-theme="dark"] .pg-grades .plan-text .ai-list li,
+[data-theme="dark"] .pg-grades .plan-text ul li { background: var(--surface); }
+[data-theme="dark"] .pg-grades .plan-text ol li { background: var(--surface); }
+[data-theme="dark"] .pg-grades .plan-text .video-card { background: var(--surface); }
+[data-theme="dark"] .pg-grades .plan-text .video-source { color: var(--text-3); }
+[data-theme="dark"] .pg-grades .plan-text .video-source { background: var(--surface-2); }
+[data-theme="dark"] .pg-grades .plan-text .no-videos-message { background: var(--surface); }
+[data-theme="dark"] .pg-grades .plan-text .no-videos-message { color: var(--text-3); }
+[data-theme="dark"] .pg-grades .plan-text .ai-h4 { background: var(--surface-2); }
+[data-theme="dark"] .pg-grades .plan-text .ai-h4 { color: var(--text-2); }
+[data-theme="dark"] .pg-grades .plan-text .ai-table td,
+[data-theme="dark"] .pg-grades .plan-content-fullscreen .ai-table td { background: var(--surface); }
+[data-theme="dark"] .pg-grades .plan-text .ai-table tr:nth-child(2n) td { background: var(--surface); }
+/* Fase 4: texto/fondos fijos que quedaban ilegibles en modo oscuro
      (la nota digitada se veía negra sobre fondo oscuro). */
-  .pg-grades .grade-input,
-  .pg-grades .recovery-cell .grade-input { color: var(--text-1); }
-  .pg-grades .def-cell { background: var(--surface-2); color: var(--text-1); }
-  .pg-grades .calc-cell { background: var(--surface-2); color: var(--text-1); }
-  .pg-grades .recovery-cell { background: var(--surface-2); }
-  .pg-grades .no-students-content { background: var(--surface); }
-  .pg-grades .grade-input::placeholder { color: var(--text-3); }
-}
+[data-theme="dark"] .pg-grades .grade-input,
+[data-theme="dark"] .pg-grades .recovery-cell .grade-input { color: var(--text-1); }
+[data-theme="dark"] .pg-grades .def-cell { background: var(--surface-2); color: var(--text-1); }
+[data-theme="dark"] .pg-grades .calc-cell { background: var(--surface-2); color: var(--text-1); }
+[data-theme="dark"] .pg-grades .recovery-cell { background: var(--surface-2); }
+[data-theme="dark"] .pg-grades .no-students-content { background: var(--surface); }
+[data-theme="dark"] .pg-grades .grade-input::placeholder { color: var(--text-3); }
 /* ── Porcentaje por nota (rol profesor) ───────────────────────────── */
 .pg-grades .pct-toolbar {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
@@ -1370,122 +1369,143 @@
 }
 
 /* ── Modo oscuro: colores de notas legibles ──────────────────────────── */
-[data-theme="dark"] .pg-grades {
-  /* Celdas calculadas (92%, 8%, ...): fondo tenue + texto claro del mismo color */
-  .pg-grades .calc-cell.grade-green,  .pg-grades .note-cell.grade-green  { background-color: rgba(34, 197, 94, 0.20) !important; }
-  .pg-grades .calc-cell.grade-yellow, .pg-grades .note-cell.grade-yellow { background-color: rgba(234, 179, 8, 0.20) !important; }
-  .pg-grades .calc-cell.grade-red,    .pg-grades .note-cell.grade-red    { background-color: rgba(239, 68, 68, 0.22) !important; }
-  .pg-grades .calc-cell.grade-green  { color: #86efac; }
-  .pg-grades .calc-cell.grade-yellow { color: #fde047; }
-  .pg-grades .calc-cell.grade-red    { color: #fca5a5; }
-  .pg-grades .calc-cell { font-weight: 600; }
-
-  /* N.FINAL: fondos sólidos pero apagados, con texto de buen contraste */
-  .pg-grades .def-cell.grade-green  { background-color: #2e7d32 !important; color: #fff; }
-  .pg-grades .def-cell.grade-yellow { background-color: #f9a825 !important; color: #1a1a1a; }
-  .pg-grades .def-cell.grade-red    { background-color: #c62828 !important; color: #fff; }
-  .pg-grades .def-cell { font-weight: 700; }
-
-  /* Fila activa un poco más visible sobre fondo oscuro */
-  .pg-grades .grades-table tbody tr:focus-within > td { box-shadow: inset 0 0 0 9999px rgba(127, 98, 248, 0.20); }
-  .pg-grades .grades-table tbody tr:focus-within > td.no-cell {
+/* Celdas calculadas (92%, 8%, ...): fondo tenue + texto claro del mismo color */
+[data-theme="dark"] .pg-grades .calc-cell.grade-green,
+[data-theme="dark"] .pg-grades .note-cell.grade-green { background-color: rgba(34, 197, 94, 0.20) !important; }
+[data-theme="dark"] .pg-grades .calc-cell.grade-yellow,
+[data-theme="dark"] .pg-grades .note-cell.grade-yellow { background-color: rgba(234, 179, 8, 0.20) !important; }
+[data-theme="dark"] .pg-grades .calc-cell.grade-red,
+[data-theme="dark"] .pg-grades .note-cell.grade-red { background-color: rgba(239, 68, 68, 0.22) !important; }
+[data-theme="dark"] .pg-grades .calc-cell.grade-green { color: #86efac; }
+[data-theme="dark"] .pg-grades .calc-cell.grade-yellow { color: #fde047; }
+[data-theme="dark"] .pg-grades .calc-cell.grade-red { color: #fca5a5; }
+[data-theme="dark"] .pg-grades .calc-cell { font-weight: 600; }
+/* N.FINAL: fondos sólidos pero apagados, con texto de buen contraste */
+[data-theme="dark"] .pg-grades .def-cell.grade-green { background-color: #2e7d32 !important; color: #fff; }
+[data-theme="dark"] .pg-grades .def-cell.grade-yellow { background-color: #f9a825 !important; color: #1a1a1a; }
+[data-theme="dark"] .pg-grades .def-cell.grade-red { background-color: #c62828 !important; color: #fff; }
+[data-theme="dark"] .pg-grades .def-cell { font-weight: 700; }
+/* Fila activa un poco más visible sobre fondo oscuro */
+[data-theme="dark"] .pg-grades .grades-table tbody tr:focus-within > td { box-shadow: inset 0 0 0 9999px rgba(127, 98, 248, 0.20); }
+[data-theme="dark"] .pg-grades .grades-table tbody tr:focus-within > td.no-cell {
     box-shadow: inset 0 0 0 9999px rgba(127, 98, 248, 0.20), inset 4px 0 0 #7f62f8; color: #a894fc;
   }
-  .pg-grades .grades-table tbody tr:focus-within > td.student-cell {
+[data-theme="dark"] .pg-grades .grades-table tbody tr:focus-within > td.student-cell {
     box-shadow: inset 0 0 0 9999px rgba(127, 98, 248, 0.32), inset 0 -2px 0 #7f62f8, inset 0 2px 0 #7f62f8;
   }
-  .pg-grades .grades-table tbody tr:focus-within > td.student-cell::before { color: #a894fc; }
-
-  /* Botones del menú/porcentajes */
-  .pg-grades .pct-open-btn, .pg-grades .pct-plus, .pg-grades .col-plus { background: transparent; color: #a894fc; border-color: #7f62f8; }
-  .pg-grades .pct-open-btn:hover, .pg-grades .pct-open-btn.active, .pg-grades .pct-plus:hover, .pg-grades .col-plus:hover { background: #5627e9; color: #fff; }
-  .pg-grades .pct-error { color: #fca5a5; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); }
-}
+[data-theme="dark"] .pg-grades .grades-table tbody tr:focus-within > td.student-cell::before { color: #a894fc; }
+/* Botones del menú/porcentajes */
+[data-theme="dark"] .pg-grades .pct-open-btn,
+[data-theme="dark"] .pg-grades .pct-plus,
+[data-theme="dark"] .pg-grades .col-plus { background: transparent; color: #a894fc; border-color: #7f62f8; }
+[data-theme="dark"] .pg-grades .pct-open-btn:hover,
+[data-theme="dark"] .pg-grades .pct-open-btn.active,
+[data-theme="dark"] .pg-grades .pct-plus:hover,
+[data-theme="dark"] .pg-grades .col-plus:hover { background: #5627e9; color: #fff; }
+[data-theme="dark"] .pg-grades .pct-error { color: #fca5a5; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); }
 
 /* ── Plan de estudio en modo oscuro ───────────────────────────────────
    El contenido generado por la IA trae fondos claros "en línea" (hojas
    blancas, tarjetas de cada día) mientras el texto heredaba el color claro
    del tema: quedaba texto claro sobre blanco. Se oscurece todo el contenido
    y se fuerzan colores legibles (!important para ganarle a los estilos en línea). */
-[data-theme="dark"] .pg-grades {
-  .pg-grades .plan-text,
-  .pg-grades .plan-text div,
-  .pg-grades .plan-text section,
-  .pg-grades .plan-text article,
-  .pg-grades .plan-text aside,
-  .pg-grades .plan-text p,
-  .pg-grades .plan-text li,
-  .pg-grades .plan-text span,
-  .pg-grades .plan-text td,
-  .pg-grades .plan-text blockquote,
-  .pg-grades .plan-text h1,
-  .pg-grades .plan-text h2,
-  .pg-grades .plan-text h3,
-  .pg-grades .plan-text h4,
-  .pg-grades .plan-text h5,
-  .pg-grades .plan-text h6,
-  .pg-grades .plan-text strong,
-  .pg-grades .plan-text b,
-  .pg-grades .plan-text em,
-  .pg-grades .plan-text i,
-  .pg-grades .plan-text label {
+[data-theme="dark"] .pg-grades .plan-text,
+[data-theme="dark"] .pg-grades .plan-text div,
+[data-theme="dark"] .pg-grades .plan-text section,
+[data-theme="dark"] .pg-grades .plan-text article,
+[data-theme="dark"] .pg-grades .plan-text aside,
+[data-theme="dark"] .pg-grades .plan-text p,
+[data-theme="dark"] .pg-grades .plan-text li,
+[data-theme="dark"] .pg-grades .plan-text span,
+[data-theme="dark"] .pg-grades .plan-text td,
+[data-theme="dark"] .pg-grades .plan-text blockquote,
+[data-theme="dark"] .pg-grades .plan-text h1,
+[data-theme="dark"] .pg-grades .plan-text h2,
+[data-theme="dark"] .pg-grades .plan-text h3,
+[data-theme="dark"] .pg-grades .plan-text h4,
+[data-theme="dark"] .pg-grades .plan-text h5,
+[data-theme="dark"] .pg-grades .plan-text h6,
+[data-theme="dark"] .pg-grades .plan-text strong,
+[data-theme="dark"] .pg-grades .plan-text b,
+[data-theme="dark"] .pg-grades .plan-text em,
+[data-theme="dark"] .pg-grades .plan-text i,
+[data-theme="dark"] .pg-grades .plan-text label {
     color: #e6e5eb !important;
   }
-  .pg-grades .plan-text div, .pg-grades .plan-text section, .pg-grades .plan-text article, .pg-grades .plan-text aside, .pg-grades .plan-text blockquote, .pg-grades .plan-text ul, .pg-grades .plan-text ol {
+[data-theme="dark"] .pg-grades .plan-text div,
+[data-theme="dark"] .pg-grades .plan-text section,
+[data-theme="dark"] .pg-grades .plan-text article,
+[data-theme="dark"] .pg-grades .plan-text aside,
+[data-theme="dark"] .pg-grades .plan-text blockquote,
+[data-theme="dark"] .pg-grades .plan-text ul,
+[data-theme="dark"] .pg-grades .plan-text ol {
     background: transparent !important;
     background-color: transparent !important;
     border-color: #3a3355 !important;
   }
-  /* Tarjetas / hojas: fondo oscuro suave para distinguirlas */
-  .pg-grades .plan-text div[style*="border"], .pg-grades .plan-text section, .pg-grades .plan-text article, .pg-grades .plan-text .day-card, .pg-grades .plan-text .card {
+/* Tarjetas / hojas: fondo oscuro suave para distinguirlas */
+[data-theme="dark"] .pg-grades .plan-text div[style*="border"],
+[data-theme="dark"] .pg-grades .plan-text section,
+[data-theme="dark"] .pg-grades .plan-text article,
+[data-theme="dark"] .pg-grades .plan-text .day-card,
+[data-theme="dark"] .pg-grades .plan-text .card {
     background-color: #251e3b !important;
   }
-  .pg-grades .plan-text h1, .pg-grades .plan-text h2, .pg-grades .plan-text h3 { color: #f9f8fc !important; }
-  .pg-grades .plan-text strong, .pg-grades .plan-text b { color: #a894fc !important; }
-  .pg-grades .plan-text a { color: #f27efb !important; }
-  .pg-grades .plan-text li::marker { color: #7f62f8; }
-  .pg-grades .plan-text ol li, .pg-grades .plan-text .ai-list li, .pg-grades .plan-text ul li { background: #251e3b !important; border-color: #3a3355 !important; }
-
-  /* Tablas del plan */
-  .pg-grades .plan-text table, .pg-grades .plan-text .ai-table { border-color: #653df4 !important; }
-  .pg-grades .plan-text .ai-table th, .pg-grades .plan-text table th { color: #fff !important; background: linear-gradient(135deg, #461fae 0%, #5627e9 50%, #4f1fd6 100%) !important; }
-  .pg-grades .plan-text .ai-table td, .pg-grades .plan-text table td { background: #251e3b !important; border-color: #3a3355 !important; color: #e6e5eb !important; }
-  .pg-grades .plan-text .ai-table tr:nth-child(2n) td, .pg-grades .plan-text table tr:nth-child(2n) td { background: #1e1733 !important; }
-  .pg-grades .plan-text .ai-table tr:hover td { background: #2c1f5e !important; }
-
-  /* Encabezados con degradado: se mantiene texto blanco / azul legible */
-  .pg-grades .plan-text .ai-h2 { color: #fff !important; }
-  .pg-grades .plan-text .ai-h3 { background: rgba(86, 39, 233, 0.25) !important; color: #ccc0fd !important; }
-  .pg-grades .plan-text .ai-h4 { background: #251e3b !important; color: #cfcbe1 !important; }
-
-  /* Videos */
-  .pg-grades .plan-text .video-card { background: #251e3b !important; border-color: #3a3355 !important; }
-  .pg-grades .plan-text .video-content .video-link { color: #f27efb !important; }
-  .pg-grades .plan-text .video-source { background: #160f2a !important; color: #9c94b8 !important; }
-  .pg-grades .plan-text .no-videos-message { background: #251e3b !important; color: #9c94b8 !important; border-color: #4e4769 !important; }
-  .pg-grades .plan-text .video-unavailable { background: rgba(239, 68, 68, 0.15) !important; border-color: rgba(239, 68, 68, 0.4) !important; }
-  .pg-grades .plan-text .video-unavailable, .pg-grades .plan-text .video-unavailable-title, .pg-grades .plan-text .video-unavailable-message, .pg-grades .plan-text .video-unavailable-url { color: #fca5a5 !important; }
-
-  /* Fórmulas (KaTeX) heredan el color del texto */
-  .pg-grades .plan-text .katex, .pg-grades .plan-text .katex * { color: #e6e5eb !important; }
-
-  /* Título del plan y contenedor */
-  .pg-grades .plan-content-fullscreen { background: #160f2a; border-color: #251e3b; box-shadow: none; }
-
-  /* Forzar visibilidad del título "Plan de Estudio" del modal grande en
+[data-theme="dark"] .pg-grades .plan-text h1,
+[data-theme="dark"] .pg-grades .plan-text h2,
+[data-theme="dark"] .pg-grades .plan-text h3 { color: #f9f8fc !important; }
+[data-theme="dark"] .pg-grades .plan-text strong,
+[data-theme="dark"] .pg-grades .plan-text b { color: #a894fc !important; }
+[data-theme="dark"] .pg-grades .plan-text a { color: #f27efb !important; }
+[data-theme="dark"] .pg-grades .plan-text li::marker { color: #7f62f8; }
+[data-theme="dark"] .pg-grades .plan-text ol li,
+[data-theme="dark"] .pg-grades .plan-text .ai-list li,
+[data-theme="dark"] .pg-grades .plan-text ul li { background: #251e3b !important; border-color: #3a3355 !important; }
+/* Tablas del plan */
+[data-theme="dark"] .pg-grades .plan-text table,
+[data-theme="dark"] .pg-grades .plan-text .ai-table { border-color: #653df4 !important; }
+[data-theme="dark"] .pg-grades .plan-text .ai-table th,
+[data-theme="dark"] .pg-grades .plan-text table th { color: #fff !important; background: linear-gradient(135deg, #461fae 0%, #5627e9 50%, #4f1fd6 100%) !important; }
+[data-theme="dark"] .pg-grades .plan-text .ai-table td,
+[data-theme="dark"] .pg-grades .plan-text table td { background: #251e3b !important; border-color: #3a3355 !important; color: #e6e5eb !important; }
+[data-theme="dark"] .pg-grades .plan-text .ai-table tr:nth-child(2n) td,
+[data-theme="dark"] .pg-grades .plan-text table tr:nth-child(2n) td { background: #1e1733 !important; }
+[data-theme="dark"] .pg-grades .plan-text .ai-table tr:hover td { background: #2c1f5e !important; }
+/* Encabezados con degradado: se mantiene texto blanco / azul legible */
+[data-theme="dark"] .pg-grades .plan-text .ai-h2 { color: #fff !important; }
+[data-theme="dark"] .pg-grades .plan-text .ai-h3 { background: rgba(86, 39, 233, 0.25) !important; color: #ccc0fd !important; }
+[data-theme="dark"] .pg-grades .plan-text .ai-h4 { background: #251e3b !important; color: #cfcbe1 !important; }
+/* Videos */
+[data-theme="dark"] .pg-grades .plan-text .video-card { background: #251e3b !important; border-color: #3a3355 !important; }
+[data-theme="dark"] .pg-grades .plan-text .video-content .video-link { color: #f27efb !important; }
+[data-theme="dark"] .pg-grades .plan-text .video-source { background: #160f2a !important; color: #9c94b8 !important; }
+[data-theme="dark"] .pg-grades .plan-text .no-videos-message { background: #251e3b !important; color: #9c94b8 !important; border-color: #4e4769 !important; }
+[data-theme="dark"] .pg-grades .plan-text .video-unavailable { background: rgba(239, 68, 68, 0.15) !important; border-color: rgba(239, 68, 68, 0.4) !important; }
+[data-theme="dark"] .pg-grades .plan-text .video-unavailable,
+[data-theme="dark"] .pg-grades .plan-text .video-unavailable-title,
+[data-theme="dark"] .pg-grades .plan-text .video-unavailable-message,
+[data-theme="dark"] .pg-grades .plan-text .video-unavailable-url { color: #fca5a5 !important; }
+/* Fórmulas (KaTeX) heredan el color del texto */
+[data-theme="dark"] .pg-grades .plan-text .katex,
+[data-theme="dark"] .pg-grades .plan-text .katex * { color: #e6e5eb !important; }
+/* Título del plan y contenedor */
+[data-theme="dark"] .pg-grades .plan-content-fullscreen { background: #160f2a; border-color: #251e3b; box-shadow: none; }
+/* Forzar visibilidad del título "Plan de Estudio" del modal grande en
      modo oscuro (regla .plan-content-fullscreen h3 lo pinta blanco en
      claro pero sin esta regla queda invisible cuando el contenedor
      hereda background oscuro). */
-  .pg-grades .plan-content-fullscreen h3 { color: #f9f8fc !important; }
-  .pg-grades .plan-text h1, .pg-grades .plan-text h2 { color: #f9f8fc !important; }
-  .pg-grades .plan-text h3 { color: #ccc0fd !important; }
-  .pg-grades .plan-text h4 { color: #cfcbe1 !important; }
-  .pg-grades .plan-text p, .pg-grades .plan-text li { color: #e5e2f0 !important; }
-  .pg-grades .plan-text strong, .pg-grades .plan-text b { color: #a894fc !important; }
-
-  /* Fallback de fórmulas si KaTeX no cargó (texto visible, en cursiva,
+[data-theme="dark"] .pg-grades .plan-content-fullscreen h3 { color: #f9f8fc !important; }
+[data-theme="dark"] .pg-grades .plan-text h1,
+[data-theme="dark"] .pg-grades .plan-text h2 { color: #f9f8fc !important; }
+[data-theme="dark"] .pg-grades .plan-text h3 { color: #ccc0fd !important; }
+[data-theme="dark"] .pg-grades .plan-text h4 { color: #cfcbe1 !important; }
+[data-theme="dark"] .pg-grades .plan-text p,
+[data-theme="dark"] .pg-grades .plan-text li { color: #e5e2f0 !important; }
+[data-theme="dark"] .pg-grades .plan-text strong,
+[data-theme="dark"] .pg-grades .plan-text b { color: #a894fc !important; }
+/* Fallback de fórmulas si KaTeX no cargó (texto visible, en cursiva,
      color destacado). */
-  .pg-grades .plan-text .math-fallback {
+[data-theme="dark"] .pg-grades .plan-text .math-fallback {
     font-style: italic;
     color: #ccc0fd !important;
     background: rgba(86, 39, 233, 0.15);
@@ -1493,7 +1513,6 @@
     border-radius: 4px;
     font-family: 'Times New Roman', serif;
   }
-}
 
 /* Fallback de fórmulas en modo claro (mismo span, color contrastado) */
 .pg-grades .plan-text .math-fallback {
@@ -1652,13 +1671,11 @@
 }
 
 /* Modo oscuro: ajustes finos */
-[data-theme="dark"] .pg-grades {
-  .pg-grades .spm-header { background: linear-gradient(135deg, #3b1f89 0%, #4f1fd6 55%, #800f8f 100%); }
-  .pg-grades .spm-info { background: rgba(101, 61, 244, .12); border-color: rgba(127, 98, 248, .3); border-left-color: #7f62f8; }
-  .pg-grades .spm-drop-action { color: #a894fc; border-color: #7f62f8; }
-  .pg-grades .spm-textarea:focus { border-color: #7f62f8; }
-  .pg-grades .spm-score-badge.grade-green  { background: rgba(34,197,94,.22);  color: #86efac; }
-  .pg-grades .spm-score-badge.grade-yellow { background: rgba(234,179,8,.22);  color: #fde047; }
-  .pg-grades .spm-score-badge.grade-red    { background: rgba(239,68,68,.25);  color: #fca5a5; }
-  .pg-grades .spm-btn-ghost:hover { background: rgba(255,255,255,.06); }
-}
+[data-theme="dark"] .pg-grades .spm-header { background: linear-gradient(135deg, #3b1f89 0%, #4f1fd6 55%, #800f8f 100%); }
+[data-theme="dark"] .pg-grades .spm-info { background: rgba(101, 61, 244, .12); border-color: rgba(127, 98, 248, .3); border-left-color: #7f62f8; }
+[data-theme="dark"] .pg-grades .spm-drop-action { color: #a894fc; border-color: #7f62f8; }
+[data-theme="dark"] .pg-grades .spm-textarea:focus { border-color: #7f62f8; }
+[data-theme="dark"] .pg-grades .spm-score-badge.grade-green { background: rgba(34,197,94,.22);  color: #86efac; }
+[data-theme="dark"] .pg-grades .spm-score-badge.grade-yellow { background: rgba(234,179,8,.22);  color: #fde047; }
+[data-theme="dark"] .pg-grades .spm-score-badge.grade-red { background: rgba(239,68,68,.25);  color: #fca5a5; }
+[data-theme="dark"] .pg-grades .spm-btn-ghost:hover { background: rgba(255,255,255,.06); }

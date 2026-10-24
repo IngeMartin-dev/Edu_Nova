@@ -1180,7 +1180,5 @@
 }
 
 /* ===== MODO OSCURO (auto) ===== */
-[data-theme="dark"] .pg-settings {
-  .pg-settings .slider:before { background-color: var(--surface); }
-  .pg-settings .spam-hint { background: rgba(180, 83, 9, 0.15); border-color: rgba(180, 83, 9, 0.35); color: #fbbf24; }
-}
+[data-theme="dark"] .pg-settings .slider:before { background-color: var(--surface); }
+[data-theme="dark"] .pg-settings .spam-hint { background: rgba(180, 83, 9, 0.15); border-color: rgba(180, 83, 9, 0.35); color: #fbbf24; }

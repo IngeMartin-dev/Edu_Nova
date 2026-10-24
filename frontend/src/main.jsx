@@ -5,6 +5,7 @@ import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource/material-icons';
 import './styles/global.css';
 import './styles/global-dark.css';
+import './styles/dark-fixes.css';
 import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { UiProvider } from './context/UiContext.jsx';

@@ -1,0 +1,96 @@
+/* ============================================================
+   EduNova — MODO OSCURO: correcciones de fondos claros fijos
+   Zonas que seguían en blanco/pastel al activar el modo oscuro.
+   Cada selector lleva [data-theme="dark"] delante, así gana en
+   especificidad a la regla clara original de la página.
+   ============================================================ */
+
+/* ---- Menú lateral: ítem activo (tenía fondo blanco) ---- */
+[data-theme="dark"] .pg-app .nav-menu li.active a,
+[data-theme="dark"] .nav-menu a.active {
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.18), rgba(139, 92, 246, 0.04));
+  color: var(--brand-500);
+  box-shadow: inset 3px 0 0 var(--brand), 0 0 16px rgba(139, 92, 246, 0.25);
+}
+[data-theme="dark"] .pg-app .nav-menu li.active a .material-icons,
+[data-theme="dark"] .nav-menu a.active .material-icons { color: var(--brand-500); }
+
+/* ---- Boletines: presets ---- */
+[data-theme="dark"] .pg-boletines .btn-preset { background: var(--brand-50); color: var(--brand-400); }
+[data-theme="dark"] .pg-boletines .btn-preset:hover { background: var(--brand-100); }
+[data-theme="dark"] .pg-boletines .preset-menu { background: var(--surface-2); border-color: var(--border-strong); }
+[data-theme="dark"] .pg-boletines .preset-option { color: var(--text-1); }
+[data-theme="dark"] .pg-boletines .preset-option:hover { background: var(--brand-50); }
+
+/* ---- Consentimiento ---- */
+[data-theme="dark"] .pg-consent-gate .consent-modal { background: var(--surface); color: var(--text-1); }
+[data-theme="dark"] .pg-consent-gate .consent-check { color: var(--text-1); }
+
+/* ---- Directores de grupo ---- */
+[data-theme="dark"] .pg-directors-group .director-chip { background: var(--warning-bg); color: var(--warning); }
+
+/* ---- Notas ---- */
+[data-theme="dark"] .pg-grades .grades-table tr.failing:hover { background: rgba(248, 113, 113, 0.22) !important; }
+[data-theme="dark"] .pg-grades .grades-table tr.losing:hover { background: rgba(251, 191, 36, 0.20) !important; }
+[data-theme="dark"] .pg-grades .fullscreen-warning,
+[data-theme="dark"] .pg-recoveries .fullscreen-warning,
+[data-theme="dark"] .pg-recoveries .no-subject-message {
+  background: var(--warning-bg) !important; color: var(--warning); border-color: rgba(251, 191, 36, 0.3);
+}
+[data-theme="dark"] .pg-grades .plan-guidelines,
+[data-theme="dark"] .pg-grades .plan-text h3,
+[data-theme="dark"] .pg-grades .plan-text .subsection-title,
+[data-theme="dark"] .pg-grades .plan-text .dia {
+  background: var(--surface-2); color: var(--text-1);
+}
+[data-theme="dark"] .pg-grades .plan-text .video-unavailable-icon { background: rgba(248, 113, 113, 0.25); }
+[data-theme="dark"] .pg-grades .plan-text .video-status-badge.unavailable { background: var(--danger-bg); color: var(--danger); }
+[data-theme="dark"] .pg-grades .plan-text .video-status-badge.checking { background: var(--warning-bg); color: var(--warning); }
+[data-theme="dark"] .pg-grades .plan-text .math-large-block,
+[data-theme="dark"] .pg-grades .plan-text .katex-display { background: var(--surface-2); color: var(--text-1); }
+[data-theme="dark"] .pg-grades .plan-text .math-large { color: var(--brand-400); }
+
+/* ---- Recuperaciones: modal de plan a pantalla completa ---- */
+[data-theme="dark"] .pg-recoveries .fullscreen-modal-content { background: var(--surface); }
+[data-theme="dark"] .pg-recoveries .plan-meta-top { background: var(--surface-2); color: var(--text-1); }
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text h3,
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .subsection-title,
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .ai-h3 { background: var(--surface-2); color: var(--text-1); }
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text h4,
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .ai-h4,
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .video-source { background: var(--surface-2); color: var(--text-2); }
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .video-card,
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .ai-list li,
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text ol li,
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .ai-table td,
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .no-videos-message { background: var(--surface); color: var(--text-1); }
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .ai-table tr:nth-child(even) td { background: var(--surface-2); }
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .ai-table tr:hover td { background: var(--brand-50); }
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .video-unavailable,
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .video-status-badge.unavailable { background: var(--danger-bg); color: var(--danger); }
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .video-unavailable-icon { background: rgba(248, 113, 113, 0.25); }
+[data-theme="dark"] .pg-recoveries .plan-content-fullscreen .plan-text .video-status-badge.checking { background: var(--warning-bg); color: var(--warning); }
+[data-theme="dark"] .pg-recoveries .plan-text .math-large-block,
+[data-theme="dark"] .pg-recoveries .plan-text .katex-display { background: var(--surface-2); color: var(--text-1); }
+[data-theme="dark"] .pg-recoveries .plan-text .math-large { color: var(--brand-400); }
+
+/* ---- Notificación de éxito ---- */
+[data-theme="dark"] .pg-notification-details .success-notification .notification-content { background: var(--surface); color: var(--text-1); }
+
+/* ---- Padres ---- */
+[data-theme="dark"] .pg-parents .unlinked-footer { background: var(--warning-bg); border-color: rgba(251, 191, 36, 0.3); }
+[data-theme="dark"] .pg-parents .delete-btn:hover,
+[data-theme="dark"] .pg-subjects .delete-btn:hover,
+[data-theme="dark"] .pg-teachers .delete-icon-button:hover { background: var(--danger-bg); }
+
+/* ---- Períodos ---- */
+[data-theme="dark"] .pg-periods .status-badge.automatic { background: var(--warning-bg); color: var(--warning); }
+[data-theme="dark"] .pg-periods .admin-notice { background: var(--warning-bg); border-color: rgba(251, 191, 36, 0.3); color: var(--text-2); }
+[data-theme="dark"] .pg-periods .success-message { color: var(--success); }
+
+/* ---- Estudiantes ---- */
+[data-theme="dark"] .pg-students .sin-salon-btn { background: var(--warning-bg); color: var(--warning); }
+[data-theme="dark"] .pg-students .salon-pick-btn { background: var(--brand-50); color: var(--brand-400); }
+
+/* ---- Materias ---- */
+[data-theme="dark"] .pg-subjects .edit-btn:hover { background: var(--warning-bg); }

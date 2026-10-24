@@ -319,7 +319,7 @@ export default function Recoveries() {
         ) : isTeacher && hasTeacherGradeRange === null ? (
           <div className="fullscreen-loading">
             <div className="spinner" />
-            <span style={{ color: '#332c50', fontSize: '1.1rem', fontWeight: 600 }}>Verificando materias asignadas...</span>
+            <span style={{ color: 'var(--text-1)', fontSize: '1.1rem', fontWeight: 600 }}>Verificando materias asignadas...</span>
           </div>
         ) : (
           <>
