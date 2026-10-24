@@ -108,7 +108,7 @@ export class Grades {
   // API Key for Groq AI
   // La generación de planes de estudio se delega al backend (proxy a NVIDIA),
   // que es quien guarda la API key de forma segura.
-  AI_PROXY_BASE = "/api/ai";
+  AI_PROXY_BASE = `${API_ORIGIN}/api/ai`;
   gradesUpdateService = gradesUpdateService_;
   realtimeService = realtimeService_;
   authService = authService_;
@@ -290,7 +290,7 @@ export class Grades {
     try {
       if (typeof fetch === "function") {
         const token = this.authService.getToken();
-        fetch(url, {
+        fetch(url.startsWith("/") ? API_ORIGIN + url : url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
