@@ -7,7 +7,11 @@ import { resolve } from 'node:path';
 // Copiar index.html a 404.html hace que Pages sirva la app y el router resuelva la ruta.
 const spaFallback = () => ({
   name: 'spa-404-fallback',
-  closeBundle() { copyFileSync(resolve('dist/index.html'), resolve('dist/404.html')); },
+  closeBundle() {
+    // Solo en GitHub Pages (VITE_BASE definido). En Cloudflare Pages un 404.html desactivaría
+    // el fallback automático a index.html y las rutas dejarían de funcionar al recargar.
+    if (process.env.VITE_BASE) copyFileSync(resolve('dist/index.html'), resolve('dist/404.html'));
+  },
 });
 
 // En desarrollo (npm run dev) las llamadas /api, /img y /uploads van al Express (8080).
