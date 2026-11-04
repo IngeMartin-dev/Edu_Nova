@@ -41,17 +41,19 @@ export default function NotificationDetails({ notification, isOpen, readOnly, on
 
   return (
     <div className="pg-notification-details">
-      <div className={`success-notification${showSuccess ? ' show' : ''}`}>
-        <div className="notification-content">
-          <div className="checkmark-circle">
-            <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-              <path className="checkmark__check" fill="none" d="M14 27l8 8 16-16" />
-            </svg>
+      {showSuccess && (
+        <div className="success-notification show">
+          <div className="notification-content">
+            <div className="checkmark-circle">
+              <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <path className="checkmark__check" fill="none" d="M14 27l8 8 16-16" />
+              </svg>
+            </div>
+            <h3>¡Respuesta enviada!</h3>
+            <p>Tu mensaje ha sido enviado con éxito</p>
           </div>
-          <h3>¡Respuesta enviada!</h3>
-          <p>Tu mensaje ha sido enviado con éxito</p>
         </div>
-      </div>
+      )}
 
       {isOpen && (
         <div className="notification-details-overlay" onClick={closeModal}>

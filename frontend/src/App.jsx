@@ -12,7 +12,8 @@ import Dashboard from './pages/Dashboard.jsx';
 import { Loading } from './components/ui.jsx';
 
 // Cada pantalla se carga cuando se visita (code splitting).
-const page = (f) => lazy(f);
+const loaders = [];
+const page = (f) => { loaders.push(f); return lazy(f); };
 const Students = page(() => import('./pages/Students.jsx'));
 const Teachers = page(() => import('./pages/Teachers.jsx'));
 const Parents = page(() => import('./pages/Parents.jsx'));
@@ -32,6 +33,10 @@ const Reports = page(() => import('./pages/Reports.jsx'));
 const Promociones = page(() => import('./pages/Promociones.jsx'));
 const SchoolYear = page(() => import('./pages/SchoolYear.jsx'));
 const NotFound = page(() => import('./pages/NotFound.jsx'));
+
+// Con la sesión iniciada se descargan en segundo plano todas las pantallas:
+// al cambiar de apartado ya están listas y no hay parpadeo de "recarga".
+const preloadPages = () => loaders.forEach((f) => { f().catch(() => {}); });
 
 const ADMIN = ['ADMIN'];
 const TEACHER = ['TEACHER', 'DIRECTOR_DE_GRUPO'];
@@ -56,6 +61,13 @@ export default function App() {
   useEffect(() => {
     setRestoreHandler(() => { const u = loc.pathname + loc.search; nav('/not-found', { replace: true }); setTimeout(() => nav(u, { replace: true }), 0); });
   }, [loc, nav]);
+  useEffect(() => {
+    if (!user) return undefined;
+    const run = () => preloadPages();
+    if ('requestIdleCallback' in window) { const id = window.requestIdleCallback(run, { timeout: 3000 }); return () => window.cancelIdleCallback(id); }
+    const t = setTimeout(run, 1200);
+    return () => clearTimeout(t);
+  }, [user]);
   if (!ready) return <Loading />;
   const r = (path, roles, el) => <Route path={path} element={<Guard roles={roles}>{el}</Guard>} />;
   return (

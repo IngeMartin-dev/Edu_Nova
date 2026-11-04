@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/pages/app.css';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -12,6 +12,7 @@ import {
 } from '../services/notifications.js';
 import { startRealtime, stopRealtime } from '../services/realtime.js';
 import { generation } from '../services/generation.js';
+import { Loading } from './ui.jsx';
 
 const ROLE_NAMES = { ADMIN: 'Administrador', TEACHER: 'Profesor', DIRECTOR_DE_GRUPO: 'Director de Grupo', PARENT: 'Padre de Familia', STUDENT: 'Estudiante' };
 
@@ -184,7 +185,9 @@ export default function Layout() {
               </div>
             </header>
             <div className="content-wrapper">
-              <Outlet />
+              <Suspense fallback={<Loading />}>
+                <Outlet />
+              </Suspense>
             </div>
           </main>
         </div>
