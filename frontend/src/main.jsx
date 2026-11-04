@@ -10,6 +10,10 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { UiProvider } from './context/UiContext.jsx';
 
+// Red de seguridad: ningún formulario puede recargar la página al enviarse.
+// (Se ejecuta en la fase de captura; los onSubmit de React siguen funcionando.)
+document.addEventListener('submit', (e) => e.preventDefault(), true);
+
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>

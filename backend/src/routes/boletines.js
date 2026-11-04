@@ -132,6 +132,13 @@ router.post('/firmas/upload', STAFF, upload.single('file'), asyncHandler(async (
   res.json({ path: p, name: p.slice(p.lastIndexOf('/') + 1) });
 }));
 
+// DELETE /api/boletines/firmas?path=/Firmas/archivo.png
+router.delete('/firmas', STAFF, asyncHandler(async (req, res) => {
+  const ok = await boletin.deleteSignature(req.query.path);
+  if (!ok) throw new HttpError(404, 'La firma no existe');
+  res.json({ deleted: req.query.path });
+}));
+
 // --- Archivos generados (ADMIN) ---
 const ADMIN = requireRole('ADMIN');
 

@@ -139,7 +139,7 @@ export default function Dashboard() {
       setCd((c) => ({ ...c, d: '00', h: '00', m: '00', s: '00' }));
       if (!flags.current.finished) {
         flags.current.finished = true;
-        lsSet('countdownNotificationFinished', 'true');
+        lsSet(`countdown_fin_${targetDate}`, 'true');
         showPush(name, '¡El tiempo ha terminado!');
         addActivity('check_circle', `Tiempo terminado: ${name}`);
       }
@@ -153,13 +153,13 @@ export default function Dashboard() {
     setCd((c) => ({ ...c, d: pad(days), h: pad(hours), m: pad(minutes), s: pad(seconds) }));
     if (distance <= 7 * 86400000 && !flags.current.d7) {
       flags.current.d7 = true;
-      lsSet('countdownNotification7d', 'true');
+      lsSet(`countdown_7d_${targetDate}`, 'true');
       showPush(name, `Faltan 7 días o menos (${days} día${days !== 1 ? 's' : ''})`);
       addActivity('schedule', `Recordatorio ${name}: Faltan 7 días o menos`);
     }
     if (distance <= 12 * 3600000 && !flags.current.h12) {
       flags.current.h12 = true;
-      lsSet('countdownNotification12h', 'true');
+      lsSet(`countdown_12h_${targetDate}`, 'true');
       const timeText = days > 0 ? `${days} día(s) y ${hours} hora(s)` : hours > 0 ? `${hours} hora(s) y ${minutes} minuto(s)` : `${minutes} minuto(s)`;
       showPush(name, `Faltan ${timeText}`);
       addActivity('schedule', `Recordatorio ${name}: Faltan ${timeText}`);
@@ -172,38 +172,63 @@ export default function Dashboard() {
     cdInterval.current = setInterval(() => updateCountdown(name, targetDate), 1000);
   }, [updateCountdown]);
 
-  useEffect(() => {
-    const saved = lsGet('countdownConfig');
-    if (saved) {
-      const config = JSON.parse(saved);
-      const name = config.name || '';
-      const targetDate = config.targetDate || '';
-      flags.current = { h12: lsGet('countdownNotification12h') === 'true', finished: lsGet('countdownNotificationFinished') === 'true', d7: lsGet('countdownNotification7d') === 'true' };
-      if (name && targetDate) {
-        const endDate = new Date(targetDate).toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        setCd((c) => ({ ...c, show: true, name, targetDate, endDate }));
-        startCountdown(name, targetDate);
-      } else setCd((c) => ({ ...c, name, targetDate }));
+  // Cronómetro compartido: el administrador lo configura y lo ven todas las cuentas (se consulta cada 3 s).
+  const liveCd = useRef({ name: '', target: '' });
+  const applyServerCountdown = useCallback((data) => {
+    const active = !!(data && data.active && data.name && data.targetDate);
+    if (!active) {
+      if (liveCd.current.target) {
+        liveCd.current = { name: '', target: '' };
+        clearInterval(cdInterval.current);
+        setCd((c) => ({ ...c, show: false }));
+      }
+      return;
     }
-    return () => clearInterval(cdInterval.current);
+    if (liveCd.current.name === data.name && liveCd.current.target === data.targetDate) return;
+    liveCd.current = { name: data.name, target: data.targetDate };
+    const key = (x) => `countdown_${x}_${data.targetDate}`;
+    flags.current = { h12: lsGet(key('12h')) === 'true', finished: lsGet(key('fin')) === 'true', d7: lsGet(key('7d')) === 'true' };
+    const endDate = new Date(data.targetDate).toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    setCd((c) => ({ ...c, show: true, name: data.name, targetDate: data.targetDate, endDate }));
+    startCountdown(data.name, data.targetDate);
   }, [startCountdown]);
 
+  useEffect(() => {
+    let alive = true;
+    let busy = false;
+    const sync = async () => {
+      if (busy) return;
+      busy = true;
+      try { const data = await api.get('/countdown'); if (alive) applyServerCountdown(data); } catch { /* sin red: se deja lo que se ve */ }
+      busy = false;
+    };
+    // Migra un cronómetro local antiguo (solo admin) al servidor.
+    (async () => {
+      const saved = lsGet('countdownConfig');
+      if (saved && isAdmin) {
+        try { const c = JSON.parse(saved); if (c?.name && c?.targetDate) await api.put('/countdown', { name: c.name, targetDate: c.targetDate }); } catch { /* se ignora */ }
+      }
+      if (saved) lsDel('countdownConfig');
+      sync();
+    })();
+    const timer = setInterval(sync, 3000);
+    return () => { alive = false; clearInterval(timer); clearInterval(cdInterval.current); };
+  }, [applyServerCountdown, isAdmin]);
+
   const saveCountdownConfig = () => {
+    if (!isAdmin) { showErrorNotification('Solo el administrador puede configurar el cronómetro'); return; }
     if (!cd.name) { showErrorNotification('Por favor ingrese un título'); return; }
     let target;
     if (cd.targetDate) target = new Date(cd.targetDate);
     else if (cd.daysInput && cd.daysInput > 0) { target = new Date(); target.setDate(target.getDate() + Number(cd.daysInput)); }
     else { showErrorNotification('Por favor ingrese una fecha o días'); return; }
 
-    flags.current = { h12: false, finished: false, d7: false };
-    ['countdownNotification12h', 'countdownNotificationFinished', 'countdownNotification7d'].forEach(lsDel);
     const iso = target.toISOString();
-    lsSet('countdownConfig', JSON.stringify({ name: cd.name, targetDate: iso }));
-    const endDate = target.toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    setCd((c) => ({ ...c, show: true, targetDate: iso, endDate }));
-    setShowCountdownConfigModal(false);
-    startCountdown(cd.name, iso);
-    showSuccessNotification('Cronómetro configurado correctamente');
+    api.put('/countdown', { name: cd.name, targetDate: iso }).then((saved) => {
+      applyServerCountdown(saved);
+      setShowCountdownConfigModal(false);
+      showSuccessNotification('Cronómetro configurado correctamente');
+    }).catch((err) => showErrorNotification(err?.message || 'No se pudo guardar el cronómetro'));
 
     const diff = target.getTime() - Date.now();
     const days = Math.floor(diff / 86400000);

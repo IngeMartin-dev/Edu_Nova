@@ -90,4 +90,31 @@ router.post('/initialize', requireRole('ADMIN'), asyncHandler(async (req, res) =
   res.json({ message: 'Periodos inicializados correctamente' });
 }));
 
+const MAX_PERIODS = 4;
+
+// POST /api/periods  (ADMIN) — agrega el siguiente período (máximo 4)
+router.post('/', requireRole('ADMIN'), asyncHandler(async (req, res) => {
+  const rows = await query('SELECT period_number FROM academic_periods WHERE period_number BETWEEN 1 AND ?', [MAX_PERIODS]);
+  const used = new Set(rows.map((r) => r.periodNumber));
+  let next = 1;
+  while (used.has(next)) next += 1;
+  if (next > MAX_PERIODS) throw new HttpError(400, `No se pueden crear más de ${MAX_PERIODS} períodos`);
+  const r = await exec(
+    'INSERT INTO academic_periods (period_number, is_unlocked, is_automatic, description) VALUES (?, 0, 0, ?)',
+    [next, `Período ${next} del año académico`]
+  );
+  res.json(periods.toPeriodJson(await one('SELECT * FROM academic_periods WHERE id = ?', [r.insertId])));
+}));
+
+// DELETE /api/periods/:n  (ADMIN) — quita un período (no borra las notas ya registradas)
+router.delete('/:n', requireRole('ADMIN'), asyncHandler(async (req, res) => {
+  const n = Number(req.params.n);
+  const found = await query('SELECT id FROM academic_periods WHERE period_number = ?', [n]);
+  if (!found.length) throw new HttpError(404, `El período ${n} no existe`);
+  const total = await one('SELECT COUNT(*) AS c FROM academic_periods WHERE period_number BETWEEN 1 AND ?', [MAX_PERIODS]);
+  if (Number(total.c) <= 1) throw new HttpError(400, 'Debe quedar al menos un período');
+  await exec('DELETE FROM academic_periods WHERE period_number = ?', [n]);
+  res.json({ removed: n });
+}));
+
 module.exports = router;

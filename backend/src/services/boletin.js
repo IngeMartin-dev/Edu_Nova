@@ -534,6 +534,17 @@ async function saveSignature(buffer) {
   return `/Firmas/${filename}`;
 }
 
+/** Borra una firma ("/Firmas/xxx.png"). Devuelve false si no existe o la ruta no es válida. */
+async function deleteSignature(sigPath) {
+  const p = String(sigPath || '');
+  if (!p.startsWith('/Firmas/')) return false;
+  const name = p.slice('/Firmas/'.length);
+  if (!name || name.includes('/') || name.includes('\\') || name.includes('..')) return false;
+  if (!(await listSignatures()).includes(p)) return false;
+  await files.remove(`firmas/${name}`);
+  return true;
+}
+
 // ---------------------------------------------------------------------------
 // Generación individual / por lotes
 // ---------------------------------------------------------------------------
@@ -753,7 +764,7 @@ module.exports = {
   loadContext, prepareBoletinData, buildBoletinHtml, buildFromRequest, generateSingleFromPayload,
   startGenerationJob, listJobs, getJob,
   nombreArchivoBoletin, listGeneratedForStudent, readGeneratedFile, locateStudentBoletines,
-  listSignatures, saveSignature, getAcademicLevel,
+  listSignatures, saveSignature, deleteSignature, getAcademicLevel,
   studentsByGradeClassroom, subjectsWithGrades, subjectsForGradeClassroom, averagesOfSalon, lostSubjectsOfSalon,
   saveObjetivos, listObjetivos, getObjetivos,
   scaleLetter, valorLabel, escalaConductualLetra,

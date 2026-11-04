@@ -106,6 +106,7 @@ function createApp() {
   app.use('/api/parents', require('./routes/parents'));
   app.use('/api/homeroom-assignments', require('./routes/homeroom'));
   app.use('/api/periods', require('./routes/periods'));
+  app.use('/api/countdown', require('./routes/countdown'));
   app.use('/api/notifications', require('./routes/notifications'));
   app.use('/api/messages', require('./routes/messages'));
   app.use('/api/feedback', require('./routes/feedback'));

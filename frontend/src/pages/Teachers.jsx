@@ -12,6 +12,8 @@ const getSubjectAcronym = (subject) => {
 const getSubjectLevelClass = (subject) =>
   (subject.level || '').toLowerCase() === 'primaria' ? 'subject-chip-primaria' : 'subject-chip-bachillerato';
 const errMsg = (err, fallback) => err?.message || fallback;
+// El backend devuelve la materia con `teacher: { id, ... }`; también se aceptan teacherId o un id numérico.
+const subjectTeacherId = (s) => s?.teacherId ?? (s?.teacher && typeof s.teacher === 'object' ? s.teacher.id : s?.teacher) ?? null;
 
 const EMPTY_EDIT = { name: '', surname: '', username: '', email: '', newPassword: '' };
 
@@ -75,7 +77,7 @@ export default function Teachers() {
     // eslint-disable-next-line
   }, []);
 
-  const getTeacherSubjectObjects = (teacher) => allSubjects.filter((s) => s.teacherId === teacher.id || s.teacher === teacher.id);
+  const getTeacherSubjectObjects = (teacher) => allSubjects.filter((s) => subjectTeacherId(s) === teacher.id);
   const primarySubjects = allSubjects.filter((s) => (s.level || '').toLowerCase() === 'primaria');
   const highSchoolSubjects = allSubjects.filter((s) => (s.level || '').toLowerCase() === 'bachillerato');
 
@@ -233,7 +235,8 @@ export default function Teachers() {
     if (!selectedTeacherForAssignment) return;
     const teacher = selectedTeacherForAssignment;
     const teacherId = teacher.id;
-    if (subject.teacherId && subject.teacherId !== teacherId) return;
+    const current = subjectTeacherId(subject);
+    if (current && current !== teacherId) return;
     try {
       await api.put(`/subjects/${subject.id}/teacher/${teacherId}`, {});
       try {
@@ -282,7 +285,7 @@ export default function Teachers() {
   };
 
   const subjectItem = (subject, levelKey) => {
-    const assignedTo = subject.teacherId || subject.teacher;
+    const assignedTo = subjectTeacherId(subject);
     const selId = selectedTeacherForAssignment?.id;
     const clickable = !!selectedTeacherForAssignment && !assignedTo;
     return (

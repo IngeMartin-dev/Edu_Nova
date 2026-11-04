@@ -55,6 +55,14 @@ async function tryRefresh() {
   return refreshing;
 }
 
+// Reintentos con espera exponencial + jitter (solo métodos idempotentes y errores de sobrecarga),
+// para no amplificar una caída momentánea del servidor. Portado de Notas Trinitario.
+const RETRY_STATUS = new Set([408, 429, 502, 503, 504]);
+const RETRY_METHODS = new Set(['GET', 'HEAD', 'PUT', 'DELETE']);
+const MAX_RETRIES = 3;
+const backoffMs = (n) => Math.round(Math.min(500 * 2 ** (n - 1), 8000) * (0.8 + Math.random() * 0.4));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function request(method, path, { body, query, raw, auth = true } = {}, retried = false) {
   let url = BASE + path;
   if (query) {
@@ -70,11 +78,16 @@ async function request(method, path, { body, query, raw, auth = true } = {}, ret
   else if (body !== undefined) { headers['Content-Type'] = 'application/json'; payload = JSON.stringify(body); }
 
   let res;
-  try {
-    res = await fetch(url, { method, headers, body: payload });
-  } catch {
-    connection.markOffline();
-    throw new ApiError('No hay conexión con el servidor', 0);
+  const canRetry = RETRY_METHODS.has(method) && !(payload instanceof FormData);
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      res = await fetch(url, { method, headers, body: payload });
+    } catch {
+      connection.markOffline();
+      throw new ApiError('No hay conexión con el servidor', 0);
+    }
+    if (canRetry && RETRY_STATUS.has(res.status) && attempt < MAX_RETRIES) { await sleep(backoffMs(attempt + 1)); continue; }
+    break;
   }
   if (res.status === 401 && auth && !retried && path !== '/auth/login' && path !== '/auth/refresh') {
     if (await tryRefresh()) return request(method, path, { body, query, raw, auth }, true);
