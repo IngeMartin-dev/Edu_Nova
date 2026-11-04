@@ -28,7 +28,6 @@ router.post('/', requireRole('ADMIN'), asyncHandler(async (req, res) => {
 
   let username = b.username && String(b.username).trim() ? String(b.username).trim() : String(email).split('@')[0];
   if (await findUserByUsername(username)) throw new HttpError(400, 'username already in use');
-  if (await findUserByEmail(String(email).trim())) throw new HttpError(400, 'email already in use');
 
   const role = await one("SELECT id FROM roles WHERE name = 'TEACHER'");
   if (!role) throw new HttpError(400, 'TEACHER role not found in database');

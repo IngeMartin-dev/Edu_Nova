@@ -19,7 +19,7 @@ CREATE TABLE users (
     name                  VARCHAR(100),
     surname               VARCHAR(100),
     username              CITEXT NOT NULL UNIQUE,
-    mail                  CITEXT NOT NULL UNIQUE,
+    mail                  CITEXT NOT NULL,
     password              VARCHAR(255) NOT NULL,
     role_id               BIGINT,
     digital_signature     TEXT,

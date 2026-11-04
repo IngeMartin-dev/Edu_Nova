@@ -72,7 +72,6 @@ router.post('/administradores', requireRole('ADMIN'), asyncHandler(async (req, r
   if (!EMAIL_RE.test(email)) throw new HttpError(400, 'Formato de correo inválido');
   if (pass.length < 8) throw new HttpError(400, 'La contraseña debe tener al menos 8 caracteres');
   if (await findUserByUsername(username)) throw new HttpError(409, 'Ese nombre de usuario ya existe');
-  if (await findUserByEmail(email)) throw new HttpError(409, 'Ese correo ya está registrado');
   const role = await one("SELECT id FROM roles WHERE name = 'ADMIN'");
   if (!role) throw new HttpError(500, 'No existe el rol ADMIN');
   const name = b.name && String(b.name).trim() ? String(b.name).trim() : 'Administrador';
@@ -93,7 +92,6 @@ router.post('/', requireRole('ADMIN'), asyncHandler(async (req, res) => {
 
   let existing = null;
   if (username) existing = await findUserByUsername(username);
-  if (!existing && email) existing = await findUserByEmail(email);
 
   if (existing) {
     const sets = ['name = ?', 'surname = ?', 'username = ?', 'mail = ?', 'enable = ?'];
@@ -142,8 +140,6 @@ router.put('/:id', requireAdminOrSelf(), asyncHandler(async (req, res) => {
   if (!email) throw new HttpError(400, 'El correo es obligatorio');
   if (!EMAIL_RE.test(email) || email.length > 200) throw new HttpError(400, 'El correo no tiene un formato válido');
 
-  const byMail = await findUserByEmail(email);
-  if (byMail && byMail.id !== id) throw new HttpError(409, 'Ese correo ya está en uso por otra cuenta');
   const byUser = await findUserByUsername(username);
   if (byUser && byUser.id !== id) throw new HttpError(409, 'Ese nombre de usuario ya está en uso por otra cuenta');
 

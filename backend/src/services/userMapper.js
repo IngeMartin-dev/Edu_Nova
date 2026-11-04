@@ -35,8 +35,11 @@ function toUserJson(row) {
 
 const findUserById = (id) => one(`${USER_SELECT} WHERE u.id = ?`, [id]);
 const findUserByUsername = (username) => one(`${USER_SELECT} WHERE u.username = ?`, [username]);
-const findUserByEmail = (email) => one(`${USER_SELECT} WHERE u.mail = ?`, [email]);
+// Varias cuentas pueden compartir el mismo correo: findUsersByEmail devuelve TODAS.
+// findUserByEmail devuelve la cuenta solo si el correo es de una única persona (si no, null).
+const findUsersByEmail = (email) => query(`${USER_SELECT} WHERE u.mail = ? ORDER BY u.id`, [email]);
+const findUserByEmail = async (email) => { const all = await findUsersByEmail(email); return all.length === 1 ? all[0] : null; };
 const findAllUsers = () => query(`${USER_SELECT} ORDER BY u.id`);
 const findUsersByRole = (roleName) => query(`${USER_SELECT} WHERE r.name = ? ORDER BY u.id`, [roleName]);
 
-module.exports = { USER_SELECT, toUserJson, findUserById, findUserByUsername, findUserByEmail, findAllUsers, findUsersByRole };
+module.exports = { USER_SELECT, toUserJson, findUserById, findUserByUsername, findUserByEmail, findUsersByEmail, findAllUsers, findUsersByRole };

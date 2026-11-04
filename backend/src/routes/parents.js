@@ -96,7 +96,6 @@ router.post('/', requireRole('ADMIN'), asyncHandler(async (req, res) => {
   if (surname.length > 100) throw new HttpError(400, 'El apellido no puede superar 100 caracteres');
   if (email.length > 200) throw new HttpError(400, 'El correo no puede superar 200 caracteres');
   if (pass.length < 6) throw new HttpError(400, 'La contraseña debe tener al menos 6 caracteres');
-  if (await findUserByEmail(email)) throw new HttpError(400, 'El correo ya está registrado');
 
   let username = email.split('@')[0].slice(0, 100);
   if (await findUserByUsername(username)) {

@@ -76,6 +76,10 @@ function createApp() {
     ? heavyLimiter(req, res, next)
     : generalLimiter(req, res, next)));
 
+  // Migraciones ligeras (una sola vez por proceso): p. ej. permitir varias cuentas con el mismo correo.
+  const { ensureMigrations } = require('./utils/migrations');
+  app.use('/api', (req, res, next) => { ensureMigrations().then(() => next(), () => next()); });
+
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 

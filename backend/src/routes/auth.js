@@ -9,7 +9,7 @@ const { requireAuth } = require('../middleware/auth');
 const refreshTokens = require('../services/refreshTokens');
 const twoFactor = require('../services/twoFactor');
 const { nowSql } = require('../utils/dates');
-const { findUserByUsername, findUserByEmail, findUserById } = require('../services/userMapper');
+const { findUserByUsername, findUsersByEmail, findUserById } = require('../services/userMapper');
 
 const router = express.Router();
 numericParams(router);
@@ -65,7 +65,21 @@ router.post('/login', asyncHandler(async (req, res) => {
   if (bruteForce.isBlocked(key)) return blockedResponse(res, key);
 
   console.log('Intento de login para username:', sanitizeForLog(username));
-  const user = (await findUserByUsername(key)) || (await findUserByEmail(key));
+  // Se busca por usuario; si no, por correo. Un correo puede ser de varias cuentas: entra la que
+  // coincida con la contraseña. Si coinciden varias (misma contraseña), se pide el nombre de usuario.
+  let user = await findUserByUsername(key);
+  if (!user) {
+    const byMail = await findUsersByEmail(key);
+    if (byMail.length === 1) [user] = byMail;
+    else if (byMail.length > 1) {
+      const matching = [];
+      for (const c of byMail) if (await password.matches(pass, c.password)) matching.push(c);
+      if (matching.length === 1) [user] = matching;
+      else if (matching.length > 1) {
+        return res.status(409).json({ error: 'Este correo lo comparten varias cuentas con la misma contraseña. Inicia sesión con tu nombre de usuario.' });
+      }
+    }
+  }
 
   if (!user) {
     await password.burnTime(pass);
@@ -118,7 +132,6 @@ router.post('/register', asyncHandler(async (req, res) => {
     throw new HttpError(400, 'Nombre o apellido demasiado largo');
   }
   if (await findUserByUsername(username)) throw new HttpError(400, 'username already in use');
-  if (await findUserByEmail(email)) throw new HttpError(400, 'email already in use');
 
   const role = await one("SELECT id FROM roles WHERE name = 'PARENT'");
   if (!role) throw new HttpError(500, 'Ocurrió un error interno');
