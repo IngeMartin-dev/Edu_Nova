@@ -581,3 +581,9 @@
   border-radius: 8px;
   font-size: 0.85rem;
 }
+/* Crear administrador */
+.pg-school-year-config .syc-new-admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; align-items: center; }
+.pg-school-year-config .syc-new-admin-form input { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--border, #cfd8dc); border-radius: 8px; font: inherit; background: transparent; color: inherit; }
+.pg-school-year-config .syc-admin-pass { position: relative; }
+.pg-school-year-config .syc-admin-pass input { padding-right: 42px; }
+.pg-school-year-config .syc-admin-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; color: inherit; display: flex; padding: 4px; }

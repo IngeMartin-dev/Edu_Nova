@@ -61,6 +61,30 @@ router.get('/', requireRole('ADMIN'), asyncHandler(async (req, res) => {
 }));
 
 // POST /api/users  (ADMIN) — crea, o actualiza si ya existe el usuario/correo
+// POST /api/users/administradores  (ADMIN) — crea un usuario con rol ADMIN.
+// El rol y el estado los fija el servidor, nunca el cliente.
+router.post('/administradores', requireRole('ADMIN'), asyncHandler(async (req, res) => {
+  const b = req.body || {};
+  const username = String(b.username || '').trim();
+  const email = String(b.email || '').trim();
+  const pass = String(b.password || '');
+  if (username.length < 3 || username.length > 100) throw new HttpError(400, 'El usuario debe tener entre 3 y 100 caracteres');
+  if (!EMAIL_RE.test(email)) throw new HttpError(400, 'Formato de correo inválido');
+  if (pass.length < 8) throw new HttpError(400, 'La contraseña debe tener al menos 8 caracteres');
+  if (await findUserByUsername(username)) throw new HttpError(409, 'Ese nombre de usuario ya existe');
+  if (await findUserByEmail(email)) throw new HttpError(409, 'Ese correo ya está registrado');
+  const role = await one("SELECT id FROM roles WHERE name = 'ADMIN'");
+  if (!role) throw new HttpError(500, 'No existe el rol ADMIN');
+  const name = b.name && String(b.name).trim() ? String(b.name).trim() : 'Administrador';
+  const surname = b.surname && String(b.surname).trim() ? String(b.surname).trim() : null;
+  const r = await exec(
+    `INSERT INTO users (name, surname, username, mail, password, role_id, enable, additional_admin, two_factor_enabled)
+     VALUES (?, ?, ?, ?, ?, ?, 1, 0, 0)`,
+    [name, surname, username, email, await password.hash(pass), role.id]
+  );
+  res.status(201).json({ id: r.insertId, username, email, message: 'Administrador creado correctamente' });
+}));
+
 router.post('/', requireRole('ADMIN'), asyncHandler(async (req, res) => {
   const b = req.body || {};
   const username = b.username ? String(b.username).trim() : '';

@@ -582,3 +582,13 @@
     justify-content: center;
   }
 }
+
+/* X en la esquina para quitar un período */
+.pg-periods .period-card { position: relative; }
+.pg-periods .period-remove {
+  position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%;
+  border: none; cursor: pointer; background: rgba(220, 38, 38, 0.12); color: #dc2626;
+  font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 2;
+}
+.pg-periods .period-remove:hover:not(:disabled) { background: #dc2626; color: #fff; }
+.pg-periods .period-remove:disabled { opacity: 0.5; cursor: not-allowed; }

@@ -220,6 +220,10 @@ export default function Periods() {
             <div className="periods-grid">
               {periods.map((period) => (
                 <div key={period.id ?? period.periodNumber} className={`period-card${!period.isUnlocked ? ' locked' : ''}${period.isUnlocked ? ' unlocked' : ''}`}>
+                  {isAdmin() && (
+                    <button type="button" className="period-remove" onClick={() => removePeriod(period)} disabled={saving}
+                      title="Quitar período" aria-label={`Quitar período ${period.periodNumber}`}>✕</button>
+                  )}
                   <div className="period-header">
                     <span className="period-number">Período {period.periodNumber}</span>
                     <span className="status-icon">
@@ -260,12 +264,6 @@ export default function Periods() {
                       <span className="material-icons">schedule</span>
                       Programar
                     </button>
-                    {isAdmin() && (
-                      <button type="button" className="btn-schedule" onClick={() => removePeriod(period)} disabled={saving} title="Quitar período">
-                        <span className="material-icons">delete</span>
-                        Quitar
-                      </button>
-                    )}
                   </div>
 
                   <div className="period-description">

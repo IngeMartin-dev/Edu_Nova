@@ -25,6 +25,10 @@ export default function SchoolYear() {
   const [advancing, setAdvancing] = useState(false);
   const [reverting, setReverting] = useState(false);
   const [advanceMessage, setAdvanceMessage] = useState('');
+  const [newAdmin, setNewAdmin] = useState({ name: '', surname: '', username: '', email: '', password: '' });
+  const [creatingAdmin, setCreatingAdmin] = useState(false);
+  const [adminMessage, setAdminMessage] = useState({ text: '', error: false });
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
   const [pendientes, setPendientes] = useState([]);
   const [asignaciones, setAsignaciones] = useState({});
   const [guardando, setGuardando] = useState({});
@@ -61,6 +65,29 @@ export default function SchoolYear() {
     setLoadingUsuarios(false);
   };
   const loadRoles = async () => { try { setRoles(await api.get('/users/roles-disponibles')); } catch { /* */ } };
+  const crearAdministrador = async (e) => {
+    e?.preventDefault();
+    const f = newAdmin;
+    const fail = (text) => setAdminMessage({ text, error: true });
+    if (f.username.trim().length < 3) return fail('El usuario debe tener al menos 3 caracteres.');
+    if (!/^\S+@\S+\.\S+$/.test(f.email.trim())) return fail('Escribe un correo válido.');
+    if (f.password.length < 8) return fail('La contraseña debe tener al menos 8 caracteres.');
+    setCreatingAdmin(true);
+    setAdminMessage({ text: '', error: false });
+    try {
+      await api.post('/users/administradores', {
+        name: f.name.trim(), surname: f.surname.trim(), username: f.username.trim(), email: f.email.trim(), password: f.password,
+      });
+      setAdminMessage({ text: `Administrador "${f.username.trim()}" creado correctamente.`, error: false });
+      setNewAdmin({ name: '', surname: '', username: '', email: '', password: '' });
+      setShowAdminPassword(false);
+      loadUsuariosGestion();
+    } catch (err) {
+      setAdminMessage({ text: err?.message || 'No se pudo crear el administrador.', error: true });
+    }
+    setCreatingAdmin(false);
+  };
+
   const loadUsuariosGestion = async () => {
     setLoadingGestion(true);
     try { setUsuariosGestion(await api.get('/users/gestion-roles')); } catch { /* */ }
@@ -248,6 +275,27 @@ export default function SchoolYear() {
             <button className="syc-revert-btn" disabled={reverting} onClick={revertYear}><span className="material-icons">arrow_downward</span>{reverting ? ' Retrocediendo...' : ' Retroceder año'}</button>
           </div>
           {advanceMessage && <p className="syc-message">{advanceMessage}</p>}
+        </div>
+
+        <div className="syc-card">
+          <h3><span className="material-icons">verified_user</span> Crear administrador</h3>
+          <p className="syc-hint">Crea una cuenta nueva con rol de Administrador. Podrá entrar de inmediato con el usuario y la contraseña que escribas aquí (mínimo 8 caracteres).</p>
+          <form className="syc-new-admin-form" autoComplete="off" noValidate onSubmit={crearAdministrador}>
+            <input type="text" name="adminName" placeholder="Nombre" autoComplete="off" value={newAdmin.name} onChange={(e) => setNewAdmin((a) => ({ ...a, name: e.target.value }))} />
+            <input type="text" name="adminSurname" placeholder="Apellido" autoComplete="off" value={newAdmin.surname} onChange={(e) => setNewAdmin((a) => ({ ...a, surname: e.target.value }))} />
+            <input type="text" name="adminUsername" placeholder="Usuario" autoComplete="off" value={newAdmin.username} onChange={(e) => setNewAdmin((a) => ({ ...a, username: e.target.value }))} />
+            <input type="email" name="adminEmail" placeholder="Correo" autoComplete="off" value={newAdmin.email} onChange={(e) => setNewAdmin((a) => ({ ...a, email: e.target.value }))} />
+            <div className="syc-admin-pass">
+              <input type={showAdminPassword ? 'text' : 'password'} name="adminPassword" placeholder="Contraseña (mín. 8)" autoComplete="new-password" value={newAdmin.password} onChange={(e) => setNewAdmin((a) => ({ ...a, password: e.target.value }))} />
+              <button type="button" className="syc-admin-eye" onClick={() => setShowAdminPassword((v) => !v)} aria-label={showAdminPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}>
+                <span className="material-icons">{showAdminPassword ? 'visibility_off' : 'visibility'}</span>
+              </button>
+            </div>
+            <button type="submit" className="syc-save-btn" disabled={creatingAdmin}>
+              <span className="material-icons">person_add</span>{creatingAdmin ? ' Creando...' : ' Crear administrador'}
+            </button>
+          </form>
+          {adminMessage.text && <p className="syc-message" style={adminMessage.error ? { color: '#c62828' } : undefined}>{adminMessage.text}</p>}
         </div>
 
         <div className="syc-card">
