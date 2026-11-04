@@ -54,7 +54,7 @@ export default function DirectorsGroup() {
   const showSuccessNotification = (m) => showNotification('success', m, 3000);
   const showErrorNotification = (m) => showNotification('error', m, 4000);
 
-  const getTeacherSubjectObjects = (t) => allSubjects.filter((s) => s.teacherId === t.id || s.teacher === t.id);
+  const getTeacherSubjectObjects = (t) => allSubjects.filter((s) => (s.teacherId ?? (s.teacher && typeof s.teacher === 'object' ? s.teacher.id : s.teacher)) === t.id);
   const getDirectorAssignment = (t) => homeroomAssignments.find((a) => a.userId === t.id);
 
   const getFilteredTeachers = () => {

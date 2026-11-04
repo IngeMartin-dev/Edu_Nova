@@ -152,6 +152,33 @@ export default function Periods() {
     return roleName === 'ADMIN' || !!user?.additionalAdmin;
   };
 
+  const addPeriod = async () => {
+    setSaving(true); setErrorMessage('');
+    try {
+      const created = await api.post('/periods', {});
+      setPeriods((ps) => uniqueByNumber([...ps, created]).sort((a, b) => a.periodNumber - b.periodNumber));
+      flashSuccess(`Período ${created.periodNumber} agregado correctamente`);
+      notifyPeriodsChanged();
+    } catch (err) {
+      setErrorMessage(err?.message || 'Error al agregar el período');
+    }
+    setSaving(false);
+  };
+
+  const removePeriod = async (period) => {
+    if (!window.confirm(`¿Quitar el Período ${period.periodNumber}? Las notas ya registradas no se borran.`)) return;
+    setSaving(true); setErrorMessage('');
+    try {
+      await api.del(`/periods/${period.periodNumber}`);
+      setPeriods((ps) => ps.filter((p) => p.periodNumber !== period.periodNumber));
+      flashSuccess(`Período ${period.periodNumber} eliminado correctamente`);
+      notifyPeriodsChanged();
+    } catch (err) {
+      setErrorMessage(err?.message || 'Error al eliminar el período');
+    }
+    setSaving(false);
+  };
+
   const goBack = () => navigate('/dashboard');
 
   return (
@@ -233,6 +260,12 @@ export default function Periods() {
                       <span className="material-icons">schedule</span>
                       Programar
                     </button>
+                    {isAdmin() && (
+                      <button type="button" className="btn-schedule" onClick={() => removePeriod(period)} disabled={saving} title="Quitar período">
+                        <span className="material-icons">delete</span>
+                        Quitar
+                      </button>
+                    )}
                   </div>
 
                   <div className="period-description">
@@ -241,6 +274,15 @@ export default function Periods() {
                 </div>
               ))}
             </div>
+
+            {isAdmin() && periods.length < 4 && (
+              <div style={{ margin: '16px 0' }}>
+                <button type="button" className="btn-schedule" onClick={addPeriod} disabled={saving}>
+                  <span className="material-icons">add</span>
+                  Agregar período
+                </button>
+              </div>
+            )}
 
             {!isAdmin() && (
               <div className="admin-notice">

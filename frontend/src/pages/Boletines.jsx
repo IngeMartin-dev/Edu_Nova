@@ -540,6 +540,18 @@ export default function Boletines() {
       .catch(() => dialog.alert('Error al subir la firma', 'Error'));
   };
 
+  const deleteSignature = async (sig) => {
+    const ok = await dialog.confirm(`¿Eliminar la firma "${sig.name}"?`, { title: 'Eliminar firma', confirmText: 'Eliminar', danger: true });
+    if (!ok) return;
+    try {
+      await api.del(`/boletines/firmas?path=${encodeURIComponent(sig.path)}`);
+      setSignatures((cur) => cur.filter((x) => x.path !== sig.path));
+      if (selectedDirectorSignature === sig.path) setSelectedDirectorSignature(undefined);
+    } catch {
+      dialog.alert('No se pudo eliminar la firma', 'Error');
+    }
+  };
+
   const onSignatureUpload = (e) => {
     const input = e.target;
     if (input.files && input.files.length > 0) {
@@ -927,6 +939,9 @@ export default function Boletines() {
                         <img src={imageUrl(sig.path)} alt={sig.name} onError={onImageError} />
                       </div>
                       <div className="sig-name">{sig.name}</div>
+                      <button type="button" className="sig-delete" title="Eliminar firma" aria-label={`Eliminar firma ${sig.name}`}
+                        style={{ position: 'absolute', top: 4, right: 4, border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', background: '#dc2626', color: '#fff', lineHeight: 1 }}
+                        onClick={(e) => { e.stopPropagation(); deleteSignature(sig); }}>×</button>
                     </div>
                   ))}
                 </div>
