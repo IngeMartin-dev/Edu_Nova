@@ -25,6 +25,11 @@ const COMPORTAMIENTO_SOCIAL = 'Comportamiento Social';
 const MAX_MATERIAS_FIJAS = 35;
 const MATERIA_FIJA_BASE = 16;
 const TEMPLATE = path.resolve(__dirname, '../../templates/BoletinBase.html');
+// Plantilla del ÚLTIMO período del año (cierre): trae promedio anual, puesto anual y "PROMOVIDO / NO PROMOVIDO".
+const TEMPLATE_FINAL = path.resolve(__dirname, '../../templates/BoletinBaseP4.html');
+/** Más de este número de áreas perdidas en el año: se muestran y el estudiante no se promueve. */
+const MAX_AREAS_PERDIDAS_PROMOVIDO = 3;
+const DEFAULT_LAST_PERIOD = 4;
 
 // ---------------------------------------------------------------------------
 // Utilidades de escala
@@ -90,6 +95,61 @@ function resolveLevelForGrade(n) {
 const toDouble = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
 
 // ---------------------------------------------------------------------------
+// Último período del año (usa la plantilla FINAL)
+// ---------------------------------------------------------------------------
+/** El MAYOR período existente en Gestión de Períodos (4 si no hay ninguno). */
+async function lastPeriodNumber() {
+  try {
+    const r = await one('SELECT MAX(period_number) AS m FROM academic_periods');
+    const m = r && r.m !== null && r.m !== undefined ? Number(r.m) : 0;
+    return m > 0 ? m : DEFAULT_LAST_PERIOD;
+  } catch (_) { return DEFAULT_LAST_PERIOD; }
+}
+
+/**
+ * Nota anual de cada materia = promedio de la N.FINAL de todos los períodos hasta `lastPeriod`.
+ * Solo cuentan los períodos con nota (> 0). Devuelve Map(materia -> nota).
+ */
+function annualGradesBySubject(ctx, studentId, subjects, lastPeriod) {
+  const out = new Map();
+  for (const subject of subjects) {
+    if (isReservedSubjectName(subject)) continue;
+    let sum = 0; let n = 0;
+    for (let p = 1; p <= lastPeriod; p++) {
+      const nf = nFinalOf(ctx, studentId, p, subject);
+      if (nf !== null && nf !== undefined && nf > 0) { sum += nf; n += 1; }
+    }
+    if (n > 0) out.set(subject, sum / n);
+  }
+  return out;
+}
+const meanOf = (values) => { const a = [...values]; return a.length ? a.reduce((x, y) => x + y, 0) / a.length : null; };
+const round2 = (v) => Math.round(v * 100) / 100;
+
+/** Cierre de año de un estudiante: promedio anual, áreas perdidas del año y puesto anual (empates comparten puesto). */
+function annualSummary(ctx, studentId, subjects, lastPeriod) {
+  const own = annualGradesBySubject(ctx, studentId, subjects, lastPeriod);
+  const annualAverage = meanOf(own.values());
+  const annualLostAreas = [...own.entries()].filter(([, nota]) => nota < ctx.minPassing).map(([materia]) => materia);
+  let annualRank = null;
+  if (annualAverage !== null) {
+    const mine = round2(annualAverage);
+    let better = 0;
+    for (const s of ctx.students) {
+      if (s.id === studentId) continue;
+      // memoizado por salón: evita recalcular a todos los compañeros para cada estudiante
+      if (!ctx._annualAvg) ctx._annualAvg = new Map();
+      const key = `${s.id}|${lastPeriod}`;
+      if (!ctx._annualAvg.has(key)) ctx._annualAvg.set(key, meanOf(annualGradesBySubject(ctx, s.id, subjects, lastPeriod).values()));
+      const other = ctx._annualAvg.get(key);
+      if (other !== null && round2(other) > mine) better += 1;
+    }
+    annualRank = better + 1;
+  }
+  return { annualAverage, annualLostAreas, annualRank };
+}
+
+// ---------------------------------------------------------------------------
 // Contexto en memoria de un salón
 // ---------------------------------------------------------------------------
 async function loadContext(grade, classroom) {
@@ -104,6 +164,7 @@ async function loadContext(grade, classroom) {
     recovery: new Map(),     // `${studentId}|${subjectNorm}|${period}` -> fila
     valoraciones: new Map(), // `${studentId}|${period}` -> nota
     minPassing: Number((await schoolYear.getConfig()).minPassingGrade ?? 3.5),
+    lastPeriod: await lastPeriodNumber(),
   };
   if (!ids.length) return ctx;
 
@@ -252,9 +313,17 @@ async function prepareBoletinData(studentId, grade, classroom, period, ctxIn = n
   const lista = [...ctx.students].sort((a, b) => (nvl(a.surname, '') < nvl(b.surname, '') ? -1 : nvl(a.surname, '') > nvl(b.surname, '') ? 1 : 0));
   const idx = lista.findIndex((s) => s.id === studentId);
 
+  // Cierre de año: solo en el último período (plantilla FINAL)
+  const isFinal = Number(period) === ctx.lastPeriod;
+  const annual = isFinal ? annualSummary(ctx, studentId, subjects, ctx.lastPeriod) : null;
+
   return {
     student: { ...student, fullName: `${nvl(student.name, '')} ${nvl(student.surname, '')}`.trim() },
     grade, classroom, period,
+    isFinal,
+    annualAverage: annual ? annual.annualAverage : null,
+    annualLostAreas: annual ? annual.annualLostAreas : [],
+    annualRank: annual ? annual.annualRank : null,
     city: 'Cartagena', jornada: 'ÚNICA',
     schoolYear: String(new Date().getFullYear()),
     academicLevel: getAcademicLevel(grade),
@@ -267,7 +336,7 @@ async function prepareBoletinData(studentId, grade, classroom, period, ctxIn = n
     objetivoPeriodo: null, compSocialObjetivo: null, compSocialIndicadores: null,
     compSocialIh: null, compSocialFa: null, compSocialFaa: null,
     valoracionAcudienteIh: null, valoracionAcudienteFa: null, valoracionAcudienteFaa: null, valoracionAcudienteObjetivo: null,
-    rightSignatureUri: '', leftSignatureUri: '', directorName: null,
+    rightSignatureUri: '', leftSignatureUri: '', directorName: null, directorTitle: null,
     _ctx: ctx,
   };
 }
@@ -416,8 +485,13 @@ function collapseCuposVacios(html, total) {
   return html;
 }
 
+const num2Coma = (v) => (v === null || v === undefined ? '0,00' : Number(v).toFixed(2).replace('.', ','));
+/** El cargo bajo la firma: "Director" o "Directora" (por defecto "Directora", como en la plantilla normal). */
+const normalizarCargo = (t) => (t && String(t).trim().toLowerCase() === 'director' ? 'Director' : 'Directora');
+
 function buildBoletinHtml(data) {
-  const template = fs.readFileSync(TEMPLATE, 'utf8');
+  const esFinal = !!data.isFinal;
+  const template = fs.readFileSync(esFinal ? TEMPLATE_FINAL : TEMPLATE, 'utf8');
   const subjects = data.subjects || [];
   const areasPerdidas = !data.lostAreas || !data.lostAreas.length ? 'NINGUNA' : data.lostAreas.join(', ').toUpperCase();
   const r = {
@@ -436,8 +510,22 @@ function buildBoletinHtml(data) {
     '{{DESEMPENO_GENERAL}}': escapeHtml(data.average !== null && data.average !== undefined ? valorLabel(data.average) : 'N.A'),
     '{{AREAS_PERDIDAS}}': escapeHtml(areasPerdidas),
     '{{DIRECTOR_NOMBRE}}': escapeHtml(nvl(data.directorName, '')),
+    '{{DIRECTOR_CARGO}}': escapeHtml(normalizarCargo(data.directorTitle)),
     '{{FIRMA_IMAGEN}}': data.rightSignatureUri || '',
   };
+  if (esFinal) {
+    // En FINAL "áreas perdidas" son las del año (nota anual < mínima); solo se muestran si son más de 3.
+    const perdidasAnual = data.annualLostAreas || [];
+    const muestraPerdidas = perdidasAnual.length > MAX_AREAS_PERDIDAS_PROMOVIDO;
+    r['{{PERIODO_FINAL}}'] = `(${data.period}) FINAL`;
+    r['{{PROMEDIO_PERIODO}}'] = num2Coma(data.average);
+    r['{{PROMEDIO_ANUAL}}'] = num2Coma(data.annualAverage);
+    r['{{PUESTO_ANUAL}}'] = data.annualRank ? String(data.annualRank) : '';
+    r['{{DESEMPENO_ANUAL}}'] = escapeHtml(data.annualAverage !== null && data.annualAverage !== undefined ? valorLabel(data.annualAverage) : 'N.A');
+    r['{{AREAS_PERDIDAS_LABEL}}'] = muestraPerdidas ? 'AREAS PERDIDAS:' : '';
+    r['{{DEFINICION_ANIO}}'] = muestraPerdidas ? 'NO PROMOVIDO' : 'PROMOVIDO';
+    r['{{AREAS_PERDIDAS}}'] = escapeHtml(muestraPerdidas ? perdidasAnual.join(', ').toUpperCase() : '');
+  }
   for (let i = 0; i < MAX_MATERIAS_FIJAS; i++) fillMateriaSlot(r, i + 1, subjects[i] || null, data.period);
   fillCierreSlots(r, data);
   let html = template;
@@ -592,6 +680,7 @@ async function buildFromRequest(req, ctx = null) {
 
   if (req.directorSignature) data.rightSignatureUri = await signatureToUri(String(req.directorSignature));
   if (req.directorName !== undefined && req.directorName !== null) data.directorName = String(req.directorName);
+  if (req.directorTitle !== undefined && req.directorTitle !== null) data.directorTitle = String(req.directorTitle);
   if (req.leftSignature) data.leftSignatureUri = await signatureToUri(String(req.leftSignature));
   if (Array.isArray(req.studentSubjectIndicators)) applySubjectIndicators(data, req.studentSubjectIndicators);
   return { data };
@@ -768,4 +857,5 @@ module.exports = {
   studentsByGradeClassroom, subjectsWithGrades, subjectsForGradeClassroom, averagesOfSalon, lostSubjectsOfSalon,
   saveObjetivos, listObjetivos, getObjetivos,
   scaleLetter, valorLabel, escalaConductualLetra,
+  lastPeriodNumber, annualGradesBySubject, annualSummary, MAX_AREAS_PERDIDAS_PROMOVIDO,
 };
