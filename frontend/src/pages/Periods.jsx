@@ -273,7 +273,7 @@ export default function Periods() {
               ))}
             </div>
 
-            {isAdmin() && periods.length < 4 && (
+            {isAdmin() && periods.length < 12 && (
               <div style={{ margin: '16px 0' }}>
                 <button type="button" className="btn-schedule" onClick={addPeriod} disabled={saving}>
                   <span className="material-icons">add</span>
