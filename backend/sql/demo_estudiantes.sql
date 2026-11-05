@@ -3,10 +3,13 @@
 --   = 110 estudiantes, cada uno con su acudiente enlazado (student_parents + parent_classes)
 --   y notas de los 4 períodos en todas las materias de su grado (según la tabla subjects).
 --
+-- También crea un profesor por cada materia (usuario prof_<código>, p. ej. prof_mat-p) y lo
+-- asigna como titular de esa materia; las notas quedan a nombre de ese profesor.
+--
 -- Requisitos: schema.sql y seed.sql ya ejecutados (roles y materias).
 -- Se puede ejecutar completo en el editor SQL de Supabase / psql. Es idempotente:
 -- si ya existe un usuario "padre_<grado><salón><n>" no lo vuelve a crear.
--- Acudientes: usuario padre_1A1 … padre_11B5   ·   contraseña: Demo2026*
+-- Acudientes: usuario padre_1A1 … padre_11B5 · Profesores: prof_<código> · contraseña de todos: Demo2026*
 -- =====================================================================
 DO $demo$
 DECLARE
@@ -15,6 +18,8 @@ DECLARE
   salones   text[] := ARRAY['A','B'];
   hash      text := '$2b$12$BnMqjZVm9mFKZOPPubHpv.xu.mwRMUsXKNud2dPjWuO8hnRK1PlDi';
   role_parent bigint;
+  role_teacher bigint;
+  tsubj record; tid bigint; nprof int := 0;
   g int; sal text; k int; n int := 0;
   uid bigint; sid bigint; ap text; nom text;
   subj record; p int;
@@ -23,7 +28,22 @@ DECLARE
 BEGIN
   SELECT id INTO role_parent FROM roles WHERE name = 'PARENT';
   IF role_parent IS NULL THEN RAISE EXCEPTION 'Falta el rol PARENT: ejecuta antes schema.sql y seed.sql'; END IF;
+  SELECT id INTO role_teacher FROM roles WHERE name = 'TEACHER';
+  IF role_teacher IS NULL THEN RAISE EXCEPTION 'Falta el rol TEACHER: ejecuta antes schema.sql y seed.sql'; END IF;
   PERFORM setseed(0.2026);   -- notas reproducibles
+
+  -- Un profesor por cada materia (cada fila de subjects) y asignación como titular
+  FOR tsubj IN SELECT id, name, code, level FROM subjects ORDER BY id LOOP
+    SELECT id INTO tid FROM users WHERE username = 'prof_' || lower(tsubj.code);
+    IF tid IS NULL THEN
+      INSERT INTO users (name, surname, username, mail, password, role_id, enable)
+      VALUES ('Profesor', tsubj.name || ' (' || initcap(tsubj.level) || ')', 'prof_' || lower(tsubj.code),
+              'prof_' || lower(tsubj.code) || '@demo.edunova.co', hash, role_teacher, 1)
+      RETURNING id INTO tid;
+      nprof := nprof + 1;
+    END IF;
+    UPDATE subjects SET teacher_id = tid WHERE id = tsubj.id;
+  END LOOP;
 
   FOR g IN 1..11 LOOP
     grade_label := 'Grado ' || g || E'º';
@@ -78,6 +98,12 @@ BEGIN
       END LOOP;
     END LOOP;
   END LOOP;
-  RAISE NOTICE 'Listo: % estudiantes con acudiente y notas (usuarios padre_1A1 … padre_11B5 / Demo2026*)', n;
+  -- Las notas de acudientes demo creados en una ejecución anterior pasan al profesor de su materia
+  UPDATE subject_grades sg SET teacher_id = su.teacher_id
+    FROM subjects su
+   WHERE sg.subject_id = su.id AND sg.teacher_id IS DISTINCT FROM su.teacher_id
+     AND sg.student_id IN (SELECT sp.student_id FROM student_parents sp JOIN users u ON u.id = sp.user_id WHERE u.username LIKE 'padre\_%');
+
+  RAISE NOTICE '% profesores nuevos. Listo: % estudiantes con acudiente y notas (padre_1A1 … padre_11B5 y prof_<código> / Demo2026*)', nprof, n;
 END
 $demo$;
