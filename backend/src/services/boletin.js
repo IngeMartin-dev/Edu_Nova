@@ -509,7 +509,7 @@ function buildBoletinHtml(data) {
     '{{PROMEDIO}}': data.average !== null && data.average !== undefined ? fmt(data.average) : fmt(0),
     '{{DESEMPENO_GENERAL}}': escapeHtml(data.average !== null && data.average !== undefined ? valorLabel(data.average) : 'N.A'),
     '{{AREAS_PERDIDAS}}': escapeHtml(areasPerdidas),
-    '{{DIRECTOR_NOMBRE}}': escapeHtml(nvl(data.directorName, '')),
+    '{{DIRECTOR_NOMBRE}}': escapeHtml(nvl(data.directorName, '').toUpperCase()),
     '{{DIRECTOR_CARGO}}': escapeHtml(normalizarCargo(data.directorTitle)),
     '{{FIRMA_IMAGEN}}': data.rightSignatureUri || '',
   };
@@ -608,21 +608,56 @@ async function signatureToUri(p) {
   } catch (_) { return ''; }
 }
 
+const SIG_META_KEY = 'firmas/_firmas.json';
+const IMG_RE = /\.(png|jpe?g|gif|webp)$/i;
+
+/** Nombre y cargo de cada firma: { "archivo.png": { name, title } } (guardado junto a las imágenes). */
+async function readSigMeta() {
+  try {
+    const buf = await files.get(SIG_META_KEY);
+    const m = buf ? JSON.parse(buf.toString('utf8')) : {};
+    return m && typeof m === 'object' ? m : {};
+  } catch (_) { return {}; }
+}
+async function writeSigMeta(meta) {
+  await files.put(SIG_META_KEY, Buffer.from(JSON.stringify(meta), 'utf8'), 'application/json');
+}
+const sigFileName = (p) => String(p || '').replace(/\\/g, '/').split('/').pop();
+
 async function listSignatures() {
   try {
-    return (await files.list('firmas')).filter((e) => !e.isDir).map((e) => `/Firmas/${e.name}`);
+    return (await files.list('firmas')).filter((e) => !e.isDir && IMG_RE.test(e.name)).map((e) => `/Firmas/${e.name}`);
   } catch (_) { return []; }
 }
 
-async function saveSignature(buffer) {
+/** Firmas con su nombre y cargo ("Director"/"Directora") para el panel. */
+async function listSignaturesDetailed() {
+  const meta = await readSigMeta();
+  return (await listSignatures()).map((p) => {
+    const file = sigFileName(p);
+    const m = meta[file] || {};
+    return { path: p, file, name: m.name || file, title: normalizarCargo(m.title) };
+  });
+}
+
+/** Nombre y cargo guardados de una firma ("/Firmas/xxx.png"); null si no hay. */
+async function signatureInfo(sigPath) {
+  const m = (await readSigMeta())[sigFileName(sigPath)];
+  return m ? { name: m.name || '', title: normalizarCargo(m.title) } : null;
+}
+
+async function saveSignature(buffer, name = '', title = '') {
   const ext = sniffImage(buffer);
   if (!ext) throw new Error('Solo se permiten imágenes (jpg, png, gif o webp)');
   const filename = `signature_${Date.now()}_${crypto.randomBytes(6).toString('hex')}.${ext}`;
   await files.put(`firmas/${filename}`, buffer, `image/${ext === 'jpg' ? 'jpeg' : ext}`);
+  const meta = await readSigMeta();
+  meta[filename] = { name: String(name || '').trim().slice(0, 120), title: normalizarCargo(title) };
+  await writeSigMeta(meta);
   return `/Firmas/${filename}`;
 }
 
-/** Borra una firma ("/Firmas/xxx.png"). Devuelve false si no existe o la ruta no es válida. */
+/** Borra una firma ("/Firmas/xxx.png") y su nombre/cargo. Devuelve false si no existe o la ruta no es válida. */
 async function deleteSignature(sigPath) {
   const p = String(sigPath || '');
   if (!p.startsWith('/Firmas/')) return false;
@@ -630,6 +665,8 @@ async function deleteSignature(sigPath) {
   if (!name || name.includes('/') || name.includes('\\') || name.includes('..')) return false;
   if (!(await listSignatures()).includes(p)) return false;
   await files.remove(`firmas/${name}`);
+  const meta = await readSigMeta();
+  if (meta[name]) { delete meta[name]; await writeSigMeta(meta); }
   return true;
 }
 
@@ -678,7 +715,11 @@ async function buildFromRequest(req, ctx = null) {
     data._ctx.valoraciones.set(`${studentId}|${period}`, notaGuardar);
   }
 
-  if (req.directorSignature) data.rightSignatureUri = await signatureToUri(String(req.directorSignature));
+  if (req.directorSignature) {
+    data.rightSignatureUri = await signatureToUri(String(req.directorSignature));
+    const info = await signatureInfo(String(req.directorSignature));
+    if (info) { data.directorName = info.name; data.directorTitle = info.title; }
+  }
   if (req.directorName !== undefined && req.directorName !== null) data.directorName = String(req.directorName);
   if (req.directorTitle !== undefined && req.directorTitle !== null) data.directorTitle = String(req.directorTitle);
   if (req.leftSignature) data.leftSignatureUri = await signatureToUri(String(req.leftSignature));
@@ -849,6 +890,7 @@ const listObjetivos = (grade, classroom) => query('SELECT period, updated_at FRO
 const getObjetivos = (grade, classroom, period) => one('SELECT period, payload FROM boletin_objetivos WHERE grade = ? AND classroom = ? AND period = ?', [grade, classroom, period]);
 
 module.exports = {
+  listSignaturesDetailed, signatureInfo,
   VALORACION_ACUDIENTE, COMPORTAMIENTO_SOCIAL,
   loadContext, prepareBoletinData, buildBoletinHtml, buildFromRequest, generateSingleFromPayload,
   startGenerationJob, listJobs, getJob,

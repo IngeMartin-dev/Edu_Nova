@@ -123,13 +123,16 @@ router.get('/objetivos-predeterminados/:period', STAFF, asyncHandler(async (req,
 }));
 
 // --- Firmas ---
-router.get('/firmas', STAFF, asyncHandler(async (req, res) => res.json((await boletin.listSignatures()).map((p) => ({ path: p, name: p.slice(p.lastIndexOf('/') + 1) })))));
+router.get('/firmas', STAFF, asyncHandler(async (req, res) => res.json(await boletin.listSignaturesDetailed())));
 
 router.post('/firmas/upload', STAFF, upload.single('file'), asyncHandler(async (req, res) => {
   if (!req.file || !req.file.size) throw new HttpError(400, 'Archivo vacío');
   if (!sniffImage(req.file.buffer)) throw new HttpError(400, 'Solo se permiten imágenes');
-  const p = await boletin.saveSignature(req.file.buffer);
-  res.json({ path: p, name: p.slice(p.lastIndexOf('/') + 1) });
+  const name = String((req.body || {}).name || '').trim();
+  if (!name) throw new HttpError(400, 'Falta el nombre de la firma');
+  const title = String((req.body || {}).title || '').trim().toLowerCase() === 'directora' ? 'Directora' : 'Director';
+  const p = await boletin.saveSignature(req.file.buffer, name, title);
+  res.json({ path: p, file: p.slice(p.lastIndexOf('/') + 1), name, title });
 }));
 
 // DELETE /api/boletines/firmas?path=/Firmas/archivo.png

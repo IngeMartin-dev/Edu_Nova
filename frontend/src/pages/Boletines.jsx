@@ -96,6 +96,10 @@ export default function Boletines() {
 
   const [selectedDirectorSignature, setSelectedDirectorSignature] = useState(undefined);
   const [showSignaturePanel, setShowSignaturePanel] = useState(false);
+  const [sigQueue, setSigQueue] = useState([]);      // imágenes esperando nombre y cargo
+  const [sigName, setSigName] = useState('');
+  const [sigTitle, setSigTitle] = useState('Director');
+  const [sigUploading, setSigUploading] = useState(false);
 
   const [showFormView, setShowFormView] = useState(true);
   const [fadeOutForm, setFadeOutForm] = useState(false);
@@ -532,13 +536,34 @@ export default function Boletines() {
   };
 
   /* ───────── Firmas ───────── */
-  const uploadSignatureFile = (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    api.post('/boletines/firmas/upload', formData)
-      .then((sig) => setSignatures((cur) => [...cur, sig]))
-      .catch(() => dialog.alert('Error al subir la firma', 'Error'));
+  // Al agregar una firma se pide el nombre y si es Director o Directora (se imprime bajo la firma en el boletín).
+  const queueSignatureFiles = (files) => {
+    const imgs = Array.from(files || []).filter((f) => f.type.startsWith('image/'));
+    if (!imgs.length) return;
+    setSigQueue((q) => [...q, ...imgs]);
   };
+
+  const confirmSignatureUpload = async () => {
+    const file = sigQueue[0];
+    const name = sigName.trim();
+    if (!file || !name || sigUploading) return;
+    setSigUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('name', name);
+      formData.append('title', sigTitle);
+      const sig = await api.post('/boletines/firmas/upload', formData);
+      setSignatures((cur) => [...cur, sig]);
+      setSigQueue((q) => q.slice(1));
+      setSigName(''); setSigTitle('Director');
+    } catch {
+      dialog.alert('Error al subir la firma', 'Error');
+    }
+    setSigUploading(false);
+  };
+
+  const cancelSignatureUpload = () => { setSigQueue((q) => q.slice(1)); setSigName(''); setSigTitle('Director'); };
 
   const deleteSignature = async (sig) => {
     const ok = await dialog.confirm(`¿Eliminar la firma "${sig.name}"?`, { title: 'Eliminar firma', confirmText: 'Eliminar', danger: true });
@@ -555,7 +580,7 @@ export default function Boletines() {
   const onSignatureUpload = (e) => {
     const input = e.target;
     if (input.files && input.files.length > 0) {
-      Array.from(input.files).forEach((file) => uploadSignatureFile(file));
+      queueSignatureFiles(input.files);
       input.value = '';
     }
   };
@@ -574,7 +599,7 @@ export default function Boletines() {
     if (panel) panel.classList.remove('drag-over');
     const files = e.dataTransfer?.files;
     if (files && files.length > 0) {
-      Array.from(files).forEach((file) => { if (file.type.startsWith('image/')) uploadSignatureFile(file); });
+      queueSignatureFiles(files);
     }
   };
 
@@ -916,6 +941,24 @@ export default function Boletines() {
                 <button className="panel-close" onClick={() => setShowSignaturePanel(false)}>✕</button>
               </div>
               <div className="panel-body">
+                {sigQueue.length > 0 && (
+                  <form className="sig-form" onSubmit={(e) => { e.preventDefault(); confirmSignatureUpload(); }}
+                    style={{ border: '1px solid var(--brand-600, #6d28d9)', borderRadius: 10, padding: 12, marginBottom: 12, display: 'grid', gap: 8 }}>
+                    <strong>Datos de la firma{sigQueue.length > 1 ? ` (${sigQueue.length} por agregar)` : ''}</strong>
+                    <span style={{ fontSize: 12, opacity: 0.8 }}>{sigQueue[0].name}</span>
+                    <label htmlFor="sig-name-input">Nombre de quien firma</label>
+                    <input id="sig-name-input" type="text" value={sigName} maxLength={120} autoFocus required placeholder="Ej: María Pérez"
+                      onChange={(e) => setSigName(e.target.value)} />
+                    <div role="radiogroup" aria-label="Cargo" style={{ display: 'flex', gap: 16 }}>
+                      <label><input type="radio" name="sig-title" checked={sigTitle === 'Director'} onChange={() => setSigTitle('Director')} /> Director</label>
+                      <label><input type="radio" name="sig-title" checked={sigTitle === 'Directora'} onChange={() => setSigTitle('Directora')} /> Directora</label>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                      <button type="button" className="btn-cancel" onClick={cancelSignatureUpload} disabled={sigUploading}>Cancelar</button>
+                      <button type="submit" className="btn-confirm" disabled={!sigName.trim() || sigUploading}>{sigUploading ? 'Guardando...' : 'Guardar firma'}</button>
+                    </div>
+                  </form>
+                )}
                 <div className="upload-zone" onDragOver={onDragOver} onDrop={onDrop}>
                   <p>Arrastra fotos de firmas aquí o</p>
                   <input type="file" accept="image/*" onChange={onSignatureUpload} multiple />
@@ -939,6 +982,7 @@ export default function Boletines() {
                         <img src={imageUrl(sig.path)} alt={sig.name} onError={onImageError} />
                       </div>
                       <div className="sig-name">{sig.name}</div>
+                      <div className="sig-title" style={{ fontSize: 11, opacity: 0.75, textAlign: 'center' }}>{sig.title || 'Director'}</div>
                       <button type="button" className="sig-delete" title="Eliminar firma" aria-label={`Eliminar firma ${sig.name}`}
                         style={{ position: 'absolute', top: 4, right: 4, border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', background: '#dc2626', color: '#fff', lineHeight: 1 }}
                         onClick={(e) => { e.stopPropagation(); deleteSignature(sig); }}>×</button>
