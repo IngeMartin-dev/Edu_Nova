@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useDialog } from '../context/UiContext.jsx';
 import { bus } from '../services/events.js';
 import { notifyPeriodsChanged } from '../services/realtime.js';
 import '../styles/pages/periods.css';
@@ -30,6 +31,7 @@ const formatDisplayDate = (dateStr) => {
 export default function Periods() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const dialog = useDialog();
   const [periods, setPeriods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -166,7 +168,9 @@ export default function Periods() {
   };
 
   const removePeriod = async (period) => {
-    if (!window.confirm(`¿Quitar el Período ${period.periodNumber}? Las notas ya registradas no se borran.`)) return;
+    const ok = await dialog.confirm(`¿Quitar el Período ${period.periodNumber}? Las notas ya registradas no se borran.`,
+      { title: 'Quitar período', confirmText: 'Quitar', danger: true });
+    if (!ok) return;
     setSaving(true); setErrorMessage('');
     try {
       await api.del(`/periods/${period.periodNumber}`);
