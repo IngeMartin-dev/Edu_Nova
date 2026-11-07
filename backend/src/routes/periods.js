@@ -69,7 +69,9 @@ router.put('/:n/schedule', requireRole('ADMIN'), asyncHandler(async (req, res) =
   const uniqueSets = [...new Set(sets)];
   if (uniqueSets.length) await exec(`UPDATE academic_periods SET ${uniqueSets.join(', ')} WHERE id = ?`, [...params, p.id]);
 
-  const saved = await one('SELECT * FROM academic_periods WHERE id = ?', [p.id]);
+  let saved = await one('SELECT * FROM academic_periods WHERE id = ?', [p.id]);
+  // Aplica la programación de inmediato (p. ej. queda cerrado hasta la hora de desbloqueo)
+  if (saved.isAutomatic) saved = await periods.checkAndUpdateAutomaticUnlock(saved);
   res.json({
     periodNumber: n,
     isUnlocked: Boolean(saved.isUnlocked),
