@@ -129,7 +129,10 @@ async function splitBoletin(htmlText) {
   if (!$('.materia-ext-page').length) return null;
   const pageDivs = $('div.page').toArray();
   if (pageDivs.length < 2) return null;
-  const blocks = $('.materia-block').toArray().filter((b) => !$(b).hasClass('materia-block--vacio'));
+  // Solo los cupos de las hojas adicionales que se usan: cada hoja sale siempre con sus 12 recuadros
+  // (los sobrantes quedan en blanco, igual que en la hoja 1).
+  const blocks = $('.materia-block').toArray()
+    .filter((b) => !$(b).hasClass('materia-block--vacio') && !$(b).closest('.materia-ext-page--vacia').length);
   if (!blocks.length) return null; // hasta 16 materias: documento completo
 
   const styleHtml = $('style').first().length ? $.html($('style').first()) : '';

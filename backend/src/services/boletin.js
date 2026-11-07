@@ -22,7 +22,7 @@ const promotions = require('./promotions');
 
 const VALORACION_ACUDIENTE = 'Valoracion Acudiente';
 const COMPORTAMIENTO_SOCIAL = 'Comportamiento Social';
-const MAX_MATERIAS_FIJAS = 35;
+const MAX_MATERIAS_FIJAS = 40;   // 16 en la hoja 1 + 12 en la hoja A + 12 en la hoja B
 const MATERIA_FIJA_BASE = 16;
 const TEMPLATE = path.resolve(__dirname, '../../templates/BoletinBase.html');
 // Plantilla del ÚLTIMO período del año (cierre): trae promedio anual, puesto anual y "PROMOVIDO / NO PROMOVIDO".
@@ -473,13 +473,10 @@ function fillCierreSlots(r, data) {
 }
 
 function collapseCuposVacios(html, total) {
+  // Una hoja adicional se imprime completa (los 12 cupos, los vacíos quedan como recuadros en blanco
+  // igual que en la hoja 1); solo se omite la hoja entera cuando no tiene ninguna materia.
   const paginaALlena = total > MATERIA_FIJA_BASE;
   const paginaBLlena = total > MATERIA_FIJA_BASE + 12;
-  for (let n = MATERIA_FIJA_BASE + 1; n <= MAX_MATERIAS_FIJAS; n++) {
-    if (n > total) {
-      html = html.replace(`<div class="materia-block" data-slot="${n}">`, `<div class="materia-block materia-block--vacio" data-slot="${n}">`);
-    }
-  }
   if (!paginaALlena) html = html.replace('<div class="materia-ext-page" data-ext-page="A">', '<div class="materia-ext-page materia-ext-page--vacia" data-ext-page="A">');
   if (!paginaBLlena) html = html.replace('<div class="materia-ext-page" data-ext-page="B">', '<div class="materia-ext-page materia-ext-page--vacia" data-ext-page="B">');
   return html;
