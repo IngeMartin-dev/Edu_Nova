@@ -1,5 +1,6 @@
 import { API_ORIGIN } from '../../api/client.js';
 import { http as http_, authService as authService_, realtimeService as realtimeService_, gradesUpdateService as gradesUpdateService_, gradeColumnConfigService as gradeColumnConfigService_, sanitizer as sanitizer_, firstValueFrom, deps } from './compat.js';
+import { tabStore } from '../../services/tabSession.js';
 
 const setTimeout = (fn, ms, ...a) => globalThis.setTimeout((...x) => { try { return fn(...x); } finally { deps.tick && deps.tick(); } }, ms, ...a);
 const setInterval = (fn, ms, ...a) => globalThis.setInterval((...x) => { try { return fn(...x); } finally { deps.tick && deps.tick(); } }, ms, ...a);
@@ -141,7 +142,7 @@ export class Grades {
     const current = this.authService.getCurrentUserValue();
     if (current) return current;
     try {
-      return JSON.parse(localStorage.getItem("currentUser") || "null");
+      return JSON.parse(tabStore.getItem("currentUser") || "null");
     } catch {
       return null;
     }
@@ -2691,8 +2692,8 @@ AHORA genera el plan completo de una sola vez.`;
       try {
         const r = await firstValueFrom(this.authService.refreshToken());
         if (r?.token) {
-          localStorage.setItem("token", r.token);
-          if (r.refreshToken) localStorage.setItem("refreshToken", r.refreshToken);
+          tabStore.setItem("token", r.token);
+          if (r.refreshToken) tabStore.setItem("refreshToken", r.refreshToken);
           res = await send(r.token);
         }
       } catch {

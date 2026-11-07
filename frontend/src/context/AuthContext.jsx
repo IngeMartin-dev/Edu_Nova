@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { api, session, setLogoutHandler } from '../api/client.js';
+import { api, session, setLogoutHandler, tabStore, publishLastSession } from '../api/client.js';
 
 const Ctx = createContext(null);
 export const useAuth = () => useContext(Ctx);
@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
 
   const loadMe = useCallback(async () => {
     const me = await api.get('/auth/me');
-    localStorage.setItem('currentUser', JSON.stringify(me));
+    tabStore.setItem('currentUser', JSON.stringify(me));
     setUser(me);
     return me;
   }, []);
@@ -28,8 +28,10 @@ export function AuthProvider({ children }) {
 
   const finishLogin = useCallback(async (r) => {
     session.set(r.token, r.refreshToken);
-    localStorage.setItem('role', r.role || '');
-    return loadMe();
+    tabStore.setItem('role', r.role || '');
+    const me = await loadMe();
+    publishLastSession();   // esta cuenta pasa a ser la "última usada" para las pestañas nuevas
+    return me;
   }, [loadMe]);
 
   const value = useMemo(() => {

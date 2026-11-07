@@ -1,6 +1,7 @@
 import { api } from '../api/client.js';
 import { bus } from './events.js';
 import { createStore, useStore } from './store.js';
+import { tabStore } from './tabSession.js';
 
 /**
  * Servicio global de generación de boletines (GenerationService del original):
@@ -33,7 +34,7 @@ export const generation = {
   },
   stopPolling() { clearTimeout(handle); handle = null; },
   async refresh() {
-    if (!localStorage.getItem('token')) return; // antes del login no se consulta
+    if (!tabStore.getItem('token')) return; // antes del login no se consulta
     try { jobs.set((await api.get('/boletines/generaciones')) || []); } catch (e) {
       if (e?.status === 401 || e?.status === 403) jobs.set([]);
     }

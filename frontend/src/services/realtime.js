@@ -1,5 +1,6 @@
 import { api } from '../api/client.js';
 import { bus } from './events.js';
+import { tabStore } from './tabSession.js';
 
 /**
  * Avisos de períodos (GlobalRealtimeService): cada 10 s consulta los períodos,
@@ -75,7 +76,7 @@ const signature = (periods) => JSON.stringify(periods.map((p) => ({
 })));
 
 async function refreshPeriods(force = false) {
-  if (!localStorage.getItem('token')) return; // antes del login no se consulta
+  if (!tabStore.getItem('token')) return; // antes del login no se consulta
   try {
     const periods = await api.get('/periods');
     const cur = signature(periods);

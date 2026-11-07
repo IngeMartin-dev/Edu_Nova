@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import { Loading } from './components/ui.jsx';
+import NeedsActivePeriod from './components/NeedsActivePeriod.jsx';
 
 // Cada pantalla se carga cuando se visita (code splitting).
 const loaders = [];
@@ -86,12 +87,12 @@ export default function App() {
           {r('/directors-group', ADMIN, <DirectorsGroup />)}
           {r('/chats', ANY, <Chats />)}
           {r('/settings', ANY, <Settings />)}
-          {r('/grades', TEACHER, <Grades />)}
+          {r('/grades', TEACHER, <NeedsActivePeriod><Grades /></NeedsActivePeriod>)}
           {r('/mis-notas', PARENT, <MisNotas />)}
           {r('/boletines', ADMIN, <Boletines />)}
           {r('/mis-boletines', PARENT, <MisBoletines />)}
           {r('/boletines-generados', ADMIN, <Generados />)}
-          {r('/recoveries', TEACHER, <Recoveries />)}
+          {r('/recoveries', TEACHER, <NeedsActivePeriod><Recoveries /></NeedsActivePeriod>)}
           {r('/reports', DIR_ADMIN, <Reports />)}
           {r('/consolidados-generados', DIR_ADMIN, <ConsolidadosGenerados />)}
           {r('/promociones', ADMIN, <Promociones />)}

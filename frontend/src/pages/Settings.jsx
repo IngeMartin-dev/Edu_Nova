@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useDialog, useUi } from '../context/UiContext.jsx';
 import Overlay from '../components/Overlay.jsx';
 import { COOKIES, PRIVACY, REFUND, TERMS } from '../legal/content.js';
+import { tabStore } from '../services/tabSession.js';
 
 const FAQ_ITEMS = [
   { question: '¿Cómo veo las calificaciones de mi hijo(a)?', answer: 'Ingresa a la sección "Calificaciones" desde el menú principal. Allí verás las notas por materia y periodo tal como las registraron los profesores.' },
@@ -195,7 +196,7 @@ export default function Settings() {
   const loadSessions = async () => {
     setLoadingSessions(true); setSessionsError(null);
     try {
-      const mine = localStorage.getItem('refreshToken') || '';
+      const mine = tabStore.getItem('refreshToken') || '';
       setSessions((await api.get('/auth/sessions', mine ? { currentRefreshToken: mine } : undefined)) || []);
     } catch { setSessionsError('No se pudieron cargar las sesiones activas. Intenta de nuevo.'); }
     setLoadingSessions(false);
@@ -279,7 +280,7 @@ export default function Settings() {
       setTimeout(() => {
         const next = { ...user, name: updated.name, surname: updated.surname, email: updated.email, profilePicture: user.profilePicture };
         setUser(next);
-        try { localStorage.setItem('currentUser', JSON.stringify(next)); } catch { /* sin almacenamiento */ }
+        try { tabStore.setItem('currentUser', JSON.stringify(next)); } catch { /* sin almacenamiento */ }
         setEditing(false); setFormHiding(false); setUpdating(false);
         showSuccessNotification();
       }, 250);

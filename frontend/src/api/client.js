@@ -1,4 +1,5 @@
 import { connection } from '../services/connection.js';
+import { tabStore, clearTabSession, alternateSession, publishLastSession } from '../services/tabSession.js';
 
 // Cliente HTTP mínimo: añade el token, renueva la sesión si expira (401)
 // y entrega JSON, texto o archivos (blob) según se pida.
@@ -19,38 +20,43 @@ export class ApiError extends Error {
 }
 
 const store = {
-  get token() { return localStorage.getItem('token'); },
-  get refresh() { return localStorage.getItem('refreshToken'); },
+  get token() { return tabStore.getItem('token'); },
+  get refresh() { return tabStore.getItem('refreshToken'); },
   set(t, r) {
-    if (t) localStorage.setItem('token', t);
-    if (r) localStorage.setItem('refreshToken', r);
+    if (t) tabStore.setItem('token', t);
+    if (r) tabStore.setItem('refreshToken', r);
   },
   clear() {
-    ['token', 'refreshToken', 'role', 'currentUser'].forEach((k) => localStorage.removeItem(k));
+    clearTabSession();
   },
 };
 
 let onLogout = () => {};
 export const setLogoutHandler = (fn) => { onLogout = fn; };
 export const session = store;
+export { tabStore, publishLastSession };
 
 let refreshing = null;
 async function tryRefresh() {
   if (!store.refresh) return false;
   if (!refreshing) {
-    refreshing = fetch(`${BASE}/auth/refresh`, {
+    const call = (rt) => fetch(`${BASE}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: store.refresh }),
-    })
-      .then(async (r) => {
-        if (!r.ok) return false;
-        const d = await r.json();
-        store.set(d.token, d.refreshToken);
-        return true;
-      })
-      .catch(() => false)
-      .finally(() => { refreshing = null; });
+      body: JSON.stringify({ refreshToken: rt }),
+    });
+    refreshing = (async () => {
+      let r = await call(store.refresh);
+      if (!r.ok) {
+        // Otra pestaña con la misma cuenta pudo renovar antes (el refreshToken viejo ya no sirve): se usa el vigente.
+        const alt = alternateSession();
+        if (alt) { store.set(alt.token, alt.refreshToken); r = await call(alt.refreshToken); }
+      }
+      if (!r.ok) return false;
+      const d = await r.json();
+      store.set(d.token, d.refreshToken);
+      return true;
+    })().catch(() => false).finally(() => { refreshing = null; });
   }
   return refreshing;
 }

@@ -1,0 +1,21 @@
+.pg-no-active-period {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 24px 16px;
+}
+.pg-no-active-period .no-active-card {
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  padding: 32px 24px;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  background: var(--surface, #fff);
+  color: var(--text, inherit);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .08);
+}
+.pg-no-active-period .material-icons { font-size: 56px; color: var(--brand, #6d28d9); }
+.pg-no-active-period h2 { margin: 12px 0 8px; font-size: 1.35rem; }
+.pg-no-active-period p { margin: 0; opacity: .8; }

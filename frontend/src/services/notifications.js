@@ -1,5 +1,6 @@
 import { api } from '../api/client.js';
 import { createStore, useStore } from './store.js';
+import { tabStore } from './tabSession.js';
 
 /**
  * Notificaciones y respuestas (NotificationService + MessageService del original).
@@ -22,7 +23,7 @@ export const useNotifications = () => useStore(notifStore);
 export const useMessages = () => useStore(msgStore);
 export const unreadOf = (list) => list.filter((x) => !x.isRead).length;
 
-const currentUserId = () => { try { return JSON.parse(localStorage.getItem('currentUser') || '{}').id; } catch { return undefined; } };
+const currentUserId = () => { try { return JSON.parse(tabStore.getItem('currentUser') || '{}').id; } catch { return undefined; } };
 
 /** Notificación nativa con el logo de la app. */
 export function showPush(title, body) {
@@ -106,8 +107,8 @@ export function startNotificationPolling() {
   if (timers.length) return;
   requestNotificationPermission();
   timers = [
-    setInterval(() => { if (localStorage.getItem('token')) loadNotifications().catch(() => {}); }, 3000),
-    setInterval(() => { if (localStorage.getItem('token')) loadMessages().catch(() => {}); }, 5000),
+    setInterval(() => { if (tabStore.getItem('token')) loadNotifications().catch(() => {}); }, 3000),
+    setInterval(() => { if (tabStore.getItem('token')) loadMessages().catch(() => {}); }, 5000),
   ];
 }
 export function stopNotificationPolling() { timers.forEach(clearInterval); timers = []; }

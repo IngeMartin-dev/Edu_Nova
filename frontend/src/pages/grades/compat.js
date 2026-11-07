@@ -2,6 +2,7 @@
 // la lógica de Calificaciones (HttpClient, AuthService, DialogService, etc.).
 import { api, session, API_ORIGIN } from '../../api/client.js';
 import { bus } from '../../services/events.js';
+import { tabStore } from '../../services/tabSession.js';
 
 const ORIGIN = /^(https?:\/\/[^/]+)?\/api/i;
 const toPath = (url) => url.replace(ORIGIN, '');
@@ -31,7 +32,7 @@ export const http = {
 };
 
 export const authService = {
-  getCurrentUserValue() { try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch { return null; } },
+  getCurrentUserValue() { try { return JSON.parse(tabStore.getItem('currentUser') || 'null'); } catch { return null; } },
   getToken: () => session.token,
   refreshToken() {
     const p = fetch(`${API_ORIGIN}/api/auth/refresh`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: session.refresh }) })
