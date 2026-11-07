@@ -65,6 +65,7 @@ function checkPeriodDates(periods) {
 }
 
 const POLL_MS = 3000;   // actualización "en vivo" de los períodos
+let worker = null;
 let onStorage = null;
 let onVisible = null;
 
@@ -85,7 +86,18 @@ async function refreshPeriods(force = false) {
 
 export function startRealtime() {
   if (timer) return;
-  timer = setInterval(() => { if (!document.hidden) refreshPeriods(); }, POLL_MS);
+  // El reloj corre en un Web Worker: el navegador no lo frena cuando la pestaña queda en segundo plano
+  // (los setInterval de la página se pausan/limitan a 1 vez por minuto), así los períodos y sus avisos salen a su hora.
+  let tickInFlight = false;
+  const tick = async () => { if (tickInFlight) return; tickInFlight = true; try { await refreshPeriods(); } finally { tickInFlight = false; } };
+  try {
+    const src = `setInterval(function(){ postMessage(1); }, ${POLL_MS});`;
+    worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'application/javascript' })));
+    worker.onmessage = tick;
+    timer = worker;
+  } catch {
+    timer = setInterval(tick, POLL_MS);   // sin soporte de workers
+  }
   // Cambios hechos en otra pestaña (se avisan por localStorage) y regreso a esta pestaña: actualiza al instante.
   onStorage = (e) => { if (e.key === 'periodsChanged') refreshPeriods(true); };
   onVisible = () => { if (!document.hidden) refreshPeriods(); };
@@ -94,7 +106,8 @@ export function startRealtime() {
   refreshPeriods(true);
 }
 export function stopRealtime() {
-  clearInterval(timer); timer = null;
+  if (worker) { worker.terminate(); worker = null; } else clearInterval(timer);
+  timer = null;
   if (onStorage) window.removeEventListener('storage', onStorage);
   if (onVisible) document.removeEventListener('visibilitychange', onVisible);
   onStorage = null; onVisible = null;
