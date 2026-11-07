@@ -64,22 +64,46 @@ function checkPeriodDates(periods) {
   }
 }
 
+const POLL_MS = 3000;   // actualización "en vivo" de los períodos
+let onStorage = null;
+let onVisible = null;
+
+/** Firma de todo lo que se ve en pantalla: estado, fechas programadas y modo automático. */
+const signature = (periods) => JSON.stringify(periods.map((p) => ({
+  n: p.periodNumber, u: !!p.isUnlocked, a: !!p.isAutomatic, ud: p.unlockDate || null, ld: p.lockDate || null, d: p.description || '',
+})));
+
+async function refreshPeriods(force = false) {
+  if (!localStorage.getItem('token')) return; // antes del login no se consulta
+  try {
+    const periods = await api.get('/periods');
+    const cur = signature(periods);
+    if (force || cur !== last) { last = cur; bus.emit('periods:changed', periods); }
+    checkPeriodDates(periods);
+  } catch { /* se reintenta */ }
+}
+
 export function startRealtime() {
   if (timer) return;
-  timer = setInterval(async () => {
-    if (!localStorage.getItem('token')) return; // antes del login no se consulta
-    try {
-      const periods = await api.get('/periods');
-      const cur = JSON.stringify(periods.map((p) => ({ n: p.periodNumber, u: p.isUnlocked })));
-      if (cur !== last) { last = cur; bus.emit('periods:changed', periods); }
-      checkPeriodDates(periods);
-    } catch { /* se reintenta */ }
-  }, 10000);
+  timer = setInterval(() => { if (!document.hidden) refreshPeriods(); }, POLL_MS);
+  // Cambios hechos en otra pestaña (se avisan por localStorage) y regreso a esta pestaña: actualiza al instante.
+  onStorage = (e) => { if (e.key === 'periodsChanged') refreshPeriods(true); };
+  onVisible = () => { if (!document.hidden) refreshPeriods(); };
+  window.addEventListener('storage', onStorage);
+  document.addEventListener('visibilitychange', onVisible);
+  refreshPeriods(true);
 }
-export function stopRealtime() { clearInterval(timer); timer = null; }
+export function stopRealtime() {
+  clearInterval(timer); timer = null;
+  if (onStorage) window.removeEventListener('storage', onStorage);
+  if (onVisible) document.removeEventListener('visibilitychange', onVisible);
+  onStorage = null; onVisible = null;
+}
 export async function notifyPeriodsChanged() {
   last = '';
-  try { bus.emit('periods:changed', await api.get('/periods')); } catch { /* sin datos */ }
+  // Avisa a las demás pestañas abiertas
+  try { localStorage.setItem('periodsChanged', String(Date.now())); localStorage.removeItem('periodsChanged'); } catch { /* sin storage */ }
+  try { const list = await api.get('/periods'); last = signature(list); bus.emit('periods:changed', list); } catch { /* sin datos */ }
 }
 export function showTestNotification() {
   if ('Notification' in window && Notification.permission === 'granted') new Notification('🔔 Notificaciones activas', { body: 'Las notificaciones push funcionan correctamente', icon: '/logo-symbol.svg' });
