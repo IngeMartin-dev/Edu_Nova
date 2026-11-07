@@ -55,7 +55,7 @@ export default function Grades() {
   const nums7 = [1, 2, 3, 4, 5, 6, 7];
 
   const gradeInput = (student, n, labelledBy) => (
-    <BoundInput type="text" className="grade-input" id={`grade-input-${student.id}-${n}`} name={`grade-${student.id}-${n}`}
+    <BoundInput type="text" inputMode="decimal" className="grade-input" id={`grade-input-${student.id}-${n}`} name={`grade-${student.id}-${n}`}
       value={c.getGradeDisplay(student.id, n)}
       onInput={A((e) => c.onGradeChange(student.id, n, e))}
       onClick={A((e) => c.onGradeClick(student.id, n, e))}
@@ -257,7 +257,7 @@ export default function Grades() {
 
                                   {c.gradeColumns.map((col) => (
                                     <td key={col.id} className={cx('note-cell', c.getGradeColor(c.getDynamicGradeValue(student.id, col.id)))}>
-                                      <BoundInput type="text" className="grade-input" name={`dyn-${student.id}-${col.id}`} value={c.getDynamicGradeDisplay(student.id, col.id)} onInput={A((e) => c.onDynamicGradeInput(student.id, col, e))} placeholder="-" maxLength={4} autoComplete="off" aria-label={c.colHeader(col)} />
+                                      <BoundInput type="text" inputMode="decimal" className="grade-input" name={`dyn-${student.id}-${col.id}`} value={c.getDynamicGradeDisplay(student.id, col.id)} onInput={A((e) => c.onDynamicGradeInput(student.id, col, e))} placeholder="-" maxLength={4} autoComplete="off" aria-label={c.colHeader(col)} />
                                     </td>
                                   ))}
                                   {teacher && <td className="plus-cell" />}
@@ -278,21 +278,21 @@ export default function Grades() {
                                   </td>
 
                                   <td className={cx('recovery-cell', 'comp-social-cell', c.getCompSocialColor(student.id))}>
-                                    <BoundInput type="text" className="grade-input" id={`recovery-compsocial-${student.id}`} name={`recovery-compsocial-${student.id}`} value={c.getCompSocialDisplay(student.id)} onInput={A((e) => c.onCompSocialChange(student.id, e))} onKeyDown={A((e) => c.handleKeydown(e))} onFocus={A(() => c.onCellFocus(student.id, 8))} placeholder="-" maxLength={4} autoComplete="off" aria-labelledby="th-compsocial" />
+                                    <BoundInput type="text" inputMode="decimal" className="grade-input" id={`recovery-compsocial-${student.id}`} name={`recovery-compsocial-${student.id}`} value={c.getCompSocialDisplay(student.id)} onInput={A((e) => c.onCompSocialChange(student.id, e))} onKeyDown={A((e) => c.handleKeydown(e))} onFocus={A(() => c.onCellFocus(student.id, 8))} placeholder="-" maxLength={4} autoComplete="off" aria-labelledby="th-compsocial" />
                                     <span className="comp-social-label">{c.getCompSocialScaleLabel(student.id)}</span>
                                   </td>
 
                                   <td className={cx('recovery-cell', 'comp-social-cell', c.getValoracionAcudienteColor(student.id))}>
-                                    <BoundInput type="text" className="grade-input" id={`recovery-acudiente-${student.id}`} name={`recovery-acudiente-${student.id}`} value={c.getValoracionAcudienteDisplay(student.id)} onInput={A((e) => c.onValoracionAcudienteChange(student.id, e))} onKeyDown={A((e) => c.handleKeydown(e))} onFocus={A(() => c.onCellFocus(student.id, 8))} placeholder="-" maxLength={4} autoComplete="off" aria-labelledby="th-val-acudiente" />
+                                    <BoundInput type="text" inputMode="decimal" className="grade-input" id={`recovery-acudiente-${student.id}`} name={`recovery-acudiente-${student.id}`} value={c.getValoracionAcudienteDisplay(student.id)} onInput={A((e) => c.onValoracionAcudienteChange(student.id, e))} onKeyDown={A((e) => c.handleKeydown(e))} onFocus={A(() => c.onCellFocus(student.id, 8))} placeholder="-" maxLength={4} autoComplete="off" aria-labelledby="th-val-acudiente" />
                                     <span className="comp-social-label">{c.getValoracionAcudienteScaleLabel(student.id)}</span>
                                   </td>
 
                                   <td className="note-cell">
-                                    <BoundInput type="text" className="grade-input" id={`recup-escrita-${student.id}`} name={`recup-escrita-${student.id}`} value={(rec?.written ?? '').toString().replace('.', ',')} onInput={A((e) => c.onRecoveryWrittenChange(student.id, e))} onKeyDown={A((e) => c.handleKeydown(e))} onFocus={A(() => c.onCellFocus(student.id, 8))} placeholder="-" maxLength={4} autoComplete="off" aria-labelledby="th-recup-escrita" />
+                                    <BoundInput type="text" inputMode="decimal" className="grade-input" id={`recup-escrita-${student.id}`} name={`recup-escrita-${student.id}`} value={(rec?.written ?? '').toString().replace('.', ',')} onInput={A((e) => c.onRecoveryWrittenChange(student.id, e))} onKeyDown={A((e) => c.handleKeydown(e))} onFocus={A(() => c.onCellFocus(student.id, 8))} placeholder="-" maxLength={4} autoComplete="off" aria-labelledby="th-recup-escrita" />
                                   </td>
 
                                   <td className="note-cell">
-                                    <BoundInput type="text" className="grade-input" id={`recup-oral-${student.id}`} name={`recup-oral-${student.id}`} value={(rec?.oral ?? '').toString().replace('.', ',')} onInput={A((e) => c.onRecoveryOralChange(student.id, e))} onKeyDown={A((e) => c.handleKeydown(e))} onFocus={A(() => c.onCellFocus(student.id, 8))} placeholder="-" maxLength={4} autoComplete="off" aria-labelledby="th-recup-oral" />
+                                    <BoundInput type="text" inputMode="decimal" className="grade-input" id={`recup-oral-${student.id}`} name={`recup-oral-${student.id}`} value={(rec?.oral ?? '').toString().replace('.', ',')} onInput={A((e) => c.onRecoveryOralChange(student.id, e))} onKeyDown={A((e) => c.handleKeydown(e))} onFocus={A(() => c.onCellFocus(student.id, 8))} placeholder="-" maxLength={4} autoComplete="off" aria-labelledby="th-recup-oral" />
                                   </td>
 
                                   <td className="calc-cell">{c.getNotaRecup(student.id)}</td>
