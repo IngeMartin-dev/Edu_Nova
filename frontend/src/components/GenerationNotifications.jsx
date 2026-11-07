@@ -17,10 +17,17 @@ const statusText = (job) => {
   if (job.status === 'ERROR') return 'Error en la generación';
   return `${job.completed} / ${job.total} boletines`;
 };
+/** El servidor manda las fechas en UTC sin zona ("2026-11-06T19:40:00"): sin la "Z" el navegador las
+ *  toma como hora local y, con la diferencia horaria, el temporizador en curso se quedaba en 0. */
+const parseServerDate = (v) => {
+  if (!v) return NaN;
+  const s = String(v);
+  return Date.parse(/(Z|[+-]\d{2}:?\d{2})$/.test(s) ? s : `${s}Z`);
+};
 function elapsedText(job) {
-  const start = Date.parse(job.startedAt);
+  const start = parseServerDate(job.startedAt);
   if (Number.isNaN(start)) return '';
-  const end = job.finishedAt ? Date.parse(job.finishedAt) : Date.now();
+  const end = job.finishedAt ? parseServerDate(job.finishedAt) : Date.now();
   const seconds = Math.max(0, Math.floor((end - start) / 1000));
   const minutes = Math.floor(seconds / 60);
   const rem = seconds % 60;
@@ -47,7 +54,7 @@ export default function GenerationNotifications() {
     // Una generación terminada solo se avisa UNA vez: si la vimos correr (o terminó hace instantes).
     // Las generaciones viejas que el servidor aún lista no vuelven a aparecer al cambiar de pantalla.
     if (finishedShownAt[job.jobId] === undefined) {
-      const fin = Date.parse(job.finishedAt);
+      const fin = parseServerDate(job.finishedAt);
       const fresh = runningSeen.has(job.jobId) || (!Number.isNaN(fin) && now - fin < AUTO_DISMISS_MS);
       finishedShownAt[job.jobId] = fresh ? now : -1;
     }

@@ -963,6 +963,7 @@
 }
 
 .pg-boletines .sig-card {
+  position: relative;   /* la × de eliminar se ancla a la esquina de la tarjeta */
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   padding: 8px;
