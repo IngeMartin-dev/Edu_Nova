@@ -142,9 +142,9 @@ async function splitBoletin(htmlText) {
   const jobs = [render(wrap($.html(pageDivs[0])), designSize())];
   for (let i = 0; i < blocks.length; i += BLOCKS_POR_HOJA) {
     const chunk = blocks.slice(i, i + BLOCKS_POR_HOJA);
-    const alto = Math.ceil(PAD_TOP + chunk.length * ALTO_BLOQUE_PX + PAD_BOTTOM);
-    const style = `width:816px;box-sizing:border-box;padding:${PAD_TOP}px ${PAD_RIGHT}px ${PAD_BOTTOM}px ${PAD_LEFT}px;font-family:'Times New Roman',Times,serif;position:relative;`;
-    jobs.push(render(wrap(`<div style="${style}">${chunk.map((b) => $.html(b)).join('')}</div>`), designSize(alto)));
+    const style = `width:816px;box-sizing:border-box;padding:${PAD_TOP}px ${PAD_RIGHT}px ${PAD_BOTTOM}px ${PAD_LEFT}px;font-family:'Times New Roman',Times,serif;color:#3B0764;position:relative;`;
+    // Misma altura de página que la hoja 1: así el PDF las escala igual y letras/recuadros salen del mismo tamaño.
+    jobs.push(render(wrap(`<div style="${style}">${chunk.map((b) => $.html(b)).join('')}</div>`), designSize()));
   }
   jobs.push(render(wrap($.html(pageDivs[1])), designSize()));
   return toLetter(await Promise.all(jobs));

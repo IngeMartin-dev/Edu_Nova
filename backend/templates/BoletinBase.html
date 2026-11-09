@@ -50,28 +50,18 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   position: relative;
   width: 732.16px;
   height: 91.84px;
-  border: 1px solid #3B0764;
+  border: none;
   background: #fff;
   box-sizing: border-box;
   break-inside: avoid;
   font-family: "Times New Roman", Times, serif;
   overflow: hidden;
 }
-.materia-block + .materia-block { border-top: none; }
 .materia-block.materia-block--vacio { display: none; }
-.materia-block.materia-block--vacio + .materia-block { border-top: 1px solid #3B0764; }
 
 /* Línea vertical única entre la columna de materia/objetivo y la
    columna de NOTA/ACUMUL./Rf -misma posición que la página 1-. No hay
    ninguna otra línea vertical antes de la tabla de Rf. */
-.materia-block::before {
-  content: "";
-  position: absolute;
-  left: 497.87px;
-  top: 15.04px;
-  height: 56px;
-  border-left: 1px solid #3B0764;
-}
 
 .mb { position: absolute; white-space: nowrap; }
 .mb-materia-name { font-weight: 700; font-size: 12px; text-transform: uppercase; max-width: 210px; overflow: hidden; text-overflow: ellipsis; }
@@ -83,7 +73,8 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   overflow: hidden; text-overflow: ellipsis;
 }
 .mb-nota-label, .mb-acumul-label { font-weight: 700; font-size: 10.7px; }
-.mb-nota-val, .mb-acumul-val { font-weight: 700; font-size: 13px; }
+.mb-nota-val { font-weight: 400; font-size: 13.3px; }
+.mb-acumul-val { font-weight: 700; font-size: 13.3px; }
 /* Separación extra para que "ACUMUL." y su valor no se toquen. */
 .mb-acumul-val { margin-left: 6px; }
 
@@ -95,21 +86,18 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
 }
 .mb-rf-table th {
   background: #EDE9FE;
-  border: 1px solid #3B0764;
-  border-left: none;
-  font-size: 12px;
+  border: none;
+  font-size: 11px;
   font-weight: 700;
   padding: 0 4px;
   height: 18.88px;
 }
-.mb-rf-table th:first-child { border-left: 1px solid #3B0764; }
 /* "1º" pegado a la izquierda de la celda y "Rf" pegado a la derecha,
    con espacio real entre ambos -como en la página 1-, en vez de un
    simple espacio de texto que queda muy apretado. */
-.mb-rf-table th .rf-head { display: flex; justify-content: space-between; align-items: baseline; }
+.mb-rf-table th .rf-head { display: flex; justify-content: flex-start; gap: 12px; align-items: baseline; }
 .mb-rf-table td {
-  border: 1px solid #3B0764;
-  border-left: none;
+  border: none;
   font-size: 13.3px;
   font-weight: 400;
   text-align: left;
@@ -117,11 +105,10 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   vertical-align: middle;
   height: 18.56px;
 }
-.mb-rf-table td:first-child { border-left: 1px solid #3B0764; }
 /* Sin línea divisoria entre la fila de nota numérica y la fila de
    letra (misma escala): se ven como un solo bloque de dos líneas. */
-.mb-rf-table tbody tr:first-child td { border-bottom: none; }
-.mb-rf-table tbody tr:last-child td { border-top: none; }
+.mb-frame { position:absolute; left:0; top:0; width:732.16px; height:91.84px; overflow:visible; pointer-events:none; }
+.mb-rf-lines { position:absolute; left:496.6px; top:15.04px; width:232px; height:56px; overflow:visible; pointer-events:none; }
 </style>
 </head>
 <body>
@@ -1423,6 +1410,7 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
 
 <div class="materia-ext-page" data-ext-page="A">
 <div class="materia-block" data-slot="17">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_17}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_17}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_17}}</span>
@@ -1433,15 +1421,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_17}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_17}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_17}}</td><td>{{P2_17}}</td><td>{{P3_17}}</td><td>{{P4_17}}</td></tr>
       <tr><td>{{ESCALA_P1_17}}</td><td>{{ESCALA_P2_17}}</td><td>{{ESCALA_P3_17}}</td><td>{{ESCALA_P4_17}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="18">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_18}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_18}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_18}}</span>
@@ -1452,15 +1442,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_18}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_18}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_18}}</td><td>{{P2_18}}</td><td>{{P3_18}}</td><td>{{P4_18}}</td></tr>
       <tr><td>{{ESCALA_P1_18}}</td><td>{{ESCALA_P2_18}}</td><td>{{ESCALA_P3_18}}</td><td>{{ESCALA_P4_18}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="19">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_19}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_19}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_19}}</span>
@@ -1471,15 +1463,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_19}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_19}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_19}}</td><td>{{P2_19}}</td><td>{{P3_19}}</td><td>{{P4_19}}</td></tr>
       <tr><td>{{ESCALA_P1_19}}</td><td>{{ESCALA_P2_19}}</td><td>{{ESCALA_P3_19}}</td><td>{{ESCALA_P4_19}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="20">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_20}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_20}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_20}}</span>
@@ -1490,15 +1484,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_20}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_20}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_20}}</td><td>{{P2_20}}</td><td>{{P3_20}}</td><td>{{P4_20}}</td></tr>
       <tr><td>{{ESCALA_P1_20}}</td><td>{{ESCALA_P2_20}}</td><td>{{ESCALA_P3_20}}</td><td>{{ESCALA_P4_20}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="21">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_21}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_21}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_21}}</span>
@@ -1509,15 +1505,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_21}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_21}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_21}}</td><td>{{P2_21}}</td><td>{{P3_21}}</td><td>{{P4_21}}</td></tr>
       <tr><td>{{ESCALA_P1_21}}</td><td>{{ESCALA_P2_21}}</td><td>{{ESCALA_P3_21}}</td><td>{{ESCALA_P4_21}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="22">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_22}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_22}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_22}}</span>
@@ -1528,15 +1526,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_22}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_22}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_22}}</td><td>{{P2_22}}</td><td>{{P3_22}}</td><td>{{P4_22}}</td></tr>
       <tr><td>{{ESCALA_P1_22}}</td><td>{{ESCALA_P2_22}}</td><td>{{ESCALA_P3_22}}</td><td>{{ESCALA_P4_22}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="23">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_23}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_23}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_23}}</span>
@@ -1547,15 +1547,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_23}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_23}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_23}}</td><td>{{P2_23}}</td><td>{{P3_23}}</td><td>{{P4_23}}</td></tr>
       <tr><td>{{ESCALA_P1_23}}</td><td>{{ESCALA_P2_23}}</td><td>{{ESCALA_P3_23}}</td><td>{{ESCALA_P4_23}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="24">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_24}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_24}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_24}}</span>
@@ -1566,15 +1568,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_24}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_24}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_24}}</td><td>{{P2_24}}</td><td>{{P3_24}}</td><td>{{P4_24}}</td></tr>
       <tr><td>{{ESCALA_P1_24}}</td><td>{{ESCALA_P2_24}}</td><td>{{ESCALA_P3_24}}</td><td>{{ESCALA_P4_24}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="25">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_25}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_25}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_25}}</span>
@@ -1585,15 +1589,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_25}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_25}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_25}}</td><td>{{P2_25}}</td><td>{{P3_25}}</td><td>{{P4_25}}</td></tr>
       <tr><td>{{ESCALA_P1_25}}</td><td>{{ESCALA_P2_25}}</td><td>{{ESCALA_P3_25}}</td><td>{{ESCALA_P4_25}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="26">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_26}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_26}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_26}}</span>
@@ -1604,15 +1610,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_26}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_26}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_26}}</td><td>{{P2_26}}</td><td>{{P3_26}}</td><td>{{P4_26}}</td></tr>
       <tr><td>{{ESCALA_P1_26}}</td><td>{{ESCALA_P2_26}}</td><td>{{ESCALA_P3_26}}</td><td>{{ESCALA_P4_26}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="27">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_27}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_27}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_27}}</span>
@@ -1623,15 +1631,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_27}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_27}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_27}}</td><td>{{P2_27}}</td><td>{{P3_27}}</td><td>{{P4_27}}</td></tr>
       <tr><td>{{ESCALA_P1_27}}</td><td>{{ESCALA_P2_27}}</td><td>{{ESCALA_P3_27}}</td><td>{{ESCALA_P4_27}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="28">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_28}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_28}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_28}}</span>
@@ -1642,17 +1652,19 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_28}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_28}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_28}}</td><td>{{P2_28}}</td><td>{{P3_28}}</td><td>{{P4_28}}</td></tr>
       <tr><td>{{ESCALA_P1_28}}</td><td>{{ESCALA_P2_28}}</td><td>{{ESCALA_P3_28}}</td><td>{{ESCALA_P4_28}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 </div>
 <div class="materia-ext-page" data-ext-page="B">
 <div class="materia-block" data-slot="29">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_29}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_29}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_29}}</span>
@@ -1663,15 +1675,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_29}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_29}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_29}}</td><td>{{P2_29}}</td><td>{{P3_29}}</td><td>{{P4_29}}</td></tr>
       <tr><td>{{ESCALA_P1_29}}</td><td>{{ESCALA_P2_29}}</td><td>{{ESCALA_P3_29}}</td><td>{{ESCALA_P4_29}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="30">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_30}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_30}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_30}}</span>
@@ -1682,15 +1696,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_30}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_30}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_30}}</td><td>{{P2_30}}</td><td>{{P3_30}}</td><td>{{P4_30}}</td></tr>
       <tr><td>{{ESCALA_P1_30}}</td><td>{{ESCALA_P2_30}}</td><td>{{ESCALA_P3_30}}</td><td>{{ESCALA_P4_30}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="31">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_31}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_31}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_31}}</span>
@@ -1701,15 +1717,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_31}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_31}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_31}}</td><td>{{P2_31}}</td><td>{{P3_31}}</td><td>{{P4_31}}</td></tr>
       <tr><td>{{ESCALA_P1_31}}</td><td>{{ESCALA_P2_31}}</td><td>{{ESCALA_P3_31}}</td><td>{{ESCALA_P4_31}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="32">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_32}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_32}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_32}}</span>
@@ -1720,15 +1738,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_32}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_32}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_32}}</td><td>{{P2_32}}</td><td>{{P3_32}}</td><td>{{P4_32}}</td></tr>
       <tr><td>{{ESCALA_P1_32}}</td><td>{{ESCALA_P2_32}}</td><td>{{ESCALA_P3_32}}</td><td>{{ESCALA_P4_32}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="33">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_33}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_33}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_33}}</span>
@@ -1739,15 +1759,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_33}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_33}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_33}}</td><td>{{P2_33}}</td><td>{{P3_33}}</td><td>{{P4_33}}</td></tr>
       <tr><td>{{ESCALA_P1_33}}</td><td>{{ESCALA_P2_33}}</td><td>{{ESCALA_P3_33}}</td><td>{{ESCALA_P4_33}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="34">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_34}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_34}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_34}}</span>
@@ -1758,15 +1780,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_34}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_34}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_34}}</td><td>{{P2_34}}</td><td>{{P3_34}}</td><td>{{P4_34}}</td></tr>
       <tr><td>{{ESCALA_P1_34}}</td><td>{{ESCALA_P2_34}}</td><td>{{ESCALA_P3_34}}</td><td>{{ESCALA_P4_34}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="35">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_35}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_35}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_35}}</span>
@@ -1777,15 +1801,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_35}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_35}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_35}}</td><td>{{P2_35}}</td><td>{{P3_35}}</td><td>{{P4_35}}</td></tr>
       <tr><td>{{ESCALA_P1_35}}</td><td>{{ESCALA_P2_35}}</td><td>{{ESCALA_P3_35}}</td><td>{{ESCALA_P4_35}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="36">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_36}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_36}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_36}}</span>
@@ -1796,15 +1822,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_36}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_36}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_36}}</td><td>{{P2_36}}</td><td>{{P3_36}}</td><td>{{P4_36}}</td></tr>
       <tr><td>{{ESCALA_P1_36}}</td><td>{{ESCALA_P2_36}}</td><td>{{ESCALA_P3_36}}</td><td>{{ESCALA_P4_36}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="37">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_37}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_37}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_37}}</span>
@@ -1815,15 +1843,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_37}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_37}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_37}}</td><td>{{P2_37}}</td><td>{{P3_37}}</td><td>{{P4_37}}</td></tr>
       <tr><td>{{ESCALA_P1_37}}</td><td>{{ESCALA_P2_37}}</td><td>{{ESCALA_P3_37}}</td><td>{{ESCALA_P4_37}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="38">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_38}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_38}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_38}}</span>
@@ -1834,15 +1864,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_38}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_38}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_38}}</td><td>{{P2_38}}</td><td>{{P3_38}}</td><td>{{P4_38}}</td></tr>
       <tr><td>{{ESCALA_P1_38}}</td><td>{{ESCALA_P2_38}}</td><td>{{ESCALA_P3_38}}</td><td>{{ESCALA_P4_38}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="39">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_39}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_39}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_39}}</span>
@@ -1853,15 +1885,17 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_39}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_39}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_39}}</td><td>{{P2_39}}</td><td>{{P3_39}}</td><td>{{P4_39}}</td></tr>
       <tr><td>{{ESCALA_P1_39}}</td><td>{{ESCALA_P2_39}}</td><td>{{ESCALA_P3_39}}</td><td>{{ESCALA_P4_39}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 <div class="materia-block" data-slot="40">
+  <svg class="mb-frame" viewBox="0 0 732.16 91.84" xmlns="http://www.w3.org/2000/svg"><rect x="0.16" y="0.16" width="731.84" height="91.52" fill="none" stroke="#3B0764" stroke-width="0.32" shape-rendering="geometricPrecision"/></svg>
   <span class="mb mb-materia-name" style="left:3.89px;top:0px;">{{MATERIA_40}}</span>
   <span class="mb mb-ih" style="left:222.56px;top:0px;">{{IH_40}}</span>
   <span class="mb mb-fa" style="left:261.23px;top:0px;">{{FA_40}}</span>
@@ -1872,13 +1906,14 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
   <span class="mb mb-nota-val" style="left:543.89px;top:0.18px;">{{NOTA_40}}</span>
   <span class="mb mb-acumul-label" style="left:582.72px;top:0.18px;">ACUMUL.</span>
   <span class="mb mb-acumul-val" style="left:633.23px;top:0.18px;">{{ACUMULADO_40}}</span>
-  <table class="mb-rf-table" style="left:498.56px;top:15.04px;width:231.04px;height:56px;">
+  <table class="mb-rf-table" style="left:496.6px;top:15.04px;width:232px;height:56px;">
     <thead><tr><th><span class="rf-head"><span>1&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>2&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>3&deg;</span><span>Rf</span></span></th><th><span class="rf-head"><span>4&deg;</span><span>Rf</span></span></th></tr></thead>
     <tbody>
       <tr><td>{{P1_40}}</td><td>{{P2_40}}</td><td>{{P3_40}}</td><td>{{P4_40}}</td></tr>
       <tr><td>{{ESCALA_P1_40}}</td><td>{{ESCALA_P2_40}}</td><td>{{ESCALA_P3_40}}</td><td>{{ESCALA_P4_40}}</td></tr>
     </tbody>
   </table>
+  <svg class="mb-rf-lines" viewBox="0 0 232.0 56.0" xmlns="http://www.w3.org/2000/svg"><g stroke="#3B0764" stroke-width="0.32" fill="none" shape-rendering="geometricPrecision"><rect x="0.16" y="0.16" width="231.68" height="55.68"/><line x1="58.00" y1="0" x2="58.00" y2="56.0"/><line x1="116.00" y1="0" x2="116.00" y2="56.0"/><line x1="174.00" y1="0" x2="174.00" y2="56.0"/><line x1="0" y1="18.88" x2="232.0" y2="18.88"/></g></svg>
 </div>
 </div>
 
