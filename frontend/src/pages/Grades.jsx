@@ -159,7 +159,7 @@ export default function Grades() {
                               <div className="pct-rows">
                                 <div className="pct-row-item">
                                   <BoundInput type="text" className="pct-name-input" name="act-name" value={c.actName} onInput={A((e) => c.onActNameInput(e))} onBlur={A((e) => c.onActNameBlur(e))} maxLength={12} autoComplete="off" aria-label="Nombre del grupo" />
-                                  <BoundInput type="text" inputMode="numeric" className="pct-input" name="act-pct" value={c.actPct ?? ''} onInput={A((e) => c.onActPctInput(e))} placeholder="%" maxLength={3} autoComplete="off" aria-label="Porcentaje del grupo" />
+                                  <BoundInput type="text" inputMode="numeric" className="pct-input" name="act-pct" value={c.actPct ?? ''} onInput={A((e) => c.onActPctInput(e))} placeholder={c.actPct ? '%' : `${c.effectiveActPct}%`} maxLength={3} autoComplete="off" aria-label="Porcentaje del grupo" />
                                   <span className="pct-row-note">todas las {c.actName} juntas (1 a 7)</span>
                                 </div>
                                 <div className="pct-row-item">

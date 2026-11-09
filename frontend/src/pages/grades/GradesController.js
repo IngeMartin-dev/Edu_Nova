@@ -1171,17 +1171,25 @@ export class Grades {
     const name = this.selectedSubject || this.teacherSubjectName || "MATEM\xC1TICAS";
     return subj?.level ? `${name} (${subj.level})` : name;
   }
-  /** Promedio ponderado: grupo ACT + cada nombre del panel Porcentajes.
-   *  Solo cuentan las que tienen nota; los pesos se reparten entre esas. */
+  /** % del grupo ACT: el que puso el profesor o, si lo dejó vacío, lo que resta de 100 después de
+   *  Eval.Period y de los demás nombres (ej.: Quiz 10% + Eval 20% => ACT 70%). */
+  get effectiveActPct() {
+    if ((this.actPct ?? 0) > 0) return this.actPct;
+    const others = this.categories.reduce((a, c) => a + (c.pct || 0), 0);
+    return Math.max(0, 100 - this.evalPct - others);
+  }
+  /** Parte de la nota final que aportan las actividades, con porcentajes:
+   *  cada grupo (ACT y cada nombre del panel) = promedio de sus notas x su porcentaje / 100.
+   *  Un grupo sin notas aporta 0; un nombre sin columnas creadas no cuenta. */
   getWeightedActivityAverage(studentId) {
     let sum = 0;
-    let weights = 0;
-    const actPct = this.actPct ?? 0;
+    let any = false;
+    const actPct = this.effectiveActPct;
     if (actPct > 0) {
       const vals = [1, 2, 3, 4, 5, 6, 7].map((i) => this.getGrade(studentId, i)).filter((v) => v !== null);
       if (vals.length > 0) {
-        sum += vals.reduce((a, b) => a + b, 0) / vals.length * actPct;
-        weights += actPct;
+        sum += vals.reduce((a, b) => a + b, 0) / vals.length * (actPct / 100);
+        any = true;
       }
     }
     for (const cat of this.categories) {
@@ -1189,19 +1197,19 @@ export class Grades {
       if (pct <= 0) continue;
       const vals = this.gradeColumns.filter((c) => c.cat === cat.id).map((c) => this.getDynamicGradeValue(studentId, c.id)).filter((v) => v !== null);
       if (vals.length > 0) {
-        sum += vals.reduce((a, b) => a + b, 0) / vals.length * pct;
-        weights += pct;
+        sum += vals.reduce((a, b) => a + b, 0) / vals.length * (pct / 100);
+        any = true;
       }
     }
-    return weights > 0 ? sum / weights : null;
+    return any ? sum : null;
   }
   // Actividades = promedio * (100 - % de Eval.Period) / 100. Si el profesor puso porcentajes,
   // el promedio es ponderado; si no, es el promedio simple de siempre.
   get80Percent(studentId) {
     if (this.weightedMode) {
-      const w = this.getWeightedActivityAverage(studentId);
+      const w = this.getWeightedActivityAverage(studentId);   // ya viene multiplicado por los porcentajes
       if (w === null) return "-";
-      return (w * (this.activitiesShare / 100)).toFixed(2).replace(".", ",");
+      return w.toFixed(2).replace(".", ",");
     }
     const grades = [
       this.getGrade(studentId, 1),

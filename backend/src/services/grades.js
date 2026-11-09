@@ -122,10 +122,19 @@ function calcPerColumnWeighted(grades, columnsJson) {
     }
   }
 
+  // Si el profesor no puso % al grupo ACT pero sí a otros nombres, ACT vale lo que resta de 100
+  // (ej.: Quiz 10% + Eval 20% => ACT 70%).
+  if (!catPct.has('act') && catPct.size > 0) {
+    let otros = 0;
+    for (const v of catPct.values()) otros += v;
+    const resto = 100 - evalPct - otros;
+    if (resto > 0) catPct.set('act', resto);
+  }
+
   const simple = catPct.size === 0;
   if (simple) {
     if (evalPct === 20.0) return null; // sin configuración útil: se usa la fórmula 80/20 clásica
-    catPct.set('__todas__', 1.0);
+    catPct.set('__todas__', 100 - evalPct);   // sin % por nombre: promedio simple x (100 - Eval.Period)
   }
 
   const acc = new Map(); // idCategoria -> [suma, cantidad]
@@ -147,14 +156,9 @@ function calcPerColumnWeighted(grades, columnsJson) {
     acc.set(catId, a);
   }
 
-  let suma = 0; let pesos = 0;
-  for (const [catId, [s, n]] of acc) {
-    const pct = catPct.get(catId);
-    suma += (s / n) * pct;
-    pesos += pct;
-  }
-  const promedio = pesos > 0 ? suma / pesos : 0;
-  const p80 = promedio * ((100 - evalPct) / 100);
+  // Cada grupo = promedio de sus notas x su porcentaje / 100 (un grupo sin notas aporta 0).
+  let p80 = 0;
+  for (const [catId, [s, n]] of acc) p80 += (s / n) * (catPct.get(catId) / 100);
   const p20 = (evaluation !== null ? evaluation : 0) * (evalPct / 100);
   return {
     hasGrades: true, weighted: true,
@@ -294,5 +298,5 @@ async function calculateAllFinalGrades(grade, classroom, period, teacherId = nul
 module.exports = {
   toGradeJson, byStudent, byClassroom, subjectNames, gradeNames,
   calculateFinalGrade, calculateAllFinalGrades, scaleLetter,
-  getColumnConfig, saveColumnConfig, SELECT,
+  getColumnConfig, saveColumnConfig, SELECT, calcPerColumnWeighted,
 };
