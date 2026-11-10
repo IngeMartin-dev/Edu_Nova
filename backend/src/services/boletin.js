@@ -224,12 +224,10 @@ async function subjectsFor(ctx, grade) {
       const k = nvl(s.name, '').trim().toUpperCase();
       if (k && !m.has(k)) m.set(k, s);
     }
-    return [...m.values()].map((s) => s.name).filter((x) => !isReservedSubjectName(x)).sort();
+    return [...m.values()].map((s) => s.name).filter((x) => !isReservedSubjectName(x)).sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
   };
-  if (level && n > 0) {
-    const byLevel = inRange.filter((s) => String(s.level).toLowerCase() === level);
-    if (byLevel.length) return unique(byLevel);
-  }
+  // Todas las materias cuyo rango cubra el grado (sin exigir que el "nivel" coincida: una materia de relleno
+  // creada con otro nivel igual debe aparecer). Se deduplican por nombre.
   if (inRange.length) return unique(inRange);
   return [...ctx.subjectNames.values()].filter((x) => !isReservedSubjectName(x));
 }
@@ -523,7 +521,20 @@ function buildBoletinHtml(data) {
     r['{{DEFINICION_ANIO}}'] = muestraPerdidas ? 'NO PROMOVIDO' : 'PROMOVIDO';
     r['{{AREAS_PERDIDAS}}'] = escapeHtml(muestraPerdidas ? perdidasAnual.join(', ').toUpperCase() : '');
   }
-  for (let i = 0; i < MAX_MATERIAS_FIJAS; i++) fillMateriaSlot(r, i + 1, subjects[i] || null, data.period);
+  // Orden de impresión: hoja 1 (cupos 1-12) → hojas adicionales (17..) → hoja final (cupos 13-16).
+  // Si hay más de 16 materias, las últimas 4 van en la hoja final para que el orden alfabético se conserve.
+  const T = subjects.length;
+  const bySlot = new Array(MAX_MATERIAS_FIJAS + 1).fill(null);
+  subjects.slice(0, MAX_MATERIAS_FIJAS).forEach((sd, i) => {
+    let slot = i + 1;
+    if (T > MATERIA_FIJA_BASE) {
+      if (i < 12) slot = i + 1;
+      else if (i >= T - 4) slot = 13 + (i - (T - 4));
+      else slot = 17 + (i - 12);
+    }
+    bySlot[slot] = sd;
+  });
+  for (let n = 1; n <= MAX_MATERIAS_FIJAS; n++) fillMateriaSlot(r, n, bySlot[n], data.period);
   fillCierreSlots(r, data);
   let html = template;
   for (const [k, v] of Object.entries(r)) html = html.split(k).join(v);
