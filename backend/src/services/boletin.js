@@ -441,7 +441,6 @@ function fillCierreSlots(r, data) {
   let manualVA = parseNumeroConductual(data.valoracionAcudiente);
   if (manualVA === null && data.valoracionAcudienteNota && data.valoracionAcudienteNota > 0) manualVA = data.valoracionAcudienteNota;
   let accVA = 0; let notaVA = null; let letraFinalVA = '';
-  const periodoParaCalculo = periodoActual || 1;
   for (let p = 1; p <= 4; p++) {
     const futuro = periodoActual && p > periodoActual;
     let valor;
@@ -451,20 +450,18 @@ function fillCierreSlots(r, data) {
       valor = ctx && ctx.valoraciones.has(`${studentId}|${p}`) ? ctx.valoraciones.get(`${studentId}|${p}`) : null;
       if (valor === null && ctx) valor = promedioConductual(ctx, studentId, p, subjectNames, true);
     }
-    if (!futuro && valor === null && periodoActual && p === periodoActual) valor = 5.0;
-    let letra = escalaConductualLetra(valor);
-    if (!letra && p === periodoParaCalculo) letra = 'E';
-    r[`{{P${p}_ACUDIENTE}}`] = valor !== null ? fmt(valor) : '0';
+    // Sin valoración registrada no se inventa ninguna nota (ni 5,00 ni letra): queda vacío.
+    const letra = escalaConductualLetra(valor);
+    r[`{{P${p}_ACUDIENTE}}`] = valor !== null ? fmt(valor) : '';
     r[`{{ESCALA_P${p}_ACUDIENTE}}`] = letra;
     if (!futuro && valor !== null) accVA = 0.25 * valor + accVA;
-    if (periodoActual && p === periodoActual) { notaVA = valor !== null ? valor : 5.0; letraFinalVA = letra; }
+    if (periodoActual && p === periodoActual) { notaVA = valor; letraFinalVA = letra; }
   }
-  if (!letraFinalVA) letraFinalVA = 'E';
   r['{{IH_ACUDIENTE}}'] = indicadorTexto(data.valoracionAcudienteIh);
   r['{{FA_ACUDIENTE}}'] = indicadorTexto(data.valoracionAcudienteFa);
   r['{{FAA_ACUDIENTE}}'] = indicadorTexto(data.valoracionAcudienteFaa);
   r['{{ESCALA_FINAL_ACUDIENTE}}'] = escalaConductualLabel(letraFinalVA);
-  r['{{NOTA_ACUDIENTE}}'] = notaVA !== null ? fmt(notaVA) : '0';
+  r['{{NOTA_ACUDIENTE}}'] = notaVA !== null ? fmt(notaVA) : '';
   r['{{ACUMULADO_ACUDIENTE}}'] = periodoActual ? `${fmt(accVA)}%` : '';
   r['{{VALORACION_ACUDIENTE}}'] = data.valoracionAcudienteObjetivo && data.valoracionAcudienteObjetivo.trim()
     ? escapeHtml(data.valoracionAcudienteObjetivo) : DEFAULT_VALORACION_OBJETIVO;
@@ -716,7 +713,6 @@ async function buildFromRequest(req, ctx = null) {
 
   const valNota = toIntOrNull(req.valoracionAcudienteNota);
   if (valNota && valNota > 0) data.valoracionAcudienteNota = valNota;
-  else if (data.valoracionAcudienteNota === null) data.valoracionAcudienteNota = 5;
   const valAcudiente = strOrNull(req.valoracionAcudiente);
   if (valAcudiente && valAcudiente.trim()) data.valoracionAcudiente = valAcudiente;
 
