@@ -15,6 +15,8 @@ const ORIG_W_IN = 8.5; const ORIG_H_IN = 14.0; // tamaño de render del diseño 
 const LETTER_W = 8.5 * 72; const LETTER_H = 11 * 72; // puntos
 const CONSOLIDADO_W_IN = 11.0; const CONSOLIDADO_H_IN = 8.5;
 const BLOCKS_POR_HOJA = 12; const ALTO_BLOQUE_PX = 92.16;
+// Hoja final: el cierre (comportamiento, valoración, áreas perdidas y firmas) empieza en y=421px y mide ~325px.
+const CIERRE_TOP_PX = 420.5; const ALTO_CIERRE_PX = 325; const GAP_CIERRE_PX = 0;
 const PAD_TOP = 20; const PAD_BOTTOM = 4; const PAD_LEFT = 53.44; const PAD_RIGHT = 30.4;
 
 const isServerless = () => Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.AWS_EXECUTION_ENV);
@@ -139,15 +141,67 @@ async function splitBoletin(htmlText) {
   const scriptsHtml = $('script').toArray().map((s) => $.html(s)).join('');
   const wrap = (inner) => `<!DOCTYPE html><html><head><meta charset="utf-8">${styleHtml}<style>body{margin:0;padding:0;}</style></head><body>${inner}${scriptsHtml}</body></html>`;
 
+  // Si la hoja final no lleva materias (solo el cierre: comportamiento, valoración, áreas perdidas y firmas),
+  // el cierre se recorta y se pega justo debajo de la última materia (o arriba de una hoja nueva si no cabe).
+  const cierreSolo = htmlText.includes('<!--cierre-solo-->');
+  const tieneNombre = (b) => $(b).find('.mb-materia-name').text().trim().length > 0;
+  let hojas = [];
+  for (let i = 0; i < blocks.length; i += BLOCKS_POR_HOJA) hojas.push(blocks.slice(i, i + BLOCKS_POR_HOJA));
+  let cierreEnUltima = false;
+  if (cierreSolo) {
+    const ultima = hojas[hojas.length - 1];
+    const reales = ultima.filter(tieneNombre);
+    const alto = PAD_TOP + reales.length * ALTO_BLOQUE_PX + GAP_CIERRE_PX + ALTO_CIERRE_PX;
+    if (alto <= ORIG_H_IN * 96) { hojas[hojas.length - 1] = reales; cierreEnUltima = true; }
+  }
+
   const jobs = [render(wrap($.html(pageDivs[0])), designSize())];
-  for (let i = 0; i < blocks.length; i += BLOCKS_POR_HOJA) {
-    const chunk = blocks.slice(i, i + BLOCKS_POR_HOJA);
+  for (const chunk of hojas) {
     const style = `width:816px;box-sizing:border-box;padding:${PAD_TOP}px ${PAD_RIGHT}px ${PAD_BOTTOM}px ${PAD_LEFT}px;font-family:'Times New Roman',Times,serif;color:#3B0764;position:relative;`;
     // Misma altura de página que la hoja 1: así el PDF las escala igual y letras/recuadros salen del mismo tamaño.
     jobs.push(render(wrap(`<div style="${style}">${chunk.map((b) => $.html(b)).join('')}</div>`), designSize()));
   }
   jobs.push(render(wrap($.html(pageDivs[1])), designSize()));
-  return toLetter(await Promise.all(jobs));
+  const buffers = await Promise.all(jobs);
+  if (!cierreSolo) return toLetter(buffers);
+
+  const { PDFDocument } = await import('pdf-lib');
+  const out = await PDFDocument.create();
+  const finalSrc = await PDFDocument.load(buffers[buffers.length - 1]);
+  const fh = finalSrc.getPage(0).getSize().height;
+  const cierre = await out.embedPage(finalSrc.getPage(0), {
+    left: 0, right: finalSrc.getPage(0).getSize().width,
+    bottom: fh - (CIERRE_TOP_PX + ALTO_CIERRE_PX) * 0.75, top: fh - CIERRE_TOP_PX * 0.75,
+  });
+  const addPages = async (buf) => {
+    const src = await PDFDocument.load(buf);
+    const embedded = await out.embedPdf(src, src.getPageIndices());
+    return embedded.map((ep, i) => {
+      const { width: w, height: h } = src.getPage(i).getSize();
+      const scale = Math.min(LETTER_W / w, LETTER_H / h, 1);
+      const page = out.addPage([LETTER_W, LETTER_H]);
+      const ox = (LETTER_W - w * scale) / 2; const oy = (LETTER_H - h * scale) / 2;
+      page.drawPage(ep, { x: ox, y: oy, xScale: scale, yScale: scale });
+      return { page, scale, ox, oy, h };
+    });
+  };
+  const sheets = [];
+  for (let i = 0; i < buffers.length - 1; i++) sheets.push(...(await addPages(buffers[i])));
+  const drawCierre = (info, topPx) => {
+    const wPt = finalSrc.getPage(0).getSize().width;
+    const hPt = ALTO_CIERRE_PX * 0.75;
+    info.page.drawPage(cierre, { x: info.ox, y: info.oy + info.h * info.scale - (topPx * 0.75 + hPt) * info.scale, xScale: info.scale, yScale: info.scale });
+  };
+  if (cierreEnUltima) {
+    const reales = hojas[hojas.length - 1].length;
+    drawCierre(sheets[sheets.length - 1], PAD_TOP + reales * ALTO_BLOQUE_PX + GAP_CIERRE_PX);
+  } else {
+    const nuevo = (await addPages(buffers[buffers.length - 1]))[0];
+    // hoja nueva solo con el cierre: se reutiliza la página final en blanco y se dibuja el cierre arriba
+    nuevo.page.drawRectangle({ x: 0, y: 0, width: LETTER_W, height: LETTER_H, color: (await import('pdf-lib')).rgb(1, 1, 1) });
+    drawCierre(nuevo, PAD_TOP);
+  }
+  return Buffer.from(await out.save());
 }
 
 // --- cola simple con concurrencia limitada ---

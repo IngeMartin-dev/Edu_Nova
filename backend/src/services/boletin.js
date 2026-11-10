@@ -540,6 +540,8 @@ function buildBoletinHtml(data) {
   fillCierreSlots(r, data);
   let html = template;
   for (const [k, v] of Object.entries(r)) html = html.split(k).join(v);
+  // Con >16 y <=36 materias la hoja final solo lleva el cierre: el PDF lo sube bajo la última materia.
+  if (T > MATERIA_FIJA_BASE && T <= 36) html = html.replace('</body>', '<!--cierre-solo--></body>');
   return collapseCuposVacios(html, subjects.length);
 }
 
