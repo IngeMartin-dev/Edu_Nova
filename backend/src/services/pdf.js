@@ -14,10 +14,11 @@ const env = require('../config/env');
 const ORIG_W_IN = 8.5; const ORIG_H_IN = 14.0; // tamaño de render del diseño del boletín
 const LETTER_W = 8.5 * 72; const LETTER_H = 11 * 72; // puntos
 const CONSOLIDADO_W_IN = 11.0; const CONSOLIDADO_H_IN = 8.5;
-const BLOCKS_POR_HOJA = 12; const ALTO_BLOQUE_PX = 92.16;
+const BLOCKS_POR_HOJA = 12; const ALTO_BLOQUE_PX = 91.84;
 // Hoja final: el cierre (comportamiento, valoración, áreas perdidas y firmas) empieza en y=421px y mide ~325px.
-const CIERRE_TOP_PX = 420.5; const ALTO_CIERRE_PX = 325; const GAP_CIERRE_PX = 0;
-const PAD_TOP = 20; const PAD_BOTTOM = 4; const PAD_LEFT = 53.44; const PAD_RIGHT = 30.4;
+const CIERRE_TOP_PX = 421.0; const ALTO_CIERRE_PX = 325; const GAP_CIERRE_PX = 0;
+// PAD_TOP = margen superior de la hoja 1 (la tinta empieza a ~44.5px en Carta)
+const PAD_TOP = 57; const PAD_BOTTOM = 4; const PAD_LEFT = 53.44; const PAD_RIGHT = 30.4;
 
 const isServerless = () => Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.AWS_EXECUTION_ENV);
 
