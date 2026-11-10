@@ -18,6 +18,8 @@ const BLOCKS_POR_HOJA = 12; const ALTO_BLOQUE_PX = 91.84;
 // Hoja final: el cierre (comportamiento, valoración, áreas perdidas y firmas) empieza en y=421px y mide ~325px.
 const CIERRE_TOP_PX = 421.0; const ALTO_CIERRE_PX = 325; const GAP_CIERRE_PX = 0;
 // PAD_TOP = margen superior de la hoja 1 (la tinta empieza a ~44.5px en Carta)
+// Hoja final: la 1ª fila (cupo 13) empieza en y=53.5px y las filas miden ~91.95px.
+const FINAL_FIRST_ROW_PX = 53.5; const FINAL_ROW_PITCH_PX = 91.95;
 const PAD_TOP = 57; const PAD_BOTTOM = 4; const PAD_LEFT = 53.44; const PAD_RIGHT = 30.4;
 
 const isServerless = () => Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.AWS_EXECUTION_ENV);
@@ -136,7 +138,9 @@ async function splitBoletin(htmlText) {
   // (los sobrantes quedan en blanco, igual que en la hoja 1).
   const blocks = $('.materia-block').toArray()
     .filter((b) => !$(b).hasClass('materia-block--vacio') && !$(b).closest('.materia-ext-page--vacia').length);
-  if (!blocks.length) return null; // hasta 16 materias: documento completo
+  const mFinal = htmlText.match(/<!--final-k=(\d+)-->/);
+  const finalK = mFinal ? Number(mFinal[1]) : null; // hasta 16 materias: la hoja final lleva k materias + cierre
+  if (!blocks.length && finalK === null) return null; // documento completo
 
   const styleHtml = $('style').first().length ? $.html($('style').first()) : '';
   const scriptsHtml = $('script').toArray().map((s) => $.html(s)).join('');
@@ -144,12 +148,12 @@ async function splitBoletin(htmlText) {
 
   // Si la hoja final no lleva materias (solo el cierre: comportamiento, valoración, áreas perdidas y firmas),
   // el cierre se recorta y se pega justo debajo de la última materia (o arriba de una hoja nueva si no cabe).
-  const cierreSolo = htmlText.includes('<!--cierre-solo-->');
+  const cierreSolo = htmlText.includes('<!--cierre-solo-->') || finalK !== null;
   const tieneNombre = (b) => $(b).find('.mb-materia-name').text().trim().length > 0;
   let hojas = [];
   for (let i = 0; i < blocks.length; i += BLOCKS_POR_HOJA) hojas.push(blocks.slice(i, i + BLOCKS_POR_HOJA));
   let cierreEnUltima = false;
-  if (cierreSolo) {
+  if (cierreSolo && hojas.length) {
     const ultima = hojas[hojas.length - 1];
     const reales = ultima.filter(tieneNombre);
     const alto = PAD_TOP + reales.length * ALTO_BLOQUE_PX + GAP_CIERRE_PX + ALTO_CIERRE_PX;
@@ -197,10 +201,19 @@ async function splitBoletin(htmlText) {
     const reales = hojas[hojas.length - 1].length;
     drawCierre(sheets[sheets.length - 1], PAD_TOP + reales * ALTO_BLOQUE_PX + GAP_CIERRE_PX);
   } else {
-    const nuevo = (await addPages(buffers[buffers.length - 1]))[0];
-    // hoja nueva solo con el cierre: se reutiliza la página final en blanco y se dibuja el cierre arriba
-    nuevo.page.drawRectangle({ x: 0, y: 0, width: LETTER_W, height: LETTER_H, color: (await import('pdf-lib')).rgb(1, 1, 1) });
-    drawCierre(nuevo, PAD_TOP);
+    // Hoja nueva: (si hay) los cupos 13..T de la hoja final recortados arriba y el cierre justo debajo.
+    const page = out.addPage([LETTER_W, LETTER_H]);
+    const wPt = finalSrc.getPage(0).getSize().width;
+    const scale = Math.min(LETTER_W / wPt, LETTER_H / fh, 1);
+    const ox = (LETTER_W - wPt * scale) / 2; const oy = (LETTER_H - fh * scale) / 2;
+    let yCierre = PAD_TOP;
+    if (finalK) {
+      const headH = FINAL_FIRST_ROW_PX + finalK * FINAL_ROW_PITCH_PX - 0.5;
+      const head = await out.embedPage(finalSrc.getPage(0), { left: 0, right: wPt, bottom: fh - headH * 0.75, top: fh });
+      page.drawPage(head, { x: ox, y: oy + fh * scale - headH * 0.75 * scale, xScale: scale, yScale: scale });
+      yCierre = headH + 0.5;
+    }
+    drawCierre({ page, scale, ox, oy, h: fh }, yCierre);
   }
   return Buffer.from(await out.save());
 }

@@ -489,7 +489,8 @@ function buildBoletinHtml(data) {
   const esFinal = !!data.isFinal;
   const template = fs.readFileSync(esFinal ? TEMPLATE_FINAL : TEMPLATE, 'utf8');
   const subjects = data.subjects || [];
-  const areasPerdidas = !data.lostAreas || !data.lostAreas.length ? 'NINGUNA' : data.lostAreas.join(', ').toUpperCase();
+  // Solo las áreas perdidas del periodo generado; sin áreas perdidas queda únicamente el título "AREAS PERDIDAS:".
+  const areasPerdidas = !data.lostAreas || !data.lostAreas.length ? '' : data.lostAreas.join(', ').toUpperCase();
   const r = {
     '{{NOMBRE_INSTITUCION}}': escapeHtml(env.institution.name.toUpperCase()),
     '{{CIUDAD}}': escapeHtml(nvl(data.city, 'Cartagena')),
@@ -518,9 +519,9 @@ function buildBoletinHtml(data) {
     r['{{PROMEDIO_ANUAL}}'] = num2Coma(data.annualAverage);
     r['{{PUESTO_ANUAL}}'] = data.annualRank ? String(data.annualRank) : '';
     r['{{DESEMPENO_ANUAL}}'] = escapeHtml(data.annualAverage !== null && data.annualAverage !== undefined ? valorLabel(data.annualAverage) : 'N.A');
-    r['{{AREAS_PERDIDAS_LABEL}}'] = muestraPerdidas ? 'AREAS PERDIDAS:' : '';
+    r['{{AREAS_PERDIDAS_LABEL}}'] = 'AREAS PERDIDAS:';
     r['{{DEFINICION_ANIO}}'] = muestraPerdidas ? 'NO PROMOVIDO' : 'PROMOVIDO';
-    r['{{AREAS_PERDIDAS}}'] = escapeHtml(muestraPerdidas ? perdidasAnual.join(', ').toUpperCase() : '');
+    // (las áreas perdidas mostradas son las del periodo, ya cargadas arriba en {{AREAS_PERDIDAS}})
   }
   // Orden de impresión: hoja 1 (cupos 1-12) → hojas adicionales A (17-28) y B (29-40) → hoja final (13-16).
   // Con más de 16 materias se llenan en orden y de corrido: 12 por hoja; los recuadros en blanco quedan solo
@@ -542,6 +543,8 @@ function buildBoletinHtml(data) {
   for (const [k, v] of Object.entries(r)) html = html.split(k).join(v);
   // Con >16 y <=36 materias la hoja final solo lleva el cierre: el PDF lo sube bajo la última materia.
   if (T > MATERIA_FIJA_BASE && T <= 36) html = html.replace('</body>', '<!--cierre-solo--></body>');
+  // Hasta 16 materias: la hoja final lleva solo los cupos 13..T y luego el cierre (sin recuadros vacíos).
+  if (T <= MATERIA_FIJA_BASE) html = html.replace('</body>', `<!--final-k=${Math.max(0, T - 12)}--></body>`);
   return collapseCuposVacios(html, subjects.length);
 }
 
