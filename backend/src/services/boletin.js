@@ -471,8 +471,7 @@ function fillCierreSlots(r, data) {
 }
 
 function collapseCuposVacios(html, total) {
-  // Una hoja adicional se imprime completa (los 12 cupos, los vacíos quedan como recuadros en blanco
-  // igual que en la hoja 1); solo se omite la hoja entera cuando no tiene ninguna materia.
+  // Una hoja adicional imprime solo los cupos con materia; se omite la hoja entera si no tiene ninguna.
   const paginaALlena = total > MATERIA_FIJA_BASE;
   const paginaBLlena = total > MATERIA_FIJA_BASE + 12;
   if (!paginaALlena) html = html.replace('<div class="materia-ext-page" data-ext-page="A">', '<div class="materia-ext-page materia-ext-page--vacia" data-ext-page="A">');
@@ -538,6 +537,10 @@ function buildBoletinHtml(data) {
   fillCierreSlots(r, data);
   let html = template;
   for (const [k, v] of Object.entries(r)) html = html.split(k).join(v);
+  // Hojas adicionales: los cupos sin materia se ocultan (sin recuadros "fantasma" tras la última materia).
+  for (let n = MATERIA_FIJA_BASE + 1; n <= MAX_MATERIAS_FIJAS; n++) {
+    if (!bySlot[n]) html = html.replace(`<div class="materia-block" data-slot="${n}">`, `<div class="materia-block materia-block--vacio" data-slot="${n}">`);
+  }
   return collapseCuposVacios(html, subjects.length);
 }
 
