@@ -471,9 +471,11 @@ function fillCierreSlots(r, data) {
 }
 
 function collapseCuposVacios(html, total) {
-  // Una hoja adicional imprime solo los cupos con materia; se omite la hoja entera si no tiene ninguna.
+  // Una hoja adicional se imprime completa (12 recuadros; los vacíos quedan en blanco igual que en la hoja 1);
+  // solo se omite la hoja entera cuando no tiene ninguna materia. Con >16 materias se llena de corrido:
+  // hoja A = materias 13-24, hoja B = 25-36.
   const paginaALlena = total > MATERIA_FIJA_BASE;
-  const paginaBLlena = total > MATERIA_FIJA_BASE + 12;
+  const paginaBLlena = total > 24;
   if (!paginaALlena) html = html.replace('<div class="materia-ext-page" data-ext-page="A">', '<div class="materia-ext-page materia-ext-page--vacia" data-ext-page="A">');
   if (!paginaBLlena) html = html.replace('<div class="materia-ext-page" data-ext-page="B">', '<div class="materia-ext-page materia-ext-page--vacia" data-ext-page="B">');
   return html;
@@ -520,16 +522,17 @@ function buildBoletinHtml(data) {
     r['{{DEFINICION_ANIO}}'] = muestraPerdidas ? 'NO PROMOVIDO' : 'PROMOVIDO';
     r['{{AREAS_PERDIDAS}}'] = escapeHtml(muestraPerdidas ? perdidasAnual.join(', ').toUpperCase() : '');
   }
-  // Orden de impresión: hoja 1 (cupos 1-12) → hojas adicionales (17..) → hoja final (cupos 13-16).
-  // Si hay más de 16 materias, las últimas 4 van en la hoja final para que el orden alfabético se conserve.
+  // Orden de impresión: hoja 1 (cupos 1-12) → hojas adicionales A (17-28) y B (29-40) → hoja final (13-16).
+  // Con más de 16 materias se llenan en orden y de corrido: 12 por hoja; los recuadros en blanco quedan solo
+  // al final de la secuencia (nunca antes de una materia).
   const T = subjects.length;
   const bySlot = new Array(MAX_MATERIAS_FIJAS + 1).fill(null);
   subjects.slice(0, MAX_MATERIAS_FIJAS).forEach((sd, i) => {
     let slot = i + 1;
     if (T > MATERIA_FIJA_BASE) {
       if (i < 12) slot = i + 1;
-      else if (i >= T - 4) slot = 13 + (i - (T - 4));
-      else slot = 17 + (i - 12);
+      else if (i < 36) slot = 17 + (i - 12);
+      else slot = 13 + (i - 36);
     }
     bySlot[slot] = sd;
   });
@@ -537,10 +540,6 @@ function buildBoletinHtml(data) {
   fillCierreSlots(r, data);
   let html = template;
   for (const [k, v] of Object.entries(r)) html = html.split(k).join(v);
-  // Hojas adicionales: los cupos sin materia se ocultan (sin recuadros "fantasma" tras la última materia).
-  for (let n = MATERIA_FIJA_BASE + 1; n <= MAX_MATERIAS_FIJAS; n++) {
-    if (!bySlot[n]) html = html.replace(`<div class="materia-block" data-slot="${n}">`, `<div class="materia-block materia-block--vacio" data-slot="${n}">`);
-  }
   return collapseCuposVacios(html, subjects.length);
 }
 
