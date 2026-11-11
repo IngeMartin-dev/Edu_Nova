@@ -2,6 +2,9 @@ import { useState } from 'react';
 
 export const Icon = ({ name, ...p }) => <span className="material-icons" {...p}>{name}</span>;
 export const Loading = () => <div className="loading"><span className="spinner" /></div>;
+export const BootLoading = () => (
+  <div className="boot-loading" role="status" aria-live="polite"><div className="boot-spin" /><div className="boot-name">EduNova</div><div className="boot-msg">Cargando…</div></div>
+);
 export const Empty = ({ icon = 'inbox', children }) => (
   <div className="empty"><Icon name={icon} />{children}</div>
 );

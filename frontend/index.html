@@ -6,9 +6,23 @@
     <meta name="theme-color" content="#6d28d9" />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <title>EduNova</title>
+    <script>
+      // Tema antes de pintar: evita el fondo negro/blanco de un instante al abrir.
+      try { document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light'); } catch (e) {}
+    </script>
+    <style>
+      html,body{margin:0;background:#f5f3ff}
+      [data-theme="dark"] body,[data-theme="dark"] html{background:#0e0a1c}
+      .boot-loading{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#f5f3ff;color:#6d28d9;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+      [data-theme="dark"] .boot-loading{background:#0e0a1c;color:#c4b5fd}
+      .boot-loading .boot-spin{width:46px;height:46px;border:4px solid rgba(124,58,237,.2);border-top-color:#7c3aed;border-radius:50%;animation:boot-spin .9s linear infinite}
+      .boot-loading .boot-name{font-size:18px;font-weight:700;letter-spacing:.04em}
+      .boot-loading .boot-msg{font-size:13px;opacity:.75}
+      @keyframes boot-spin{to{transform:rotate(360deg)}}
+      </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div class="boot-loading" role="status" aria-live="polite"><div class="boot-spin"></div><div class="boot-name">EduNova</div><div class="boot-msg">Cargando…</div></div></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

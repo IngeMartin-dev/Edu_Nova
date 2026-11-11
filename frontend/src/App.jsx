@@ -9,7 +9,7 @@ import { setRestoreHandler, useConnection } from './services/connection.js';
 import { useEffect } from 'react';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-import { Loading } from './components/ui.jsx';
+import { Loading, BootLoading } from './components/ui.jsx';
 import NeedsActivePeriod from './components/NeedsActivePeriod.jsx';
 
 // Cada pantalla se carga cuando se visita (code splitting).
@@ -69,11 +69,11 @@ export default function App() {
     const t = setTimeout(run, 1200);
     return () => clearTimeout(t);
   }, [user]);
-  if (!ready) return <Loading />;
+  if (!ready) return <BootLoading />;
   const r = (path, roles, el) => <Route path={path} element={<Guard roles={roles}>{el}</Guard>} />;
   return (
     <>
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<BootLoading />}>
       <Routes>
         <Route path="/not-found" element={<NotFound />} />
         <Route path="/login" element={<Login />} />
