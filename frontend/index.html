@@ -11,8 +11,7 @@
       try { document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light'); } catch (e) {}
     </script>
     <style>
-      html,body{margin:0;background:#f5f3ff}
-      [data-theme="dark"] body,[data-theme="dark"] html{background:#0e0a1c}
+      html,body{margin:0}
       .boot-loading{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#f5f3ff;color:#6d28d9;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
       [data-theme="dark"] .boot-loading{background:#0e0a1c;color:#c4b5fd}
       .boot-loading .boot-spin{width:46px;height:46px;border:4px solid rgba(124,58,237,.2);border-top-color:#7c3aed;border-radius:50%;animation:boot-spin .9s linear infinite}
