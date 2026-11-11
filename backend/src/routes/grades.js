@@ -153,6 +153,23 @@ router.get('/count/teacher', asyncHandler(async (req, res) => {
   return res.json({ count: (await one('SELECT COUNT(*) AS c FROM subject_grades WHERE teacher_id = ?', [req.user.id])).c });
 }));
 
+// GET /api/grades/mis-notas/version  (PARENT) — huella barata de las notas de sus hijos activos.
+// El front la consulta cada pocos segundos y solo recarga las notas cuando cambia (tiempo real).
+router.get('/mis-notas/version', asyncHandler(async (req, res) => {
+  if (!req.user.role || req.user.role.name !== 'PARENT') {
+    throw new HttpError(403, 'Solo disponible para cuentas de padre de familia');
+  }
+  const hijos = (await students.findByParentId(req.user.id)).filter((s) => s.active);
+  if (!hijos.length) return res.json({ version: 'vacio' });
+  const ids = hijos.map((h) => h.id);
+  const marks = ids.map(() => '?').join(',');
+  const r = await one(
+    `SELECT COUNT(*) AS c, COALESCE(SUM(grade_value), 0) AS s, MAX(updated_at) AS u, MAX(id) AS m,
+            COALESCE(SUM(LENGTH(COALESCE(appreciative, ''))), 0) AS a
+       FROM subject_grades WHERE student_id IN (${marks})`, ids);
+  res.json({ version: `${ids.join('.')}|${r.c}|${r.s}|${r.u ? new Date(r.u).getTime() : 0}|${r.m}|${r.a}` });
+}));
+
 // GET /api/grades/mis-notas  (PARENT) — notas de sus hijos activos
 router.get('/mis-notas', asyncHandler(async (req, res) => {
   if (!req.user.role || req.user.role.name !== 'PARENT') {

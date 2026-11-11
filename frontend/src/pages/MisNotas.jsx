@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 import '../styles/pages/mis-notas.css';
 import { api } from '../api/client.js';
 
-const POLL_MS = 15000;
+const POLL_MS = 15000;      // recarga completa de respaldo
+const VERSION_MS = 2000;    // huella barata: si cambia, se recargan las notas al instante
 const fmt1 = (n) => Number(n).toFixed(1);
 const esAprobatoria = (finalGrade, minPassing) => {
   if (finalGrade === null || finalGrade === undefined) return true;
   return finalGrade >= minPassing;
 };
 
-/** Vista de solo lectura de notas para PADRE DE FAMILIA. Se refresca cada 15s. */
+/** Vista de solo lectura de notas para PADRE DE FAMILIA. Se actualiza en tiempo real (huella cada 2 s). */
 export default function MisNotas() {
   const [hijos, setHijos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +43,32 @@ export default function MisNotas() {
     };
     load();
     const t = setInterval(load, POLL_MS);
-    return () => { alive = false; clearInterval(t); };
+    // Tiempo real: si el profesor cambia una nota, la huella cambia y se recarga de inmediato.
+    let lastVersion = null;
+    let busy = false;
+    const checkVersion = async () => {
+      if (busy || !alive) return;
+      busy = true;
+      try {
+        const { version } = await api.get('/grades/mis-notas/version');
+        if (lastVersion !== null && version !== lastVersion) await load();
+        lastVersion = version;
+      } catch { /* se reintenta */ } finally { busy = false; }
+    };
+    checkVersion();
+    // El reloj corre en un Web Worker para que no se frene con la pestaña en segundo plano.
+    let worker = null; let t2 = null;
+    try {
+      worker = new Worker(URL.createObjectURL(new Blob([`setInterval(function(){postMessage(1)},${VERSION_MS});`], { type: 'application/javascript' })));
+      worker.onmessage = checkVersion;
+    } catch { t2 = setInterval(checkVersion, VERSION_MS); }
+    const onVisible = () => { if (!document.hidden) checkVersion(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      alive = false; clearInterval(t); clearInterval(t2);
+      if (worker) worker.terminate();
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
   const periodoActivo = (hijo) => hijo.periods.find((p) => p.period === selectedPeriodByStudent[hijo.studentId]);
