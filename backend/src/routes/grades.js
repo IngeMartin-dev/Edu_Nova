@@ -160,15 +160,17 @@ router.get('/mis-notas/version', asyncHandler(async (req, res) => {
   if (!req.user.role || req.user.role.name !== 'PARENT') {
     throw new HttpError(403, 'Solo disponible para cuentas de padre de familia');
   }
-  const hijos = (await students.findByParentId(req.user.id)).filter((s) => s.active);
-  if (!hijos.length) return res.json({ version: 'vacio' });
+  const todos = await students.findByParentId(req.user.id);
+  const hijos = todos.filter((s) => s.active);
+  const estado = todos.map((h) => `${h.id}${h.active ? 'a' : 'i'}`).join('.');   // activar/inactivar también cambia la huella
+  if (!hijos.length) return res.json({ version: `vacio|${estado}` });
   const ids = hijos.map((h) => h.id);
   const marks = ids.map(() => '?').join(',');
   const r = await one(
     `SELECT COUNT(*) AS c, COALESCE(SUM(grade_value), 0) AS s, MAX(updated_at) AS u, MAX(id) AS m,
             COALESCE(SUM(LENGTH(COALESCE(appreciative, ''))), 0) AS a
        FROM subject_grades WHERE student_id IN (${marks})`, ids);
-  res.json({ version: `${ids.join('.')}|${r.c}|${r.s}|${r.u ? new Date(r.u).getTime() : 0}|${r.m}|${r.a}` });
+  res.json({ version: `${estado}|${r.c}|${r.s}|${r.u ? new Date(r.u).getTime() : 0}|${r.m}|${r.a}` });
 }));
 
 // GET /api/grades/mis-notas  (PARENT) — notas de sus hijos activos
@@ -177,9 +179,14 @@ router.get('/mis-notas', asyncHandler(async (req, res) => {
     throw new HttpError(403, 'Solo disponible para cuentas de padre de familia');
   }
   const cfg = await schoolYear.getConfig();
-  const hijos = (await students.findByParentId(req.user.id)).filter((s) => s.active);
+  const hijos = await students.findByParentId(req.user.id);
   const out = [];
   for (const h of hijos) {
+    // Estudiante inactivo: no se envían notas; el padre ve el aviso de paz y salvo.
+    if (!h.active) {
+      out.push({ studentId: h.id, studentName: `${h.name} ${h.surname}`.trim(), grade: h.grade, classroom: h.classGroup, active: false, minPassingGrade: cfg.minPassingGrade, periods: [] });
+      continue;
+    }
     const periodos = [];
     for (let period = 1; period <= 4; period++) {
       const rows = await grades.byStudent(h.id, period);
@@ -214,7 +221,7 @@ router.get('/mis-notas', asyncHandler(async (req, res) => {
       periodos.push({ period, subjects: materias });
     }
     out.push({
-      studentId: h.id, studentName: `${h.name} ${h.surname}`.trim(), grade: h.grade, classroom: h.classGroup,
+      studentId: h.id, studentName: `${h.name} ${h.surname}`.trim(), grade: h.grade, classroom: h.classGroup, active: true,
       minPassingGrade: cfg.minPassingGrade, periods: periodos,
     });
   }

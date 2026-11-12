@@ -186,6 +186,10 @@ async function activeChildren(req) {
 
 router.get('/mis-boletines', asyncHandler(async (req, res) => {
   const out = [];
+  // Estudiantes inactivos: sin boletines; se devuelve un aviso para que el padre se ponga a paz y salvo.
+  for (const h of (await students.findByParentId(req.user.id)).filter((x) => !x.active)) {
+    out.push({ inactive: true, studentId: h.id, studentName: `${h.name} ${h.surname}`.trim(), grade: h.grade, classroom: h.classGroup, generatedAt: '' });
+  }
   for (const h of await activeChildren(req)) {
     for (const item of await boletin.listGeneratedForStudent(h)) {
       out.push({ ...item, studentId: h.id, studentName: `${h.name} ${h.surname}`.trim(), grade: h.grade, classroom: h.classGroup });

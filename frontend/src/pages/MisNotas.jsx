@@ -101,7 +101,7 @@ export default function MisNotas() {
             <h3>Todavía no hay notas registradas</h3>
             <p>
               Cuando el profesor registre notas de tu hijo(a), aparecerán aquí automáticamente.
-              Si tu hijo(a) está marcado como inactivo, sus notas no se mostrarán hasta que sea reactivado.
+             
             </p>
           </div>
         )}
@@ -129,6 +129,14 @@ export default function MisNotas() {
                   </button>
                 ))}
               </div>
+
+              {hijo.active === false && (
+                <div className="empty-state">
+                  <span className="material-icons">lock</span>
+                  <h3>Notas no disponibles</h3>
+                  <p>Por favor, comunícate con EduNova y ponte a paz y salvo para poder ver las notas de {hijo.studentName}.</p>
+                </div>
+              )}
 
               {periodo && (
                 <div className="subjects-grid">

@@ -3,14 +3,14 @@ import '../styles/pages/mis-boletines.css';
 import { misBoletinesService } from '../services/mis-boletines.service.js';
 import { useDialog } from '../context/UiContext.jsx';
 
-const POLL_MS = 15000;
+const POLL_MS = 3000;
 
 function agrupar(data) {
   const mapa = new Map();
   for (const b of data) {
     let g = mapa.get(b.studentId);
     if (!g) { g = { studentId: b.studentId, studentName: b.studentName, grade: b.grade, classroom: b.classroom, boletines: [] }; mapa.set(b.studentId, g); }
-    g.boletines.push(b);
+    if (b.inactive) g.inactive = true; else g.boletines.push(b);
   }
   for (const g of mapa.values()) g.boletines.sort((a, b) => a.period - b.period);
   return Array.from(mapa.values());
@@ -74,7 +74,7 @@ export default function MisBoletines() {
           <div className="empty-state">
             <span className="material-icons">folder_open</span>
             <h3>Todavía no hay boletines disponibles</h3>
-            <p>Cuando el colegio genere el boletín de tu hijo(a), aparecerá aquí automáticamente. Si tu hijo(a) está marcado como inactivo, sus boletines no se mostrarán hasta que sea reactivado.</p>
+            <p>Cuando el colegio genere el boletín de tu hijo(a), aparecerá aquí automáticamente. </p>
           </div>
         )}
 
@@ -87,6 +87,13 @@ export default function MisBoletines() {
                 <span className="student-meta">{grupo.grade} · {grupo.classroom}</span>
               </div>
             </div>
+            {grupo.inactive && (
+              <div className="empty-state">
+                <span className="material-icons">lock</span>
+                <h3>Boletines no disponibles</h3>
+                <p>Por favor, comunícate con EduNova y ponte a paz y salvo para poder ver los boletines de {grupo.studentName}.</p>
+              </div>
+            )}
             <div className="boletines-grid">
               {grupo.boletines.map((b) => {
                 const key = b.studentId + '-' + b.period;
