@@ -62,6 +62,43 @@
   margin-bottom: var(--sp-6);
 }
 
+/* Escritorio: profesores y salones permanecen juntos en paneles paralelos;
+   cada lista se desplaza por separado dentro de la altura visible. */
+@media (min-width: 901px) {
+  .pg-directors-group .two-columns {
+    height: clamp(360px, calc(100dvh - 270px), 760px);
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  .pg-directors-group .two-columns > .column {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .pg-directors-group .two-columns > .column:first-child .teachers-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 2px 4px 4px 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pg-directors-group .two-columns > .column:last-child .classrooms-page-grid {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    align-content: start;
+    padding: 2px 4px 4px 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 .pg-directors-group .column {
   background: var(--surface);
   border-radius: var(--r-lg);
