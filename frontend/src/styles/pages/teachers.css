@@ -42,20 +42,20 @@
 .pg-teachers .column:first-child { padding: var(--sp-5); }
 .pg-teachers .column:last-child { padding: var(--sp-4); }
 
-/* Escritorio: profesores y materias en dos paneles. La lista de profesores
-   tiene scroll propio; las secciones de materias conservan su altura completa. */
+/* Escritorio: ambos paneles comparten altura y cada lista se desplaza
+   dentro de su propio espacio, sin mover toda la página. */
 @media (min-width: 901px) {
   .pg-teachers .two-columns {
-    height: auto;
-    align-items: start;
+    height: clamp(360px, calc(100dvh - 270px), 760px);
+    min-height: 0;
+    align-items: stretch;
   }
 
-  .pg-teachers .two-columns > .column:first-child {
+  .pg-teachers .two-columns > .column {
     display: flex;
     flex-direction: column;
     min-width: 0;
     min-height: 0;
-    height: clamp(360px, calc(100dvh - 270px), 760px);
     overflow: hidden;
   }
 
@@ -69,16 +69,17 @@
   }
 
   .pg-teachers .two-columns > .column:last-child .subjects-list {
-    flex: initial;
-    min-height: auto;
+    flex: 1;
+    min-height: 0;
     grid-template-columns: minmax(0, 1fr);
-    overflow: visible;
+    grid-auto-rows: max-content;
+    align-content: start;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .pg-teachers .two-columns > .column:last-child {
-    min-width: 0;
-    overflow: visible;
-  }
+  .pg-teachers .materia-columna { min-height: max-content; }
 }
 
 .pg-teachers .column > h3 {
