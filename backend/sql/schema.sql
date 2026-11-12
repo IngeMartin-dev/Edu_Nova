@@ -252,6 +252,7 @@ CREATE TABLE notifications (
     created_at         TIMESTAMP,
     is_read            SMALLINT DEFAULT 0,
     notification_type  VARCHAR(50),
+    sender_id          BIGINT,
     CONSTRAINT fk_notif_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

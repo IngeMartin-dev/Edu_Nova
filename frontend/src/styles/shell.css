@@ -349,3 +349,8 @@ input:checked + .slider:before { transform: translateX(24px); }
 [data-theme="dark"] .mobile-nav { background: rgba(26, 19, 48, 0.92); }
 [data-theme="dark"] .loading-overlay { background: rgba(14, 10, 28, 0.82); }
 [data-theme="dark"] .footer { background: var(--surface); }
+
+/* Puntito de mensajes sin leer (icono de Chats) */
+.nav-icon-wrap { position: relative; }
+.nav-dot { position: absolute; top: -2px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: #ef4444; border: 2px solid var(--sidebar-bg, #1e1b4b); box-shadow: 0 0 0 0 rgba(239,68,68,.6); animation: nav-dot-pulse 1.8s ease-out infinite; }
+@keyframes nav-dot-pulse { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,.55); } 70% { box-shadow: 0 0 0 7px rgba(239,68,68,0); } 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } }

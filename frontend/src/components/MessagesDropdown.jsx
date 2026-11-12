@@ -31,10 +31,10 @@ export default function MessagesDropdown({ isOpen, onClose, onMessageClick, noti
   const items = [];
   for (const n of filteredNotifications) {
     const st = typeStyle(n.notificationType);
-    const sender = n.user ? `${n.user.name || ''} ${n.user.surname || ''}`.trim() : '';
+    const sender = n.sender ? `${n.sender.name || ''} ${n.sender.surname || ''}`.trim() : 'EduNova';
     items.push({
-      key: `n${n.id}`, id: n.id, kind: 'notification', raw: n, title: n.title, text: n.message, sender: sender || 'Sistema',
-      picture: n.user?.profilePicture || '', icon: st.icon, color: st.color, colorSoft: soft(st.color), label: st.label,
+      key: `n${n.id}`, id: n.id, kind: 'notification', raw: n, title: n.title, text: n.message, sender: sender || 'EduNova',
+      picture: n.sender?.profilePicture || '', icon: st.icon, color: st.color, colorSoft: soft(st.color), label: st.label,
       unread: isNewlyArrived(n) || !n.isRead, ts: toTime(n.createdAt), time: formatTimeAgo(n.createdAt),
     });
   }

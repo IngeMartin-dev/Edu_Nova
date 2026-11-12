@@ -36,7 +36,9 @@ export default function NotificationDetails({ notification, isOpen, readOnly, on
     setTimeout(() => { setShowSuccess(false); resetForm(); }, 2000);
   };
 
-  const isOwn = !!notification && !!user && notification.user?.id === user.id;
+  // Remitente: null = automática del sistema → "EduNova". Solo es "propia" si la envié yo.
+  const isOwn = !!notification && !!user && !!notification.sender && notification.sender.id === user.id;
+  const isSystem = !!notification && !notification.sender;
   const n = notification;
 
   return (
@@ -66,12 +68,17 @@ export default function NotificationDetails({ notification, isOpen, readOnly, on
                 <div className="header-text">
                   <h2>{n?.title || 'Notificación'}</h2>
                   <div className="meta-info">
-                    {n?.user && (
+                    {n?.sender ? (
                       <span className="sender">
-                        {n.user.profilePicture
-                          ? <img src={imageUrl(n.user.profilePicture)} alt={`${n.user.name || ''} ${n.user.surname || ''}`} title={`${n.user.name || ''} ${n.user.surname || ''}`} className="sender-profile-picture" />
-                          : <div className="sender-initials">{getInitials(n.user.name, n.user.surname)}</div>}
-                        {n.user.name || ''} {n.user.surname || ''}
+                        {n.sender.profilePicture
+                          ? <img src={imageUrl(n.sender.profilePicture)} alt={`${n.sender.name || ''} ${n.sender.surname || ''}`} title={`${n.sender.name || ''} ${n.sender.surname || ''}`} className="sender-profile-picture" />
+                          : <div className="sender-initials">{getInitials(n.sender.name, n.sender.surname)}</div>}
+                        {n.sender.name || ''} {n.sender.surname || ''}{n.sender.role === 'ADMIN' ? ' · Administrador' : ''}
+                      </span>
+                    ) : (
+                      <span className="sender">
+                        <img src={`${import.meta.env.BASE_URL}logo-symbol.svg`} alt="EduNova" className="sender-profile-picture" />
+                        EduNova
                       </span>
                     )}
                     <span className="date">{formatDateTime(n?.createdAt || '')}</span>
@@ -94,7 +101,7 @@ export default function NotificationDetails({ notification, isOpen, readOnly, on
                   )}
                 </div>
 
-                {!isOwn && !readOnly && (
+                {!isOwn && !isSystem && !readOnly && (
                   <div className="reply-section">
                     <div className="reply-header"><h3>Responder</h3></div>
                     <div className="reply-form">

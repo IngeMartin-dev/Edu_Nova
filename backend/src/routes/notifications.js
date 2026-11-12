@@ -40,10 +40,10 @@ router.post('/send', requireRole('ADMIN'), asyncHandler(async (req, res) => {
   const recipientType = (req.body || {}).recipientType || 'ALL';
   const t = type || 'GENERAL';
   switch (recipientType) {
-    case 'PARENTS': await notifications.sendNotificationByRole('PARENT', title, message, t); break;
-    case 'TEACHERS': await notifications.sendNotificationByRole('TEACHER', title, message, t); break;
-    case 'ADMINISTRATORS': await notifications.sendNotificationByRole('ADMIN', title, message, t); break;
-    default: await notifications.sendNotificationToAll(title, message, t);
+    case 'PARENTS': await notifications.sendNotificationByRole('PARENT', title, message, t, req.user.id); break;
+    case 'TEACHERS': await notifications.sendNotificationByRole('TEACHER', title, message, t, req.user.id); break;
+    case 'ADMINISTRATORS': await notifications.sendNotificationByRole('ADMIN', title, message, t, req.user.id); break;
+    default: await notifications.sendNotificationToAll(title, message, t, req.user.id);
   }
   res.json({ success: true, message: 'Notificación enviada exitosamente' });
 }));
@@ -63,7 +63,8 @@ router.post('/reply', asyncHandler(async (req, res) => {
     orig.userId,
     `Respuesta a: ${orig.title}`,
     `Mensaje original:\n${orig.message}\n\nRespuesta:\n${replyMessage}`,
-    'NOTIFICATION_REPLY'
+    'NOTIFICATION_REPLY',
+    req.user.id
   );
   return res.json({ success: true, message: 'Respuesta enviada exitosamente' });
 }));

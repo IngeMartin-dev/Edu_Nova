@@ -58,6 +58,25 @@ export default function Layout() {
 
   useEffect(() => { setSidebarOpen(false); }, [loc.pathname]);
 
+  // Puntito en "Chats" cuando hay mensajes sin leer (se consulta cada 2 s y al volver a la pestaña).
+  const [chatUnread, setChatUnread] = useState(0);
+  useEffect(() => {
+    if (!user?.id) return undefined;
+    let alive = true;
+    const check = async () => {
+      try {
+        const r = await api.get('/chats/no-leidos', { currentUserId: user.id });
+        if (alive) setChatUnread(Number(r?.total) || 0);
+      } catch { /* se reintenta */ }
+    };
+    check();
+    const t = setInterval(check, 2000);
+    const onVis = () => { if (!document.hidden) check(); };
+    document.addEventListener('visibilitychange', onVis);
+    return () => { alive = false; clearInterval(t); document.removeEventListener('visibilitychange', onVis); };
+  }, [user?.id]);
+  const showChatDot = chatUnread > 0 && routeName !== 'chats';
+
   const gradesRoute = isParent ? '/mis-notas' : '/grades';
   const boletinesRoute = isParent ? '/mis-boletines' : '/boletines';
 
@@ -67,17 +86,17 @@ export default function Layout() {
   const initials = user?.name && user?.surname ? (user.name.charAt(0) + user.surname.charAt(0)).toUpperCase() : user?.name ? user.name.charAt(0).toUpperCase() : 'U';
   const picture = user?.profilePicture ? imageUrl(user.profilePicture) : null;
 
-  const item = (route, to, icon, label) => (
+  const item = (route, to, icon, label, dot = false) => (
     <li className={routeName === route ? 'active' : ''}>
       <Link to={to} onClick={() => setSidebarOpen(false)}>
-        <span className="material-icons">{icon}</span>
+        <span className="material-icons nav-icon-wrap">{icon}{dot && <i className="nav-dot" aria-label="Mensajes sin leer" />}</span>
         <span className="menu-text">{label}</span>
       </Link>
     </li>
   );
-  const mobile = (route, to, icon, label) => (
+  const mobile = (route, to, icon, label, dot = false) => (
     <Link className={routeName === route ? 'active' : ''} to={to} onClick={() => setSidebarOpen(false)}>
-      <span className="material-icons">{icon}</span>
+      <span className="material-icons nav-icon-wrap">{icon}{dot && <i className="nav-dot" aria-label="Mensajes sin leer" />}</span>
       <span>{label}</span>
     </Link>
   );
@@ -126,7 +145,7 @@ export default function Layout() {
                 {isAdmin && item('parents', '/parents', 'family_restroom', 'Padres de Familia')}
                 {isAdmin && item('teachers', '/teachers', 'person', 'Profesores')}
                 {isAdmin && item('directors-group', '/directors-group', 'groups', 'Directores de Grupo')}
-                {known && item('chats', '/chats', 'chat', 'Chats')}
+                {known && item('chats', '/chats', 'chat', 'Chats', showChatDot)}
                 {isAdmin && item('subjects', '/subjects', 'menu_book', 'Materias')}
                 {(isTeacherOrDirector || isParent) && item('grades', gradesRoute, 'assignment', 'Calificaciones')}
                 {(isAdmin || isParent) && item('boletines', boletinesRoute, 'description', 'Boletines')}
@@ -199,7 +218,7 @@ export default function Layout() {
             {(isTeacherOrDirector || isParent) && mobile('grades', gradesRoute, 'assignment', 'Calificaciones')}
             {(isAdmin || isParent) && mobile('boletines', boletinesRoute, 'description', 'Boletines')}
             {isDirectorOrAdmin && mobile('reports', '/reports', 'assessment', 'Reportes')}
-            {known && mobile('chats', '/chats', 'chat', 'Chats')}
+            {known && mobile('chats', '/chats', 'chat', 'Chats', showChatDot)}
           </nav>
         )}
 

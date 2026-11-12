@@ -37,6 +37,8 @@ BEGIN
   END LOOP;
 END $$;
 CREATE INDEX IF NOT EXISTS idx_users_mail ON users (mail);
+-- notifications.sender_id: quién envió la notificación (NULL = automática del sistema → se muestra como "EduNova").
+ALTER TABLE notifications ADD COLUMN IF NOT EXISTS sender_id BIGINT;
 `;
 
 let running = null;
