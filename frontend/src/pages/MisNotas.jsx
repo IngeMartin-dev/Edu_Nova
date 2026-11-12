@@ -3,14 +3,14 @@ import '../styles/pages/mis-notas.css';
 import { api } from '../api/client.js';
 
 const POLL_MS = 15000;      // recarga completa de respaldo
-const VERSION_MS = 2000;    // huella barata: si cambia, se recargan las notas al instante
+const VERSION_MS = 1000;    // huella barata cada 1 s: si cambia, se recargan las notas al instante
 const fmt1 = (n) => Number(n).toFixed(1);
 const esAprobatoria = (finalGrade, minPassing) => {
   if (finalGrade === null || finalGrade === undefined) return true;
   return finalGrade >= minPassing;
 };
 
-/** Vista de solo lectura de notas para PADRE DE FAMILIA. Se actualiza en tiempo real (huella cada 2 s). */
+/** Vista de solo lectura de notas para PADRE DE FAMILIA. Se actualiza en tiempo real (huella cada 1 s). */
 export default function MisNotas() {
   const [hijos, setHijos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

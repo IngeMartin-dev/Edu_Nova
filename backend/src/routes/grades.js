@@ -202,7 +202,10 @@ router.get('/mis-notas', asyncHandler(async (req, res) => {
         }
         const items = [...latest.entries()].map(([k, g]) => ({ ...g }))
           .filter((g) => !['nfinal', 'ih', 'fa', 'faa'].includes(String(g.gradeName || '').trim().toLowerCase()))  // solo notas: sin indicadores
-          .map((g) => ({ gradeName: g.gradeName, gradeValue: g.gradeValue, appreciative: g.appreciative, isEvaluation: g.isEvaluation }));
+          .map((g) => ({ gradeName: g.gradeName, gradeValue: g.gradeValue, appreciative: g.appreciative, isEvaluation: g.isEvaluation }))
+          // Orden: primero las actividades (ACT1, ACT2… ACT10 en orden numérico) y al final la evaluación.
+          .sort((x, y) => (x.isEvaluation ? 1 : 0) - (y.isEvaluation ? 1 : 0)
+            || String(x.gradeName || '').localeCompare(String(y.gradeName || ''), 'es', { numeric: true, sensitivity: 'base' }));
         const calc = await grades.calculateFinalGrade(h.id, period, subjectName);
         materias.push({ subjectName, items, finalGrade: calc.finalGrade });
       }
