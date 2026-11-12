@@ -52,7 +52,8 @@ router.post('/', STAFF, asyncHandler(async (req, res) => {
   if (teacherId && !(await one('SELECT id FROM users WHERE id = ?', [teacherId]))) throw new HttpError(400, 'Teacher not found');
 
   // ¿ya existe esa nota?
-  const where = ['student_id = ?', 'period = ?', 'subject_name = ?', 'grade_name = ?'];
+  // El nombre se compara sin distinguir mayúsculas ("Act1" = "ACT1"): así se actualiza la nota original y no se duplica.
+  const where = ['student_id = ?', 'period = ?', 'subject_name = ?', 'LOWER(grade_name) = LOWER(?)'];
   const params = [studentId, period, subjectName, gradeName];
   if (subjectId) { where.push('(subject_id = ? OR subject_id IS NULL)'); params.push(subjectId); }
   if (teacherId) { where.push('teacher_id = ?'); params.push(teacherId); }
@@ -190,16 +191,20 @@ router.get('/mis-notas', asyncHandler(async (req, res) => {
       }
       const materias = [];
       for (const [subjectName, list] of porMateria) {
-        // por cada nombre de nota se queda la más reciente
+        // Una sola fila por nombre de nota (sin distinguir mayúsculas): se muestra el nombre ORIGINAL
+        // (el de la fila más antigua) con el valor más reciente.
         const latest = new Map();
+        const original = new Map();
         for (const g of list) {
-          const key = g.gradeName || '';
+          const key = String(g.gradeName || '').trim().toLowerCase();
           const cur = latest.get(key);
           const tg = g.updatedAt || g.createdAt || '';
           const tc = cur ? (cur.updatedAt || cur.createdAt || '') : '';
           if (!cur || tg > tc || (tg === tc && g.id > cur.id)) latest.set(key, g);
+          const o = original.get(key);
+          if (!o || g.id < o.id) original.set(key, g);
         }
-        const items = [...latest.values()]
+        const items = [...latest.entries()].map(([k, g]) => ({ ...g, gradeName: original.get(k).gradeName }))
           .filter((g) => String(g.gradeName || '').toLowerCase() !== 'nfinal')
           .map((g) => ({ gradeName: g.gradeName, gradeValue: g.gradeValue, appreciative: g.appreciative, isEvaluation: g.isEvaluation }));
         const calc = await grades.calculateFinalGrade(h.id, period, subjectName);
