@@ -570,12 +570,22 @@
     grid-template-columns: 1fr;
     /* La asignación de salones queda a poca distancia de la lista, sin
        obligar a recorrer todos los profesores para llegar a ella. */
-    max-height: min(34vh, 300px);
+    max-height: min(24vh, 210px);
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: 2px 4px 4px 2px;
     -webkit-overflow-scrolling: touch;
   }
+  .pg-directors-group .teacher-item { padding: 0.6rem 0.7rem; }
+  .pg-directors-group .teacher-info {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 0.6rem;
+  }
+  .pg-directors-group .teacher-name-row { justify-content: flex-start; margin-bottom: 0.15rem; }
+  .pg-directors-group .teacher-email,
+  .pg-directors-group .teacher-subject-chips { display: none; }
 
   .pg-directors-group .classrooms-page-grid {
     grid-template-columns: 1fr;

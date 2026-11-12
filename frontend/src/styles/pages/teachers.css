@@ -349,6 +349,7 @@
 
 .pg-teachers .columna-header.primaria { background: var(--success); }
 .pg-teachers .columna-header.bachillerato { background: var(--brand); }
+.pg-teachers .columna-header.media { background: #0f766e; }
 
 .pg-teachers .columna-header .icono { font-size: 1.3rem; }
 
@@ -480,6 +481,7 @@
   color: var(--brand);
   border: 1px solid var(--brand-100);
 }
+.pg-teachers .subject-badge.media { background: #ccfbf1; color: #115e59; }
 
 /* ---------- Empty states ---------- */
 .pg-teachers .empty-state {
@@ -1012,12 +1014,30 @@
   .pg-teachers .teachers-list { grid-template-columns: 1fr; }
   /* Mantiene accesible el panel de materias sin tener que recorrer toda la lista. */
   .pg-teachers .two-columns > .column:first-child .teachers-list {
-    max-height: min(34vh, 300px);
+    max-height: min(24vh, 210px);
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: 2px 4px 4px 2px;
     -webkit-overflow-scrolling: touch;
   }
+  .pg-teachers .teacher-item {
+    min-height: 0;
+    padding: 0.65rem 2.8rem 0.65rem 0.7rem;
+  }
+  .pg-teachers .teacher-info {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 0.65rem;
+  }
+  .pg-teachers .teacher-avatar,
+  .pg-teachers .teacher-photo { width: 2rem; height: 2rem; }
+  .pg-teachers .teacher-name-row { justify-content: flex-start; margin: 0; }
+  .pg-teachers .teacher-email,
+  .pg-teachers .teacher-username,
+  .pg-teachers .assigned-subjects-label { display: none; }
+  .pg-teachers .assigned-subjects { align-items: flex-start; margin-top: 0.2rem; }
+  .pg-teachers .teacher-subject-chips { justify-content: flex-start; flex-wrap: nowrap; overflow: hidden; }
   .pg-teachers .two-columns > .column:last-child .subjects-list {
     max-height: min(48vh, 420px);
     overflow-y: auto;

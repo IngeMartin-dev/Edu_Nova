@@ -79,7 +79,11 @@ export default function Teachers() {
 
   const getTeacherSubjectObjects = (teacher) => allSubjects.filter((s) => subjectTeacherId(s) === teacher.id);
   const primarySubjects = allSubjects.filter((s) => (s.level || '').toLowerCase() === 'primaria');
-  const highSchoolSubjects = allSubjects.filter((s) => (s.level || '').toLowerCase() === 'bachillerato');
+  const mediaSubjects = allSubjects.filter((s) => Number(s.gradeMin) === 10 && Number(s.gradeMax) === 11);
+  const highSchoolSubjects = allSubjects.filter((s) => {
+    const level = (s.level || '').toLowerCase();
+    return level === 'bachillerato' && !(Number(s.gradeMin) === 10 && Number(s.gradeMax) === 11);
+  });
 
   const getFilteredTeachers = () => {
     const term = searchTerm.toLowerCase();
@@ -297,7 +301,7 @@ export default function Teachers() {
           <span className={`subject-code-pill ${getSubjectLevelClass(subject)}`}>{getSubjectAcronym(subject)}</span>
         </div>
         <div className="subject-meta">
-          <span className={`subject-badge ${levelKey}`}>{levelKey === 'bachillerato' ? 'Bachillerato' : 'Primaria'}</span>
+          <span className={`subject-badge ${levelKey}`}>{levelKey === 'media' ? 'Media' : levelKey === 'bachillerato' ? 'Bachillerato' : 'Primaria'}</span>
           {subject.gradeMin != null && subject.gradeMax != null && (
             <span className="subject-range">Grados {subject.gradeMin}-{subject.gradeMax}</span>
           )}
@@ -409,6 +413,16 @@ export default function Teachers() {
                     <div className="columna-body">
                       {highSchoolSubjects.map((s) => subjectItem(s, 'bachillerato'))}
                       {highSchoolSubjects.length === 0 && <p className="empty-text">Sin materias de bachillerato</p>}
+                    </div>
+                  </div>
+                  <div className="materia-columna">
+                    <div className="columna-header media">
+                      <span className="icono">📖</span>
+                      <h4>Media (10° - 11°)</h4>
+                    </div>
+                    <div className="columna-body">
+                      {mediaSubjects.map((s) => subjectItem(s, 'media'))}
+                      {mediaSubjects.length === 0 && <p className="empty-text">Sin materias de media (10° - 11°)</p>}
                     </div>
                   </div>
                   <div className="materia-columna">
