@@ -42,20 +42,20 @@
 .pg-teachers .column:first-child { padding: var(--sp-5); }
 .pg-teachers .column:last-child { padding: var(--sp-4); }
 
-/* Escritorio: listas paralelas con scroll propio para mantener visibles
-   Profesores y las tres filas de materias al mismo tiempo. */
+/* Escritorio: profesores y materias en dos paneles. La lista de profesores
+   tiene scroll propio; las secciones de materias conservan su altura completa. */
 @media (min-width: 901px) {
   .pg-teachers .two-columns {
-    height: clamp(360px, calc(100dvh - 270px), 760px);
-    min-height: 0;
-    align-items: stretch;
+    height: auto;
+    align-items: start;
   }
 
-  .pg-teachers .two-columns > .column {
+  .pg-teachers .two-columns > .column:first-child {
     display: flex;
     flex-direction: column;
     min-width: 0;
     min-height: 0;
+    height: clamp(360px, calc(100dvh - 270px), 760px);
     overflow: hidden;
   }
 
@@ -69,16 +69,16 @@
   }
 
   .pg-teachers .two-columns > .column:last-child .subjects-list {
-    flex: 1;
-    min-height: 0;
+    flex: initial;
+    min-height: auto;
     grid-template-columns: minmax(0, 1fr);
-    grid-auto-rows: minmax(0, auto);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
   }
 
-  .pg-teachers .materia-columna { min-height: 0; }
+  .pg-teachers .two-columns > .column:last-child {
+    min-width: 0;
+    overflow: visible;
+  }
 }
 
 .pg-teachers .column > h3 {
