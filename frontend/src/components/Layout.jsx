@@ -75,7 +75,7 @@ export default function Layout() {
     document.addEventListener('visibilitychange', onVis);
     return () => { alive = false; clearInterval(t); document.removeEventListener('visibilitychange', onVis); };
   }, [user?.id]);
-  const showChatDot = chatUnread > 0 && routeName !== 'chats';
+  const showChatDot = chatUnread > 0;
 
   const gradesRoute = isParent ? '/mis-notas' : '/grades';
   const boletinesRoute = isParent ? '/mis-boletines' : '/boletines';
