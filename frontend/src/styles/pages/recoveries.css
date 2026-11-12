@@ -1310,7 +1310,94 @@
 }
 
 @media (max-width: 768px) {
-  .pg-recoveries .recoveries-container { padding: var(--sp-4); }
+  .pg-recoveries,
+  .pg-recoveries .recoveries-container {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .pg-recoveries .recoveries-container {
+    padding: var(--sp-3, 12px);
+    overflow-x: hidden;
+  }
+
+  .pg-recoveries .grades-sidebar {
+    min-width: 0;
+    padding: 12px;
+    overflow: visible;
+  }
+
+  .pg-recoveries .grades-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    gap: 10px;
+    justify-content: stretch;
+  }
+
+  .pg-recoveries .grade-section {
+    min-width: 0;
+    padding: 12px 10px;
+  }
+
+  .pg-recoveries .classrooms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+    gap: 6px;
+  }
+
+  .pg-recoveries .classroom-btn {
+    min-width: 0;
+    padding: 10px 8px;
+  }
+
+  .pg-recoveries .subject-selector {
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+
+  .pg-recoveries .subject-selector .subject-btn {
+    flex: 1 1 130px;
+    min-width: 0;
+  }
+
+  .pg-recoveries .right-content,
+  .pg-recoveries .recoveries-list {
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .pg-recoveries .period-selector {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+  }
+
+  .pg-recoveries .period-selector select {
+    flex: 1 1 150px;
+    min-width: 0;
+  }
+
+  .pg-recoveries .recovery-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pg-recoveries .recovery-card {
+    min-width: 0;
+    padding: 14px;
+  }
+
+  .pg-recoveries .plan-topics {
+    overflow-wrap: anywhere;
+  }
+
+  .pg-recoveries .no-students-message {
+    padding: 16px 4px;
+  }
+
+  .pg-recoveries .no-students-content {
+    padding: 18px 14px;
+    overflow-wrap: anywhere;
+  }
+
   .pg-recoveries .modal-footer {
     flex-direction: column-reverse;
   }
@@ -1321,6 +1408,12 @@
   .pg-recoveries .recovery-card .card-footer .view-plan-btn {
     width: 100%;
   }
+}
+
+@media (max-width: 380px) {
+  .pg-recoveries .recoveries-container { padding: 8px; }
+  .pg-recoveries .grades-row { grid-template-columns: minmax(0, 1fr); }
+  .pg-recoveries .student-info h4 { white-space: normal; overflow-wrap: anywhere; }
 }
 
 /* ============================================================

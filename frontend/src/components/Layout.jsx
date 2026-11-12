@@ -215,6 +215,9 @@ export default function Layout() {
           <nav className="mobile-nav">
             {known && mobile('dashboard', '/dashboard', 'dashboard', 'Inicio')}
             {isAdmin && mobile('students', '/students', 'school', 'Estudiantes')}
+            {isAdmin && mobile('parents', '/parents', 'family_restroom', 'Padres')}
+            {isAdmin && mobile('teachers', '/teachers', 'person', 'Profesores')}
+            {isAdmin && mobile('directors-group', '/directors-group', 'groups', 'Directores')}
             {(isTeacherOrDirector || isParent) && mobile('grades', gradesRoute, 'assignment', 'Calificaciones')}
             {(isAdmin || isParent) && mobile('boletines', boletinesRoute, 'description', 'Boletines')}
             {isDirectorOrAdmin && mobile('reports', '/reports', 'assessment', 'Reportes')}
