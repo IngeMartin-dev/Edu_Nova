@@ -1010,6 +1010,20 @@
   .pg-teachers .teachers-container { padding: var(--sp-4); }
   .pg-teachers .column { padding: var(--sp-4); }
   .pg-teachers .teachers-list { grid-template-columns: 1fr; }
+  /* Mantiene accesible el panel de materias sin tener que recorrer toda la lista. */
+  .pg-teachers .two-columns > .column:first-child .teachers-list {
+    max-height: min(34vh, 300px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 2px 4px 4px 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pg-teachers .two-columns > .column:last-child .subjects-list {
+    max-height: min(48vh, 420px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
   .pg-teachers .columna-body { grid-template-columns: 1fr; }
   .pg-teachers .modal-content.large-modal { width: 100%; max-width: 100%; }
   .pg-teachers .form-row { grid-template-columns: 1fr; }

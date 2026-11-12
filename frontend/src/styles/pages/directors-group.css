@@ -568,6 +568,13 @@
 
   .pg-directors-group .teachers-list {
     grid-template-columns: 1fr;
+    /* La asignación de salones queda a poca distancia de la lista, sin
+       obligar a recorrer todos los profesores para llegar a ella. */
+    max-height: min(34vh, 300px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 2px 4px 4px 2px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .pg-directors-group .classrooms-page-grid {

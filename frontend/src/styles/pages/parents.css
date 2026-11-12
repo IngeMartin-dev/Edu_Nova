@@ -929,6 +929,14 @@
 
   .pg-parents .parents-grid { grid-template-columns: 1fr; }
 
+  /* Evita que la lista de estudiantes empuje fuera de vista la de padres. */
+  .pg-parents .people-list {
+    max-height: min(34vh, 300px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .pg-parents .grade-section { min-width: 130px; padding: var(--sp-3) var(--sp-2); }
 
   .pg-parents .right-content { padding: var(--sp-4); }
