@@ -69,8 +69,8 @@ router.post('/', STAFF, asyncHandler(async (req, res) => {
   if (existing.length) {
     id = existing[0].id;
     await exec(
-      'UPDATE subject_grades SET grade_value = ?, is_evaluation = ?, appreciative = ?, subject_id = ?, updated_at = ? WHERE id = ?',
-      [gradeValue, isEvaluation ? 1 : 0, appreciative, subjectId, nowSql(), id]);
+      'UPDATE subject_grades SET grade_name = ?, grade_value = ?, is_evaluation = ?, appreciative = ?, subject_id = ?, updated_at = ? WHERE id = ?',
+      [gradeName, gradeValue, isEvaluation ? 1 : 0, appreciative, subjectId, nowSql(), id]);
   } else {
     const r = await exec(
       `INSERT INTO subject_grades (student_id, teacher_id, subject_name, subject_id, period, grade_name, grade_value, is_evaluation, appreciative, created_at, updated_at)
@@ -191,21 +191,17 @@ router.get('/mis-notas', asyncHandler(async (req, res) => {
       }
       const materias = [];
       for (const [subjectName, list] of porMateria) {
-        // Una sola fila por nombre de nota (sin distinguir mayúsculas): se muestra el nombre ORIGINAL
-        // (el de la fila más antigua) con el valor más reciente.
+        // Una sola fila por nombre de nota (sin distinguir mayúsculas): la más reciente, que es la que el profesor edita.
         const latest = new Map();
-        const original = new Map();
         for (const g of list) {
           const key = String(g.gradeName || '').trim().toLowerCase();
           const cur = latest.get(key);
           const tg = g.updatedAt || g.createdAt || '';
           const tc = cur ? (cur.updatedAt || cur.createdAt || '') : '';
           if (!cur || tg > tc || (tg === tc && g.id > cur.id)) latest.set(key, g);
-          const o = original.get(key);
-          if (!o || g.id < o.id) original.set(key, g);
         }
-        const items = [...latest.entries()].map(([k, g]) => ({ ...g, gradeName: original.get(k).gradeName }))
-          .filter((g) => String(g.gradeName || '').toLowerCase() !== 'nfinal')
+        const items = [...latest.entries()].map(([k, g]) => ({ ...g }))
+          .filter((g) => !['nfinal', 'ih', 'fa', 'faa'].includes(String(g.gradeName || '').trim().toLowerCase()))  // solo notas: sin indicadores
           .map((g) => ({ gradeName: g.gradeName, gradeValue: g.gradeValue, appreciative: g.appreciative, isEvaluation: g.isEvaluation }));
         const calc = await grades.calculateFinalGrade(h.id, period, subjectName);
         materias.push({ subjectName, items, finalGrade: calc.finalGrade });
